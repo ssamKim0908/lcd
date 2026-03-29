@@ -1,20 +1,22 @@
 CXX = g++
-
 CXXFLAGS = -std=c++17 -Wall
 
-SRCS = $(wildcard ./*.cpp)
-OBJS = $(patsubst ./%.cpp,./%.o,$(SRCS))
+SRCS = $(wildcard *.cpp)
+BUILD_DIR = build
+OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 
-TARGET = test_spi
+TARGET = $(BUILD_DIR)/lcd_driver
 
+.PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
-$(OBJS):./%.o:./%.cpp
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -rf $(BUILD_DIR)

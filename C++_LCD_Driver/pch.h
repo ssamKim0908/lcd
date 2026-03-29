@@ -5,3 +5,4 @@
 #include <iostream>
 #include <sys/ioctl.h>
 #include <memory>
+#include <cstdint>

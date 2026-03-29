@@ -3,6 +3,7 @@
  *  Author(s):Andy Li from Seengreat
  * ********************/
 #include "transport_spi.hpp"
+#include "transport_interface.hpp"
 #include "pch.h"
 
 /******************************
@@ -16,10 +17,9 @@
  * 
  * */
 
-
 int main(void)
 {
 	std::unique_ptr<Fd_spi> spi = std::make_unique<Fd_spi>("/dev/spidev0.0", O_RDWR);
-	spi->write();
+	
 	return 0;
 }

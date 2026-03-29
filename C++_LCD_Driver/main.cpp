@@ -3,7 +3,7 @@
  *  Author(s):Andy Li from Seengreat
  * ********************/
 #include "transport_spi.hpp"
-
+#include "pch.h"
 
 /******************************
  * when set image in ROTATE_0:
@@ -19,5 +19,7 @@
 
 int main(void)
 {
-	
+	std::unique_ptr<Fd_spi> spi = std::make_unique<Fd_spi>("/dev/spidev0.0", O_RDWR);
+	spi->write();
+	return 0;
 }

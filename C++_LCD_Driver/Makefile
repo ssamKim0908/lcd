@@ -1,26 +1,20 @@
-CC = gcc
-#get all .c files in current directory 
-src=$(wildcard ./*.c)
-#matches the corresponding files in the current directory
-obj=$(patsubst ./%.c,./%.o,$(src))
-#link to library
-DLIBS=-llgpio -lm
-#name of the excutable file
-app=main
+CXX = g++
 
-$(app):$(obj)
-	$(CC) $(obj) -o $(app) $(DLIBS)
+CXXFLAGS = -std=c++17 -Wall
 
-#output all .o files
-$(obj):./%.o:./%.c	
-	$(CC) -c $< -o $@ $(DLIBS)
+SRCS = $(wildcard ./*.cpp)
+OBJS = $(patsubst ./%.cpp,./%.o,$(SRCS))
 
-.PHONY:clean all
+TARGET = test_spi
+
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
+
+$(OBJS):./%.o:./%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 clean:
-	-rm *.o $(app)
-$(info clean successful)
-
-#this file should be located in current root directory
-#the name of excutable file can modify in "app = main" 
-#make clean command is clear all output files 
-#if has other library then should be added in DLIBS
+	rm -f $(TARGET) $(OBJS)

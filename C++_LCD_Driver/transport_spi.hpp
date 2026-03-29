@@ -1,6 +1,6 @@
 #pragma once
-#include <linux/spi/spidev.h>
 #include "pch.h"
+#include "transport_interface.hpp"
 
 class Fd_spi : public Fd_transport, public ITransport_write, public ITransport_ioctl
 {

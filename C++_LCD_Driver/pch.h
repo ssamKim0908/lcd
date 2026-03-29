@@ -4,3 +4,4 @@
 #include <stdexcept>
 #include <iostream>
 #include <sys/ioctl.h>
+#include <memory>

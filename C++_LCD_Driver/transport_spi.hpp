@@ -1,11 +1,12 @@
+#pragma once
 #include <linux/spi/spidev.h>
-#include "transport_abstract.hpp"
+#include "pch.h"
 
-class transport_spi : public transport
+class Fd_spi : public Fd_transport, public ITransport_write, public ITransport_ioctl
 {
 public:
-    bool trans_init() override
-    {
-        ioctl(get_fd(), SPI_IOC_WR_MODE, &mode);
-    }
-}
+    Fd_spi(const std::string& device, int flags) : Fd_transport(device, flags) {}
+
+    void write() override;
+    void ioctl() override;
+};

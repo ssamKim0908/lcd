@@ -7,6 +7,6 @@ class Fd_spi : public Fd_transport, public ITransport_write, public ITransport_i
 public:
     Fd_spi(const std::string& device, int flags) : Fd_transport(device, flags) {}
 
-    void write() override;
-    void ioctl() override;
+    void Write(const uint8_t* buffer, uint32_t length) override;
+    void Ioctl(uint32_t flag, void* arg) override;
 };

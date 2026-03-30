@@ -4,19 +4,19 @@
 class ITransport_read
 {
 public:
-    virtual void read() = 0;
+    virtual void Read(uint8_t* buffer, uint32_t length) = 0;
 };
 
 class ITransport_write
 {
 public:
-    virtual void write() = 0;
+    virtual void Write(const uint8_t* buffer, uint32_t length) = 0;
 };
 
 class ITransport_ioctl
 {
 public:
-    virtual void ioctl() = 0;
+    virtual void Ioctl(uint32_t flag, void* arg) = 0;
 };
 
 class Fd_transport
@@ -42,5 +42,5 @@ public:
             close(fd);
         }
     }
-};
+};  
 

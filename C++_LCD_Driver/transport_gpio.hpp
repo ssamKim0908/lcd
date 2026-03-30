@@ -19,6 +19,6 @@ class Fd_gpio : public Fd_transport, public ITransport_read, public ITransport_i
 {
 public:
     Fd_gpio(const std::string& device, int flags) : Fd_transport(device, flags) {}
-    void read() override;
-    void ioctl() override;
+    void Read(uint8_t* buffer, uint32_t length) override;
+    void Ioctl(uint32_t flag, void* arg) override;
 };

@@ -9,6 +9,6 @@ private:
 public:
     Fd_Spi(const std::string& device, int flags) : fd_t{device, flags} {};
 
-    void write(span<uint8_t> buffer) override;
+    void write(const span<uint8_t> buffer) override;
     void ioctl(uint32_t flag, void* arg) override;
 };

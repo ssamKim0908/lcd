@@ -11,6 +11,8 @@ public:
     template <class Container>
     span(Container& container) : ptr(container.data()), len(container.size()) {};
 
+    //Todo : 이니셜라이저 리스트 생성자 필요
+
     T* data() const { return ptr; }
     size_t size() const { return len; }
 };

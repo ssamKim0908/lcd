@@ -12,7 +12,7 @@ public:
 class ITransport_Write
 {
 public:
-    virtual void write(span<uint8_t> buffer) = 0;
+    virtual void write(const span<uint8_t> buffer) = 0;
     virtual ~ITransport_Write() = default;
 };
 

@@ -19,6 +19,8 @@
 
 int main(void)
 {
-	
+	std::unique_ptr<Fd_Spi> spi_transport = std::make_unique<Fd_Spi>("/dev/spidev0.0", O_WRONLY);
+	spi_transport->write({0x00, 0x01, 0x02, 0x03}); // Example data to write to SPI device
+
 	return 0;
 }

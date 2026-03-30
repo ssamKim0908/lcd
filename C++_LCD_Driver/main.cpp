@@ -19,7 +19,7 @@
 
 int main(void)
 {
-	std::unique_ptr<Fd_spi> spi = std::make_unique<Fd_spi>("/dev/spidev0.0", O_RDWR);
+	std::unique_ptr<Fd_Spi> spi = std::make_unique<Fd_Spi>("/dev/spidev0.0", O_RDWR);
 	
 	return 0;
 }

@@ -15,10 +15,12 @@ enum class GpioValue
     High
 };
 
-class Fd_gpio : public Fd_transport, public ITransport_read, public ITransport_ioctl
+class Fd_Gpio : public ITransport_Read, public ITransport_Ioctl
 {
+private:
+    Fd_Transport fd_t;
 public:
-    Fd_gpio(const std::string& device, int flags) : Fd_transport(device, flags) {}
+    Fd_Gpio(const std::string& device, int flags) : fd_t(device, flags) {};
     void Read(uint8_t* buffer, uint32_t length) override;
     void Ioctl(uint32_t flag, void* arg) override;
 };

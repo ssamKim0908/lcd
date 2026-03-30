@@ -21,6 +21,6 @@ private:
     Fd_Transport fd_t;
 public:
     Fd_Gpio(const std::string& device, int flags) : fd_t(device, flags) {};
-    void Read(uint8_t* buffer, uint32_t length) override;
-    void Ioctl(uint32_t flag, void* arg) override;
+    void read(span<uint8_t> buffer) override;
+    void ioctl(uint32_t flag, void* arg) override;
 };

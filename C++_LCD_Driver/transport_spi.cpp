@@ -3,14 +3,14 @@
 #include <linux/spi/spidev.h>
 #include "pch.h"
 
-void Fd_Spi::Write(const uint8_t* buffer, uint32_t length)
+void Fd_Spi::write(span<uint8_t> buffer)
 {
     std::cout << "Writing to SPI device with file descriptor: " << fd_t.get_fd() << std::endl;
-    write(fd_t.get_fd(), buffer, length);
+    ::write(fd_t.get_fd(), buffer.data(), buffer.size());
 }
 
-void Fd_Spi::Ioctl(uint32_t flag, void* arg)
+void Fd_Spi::ioctl(uint32_t flag, void* arg)
 {
     std::cout << "Performing ioctl on SPI device with file descriptor: " << fd_t.get_fd() << std::endl;
-    ioctl(fd_t.get_fd(), flag, arg);
+    ::ioctl(fd_t.get_fd(), flag, arg);
 }

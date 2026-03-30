@@ -3,14 +3,14 @@ template <class T>
 class span
 {
 private:
-    T* data;
-    size_t size;
+    T* ptr;
+    size_t len;
 public:
-    span(T* data, size_t size) : data(data), size(size) {};
+    span(T* ptr, size_t len) : ptr(ptr), len(len) {};
 
     template <class Container>
-    span(Container& container) : data(container.data()), size(container.size()) {};
+    span(Container& container) : ptr(container.data()), len(container.size()) {};
 
-    T* data() const { return data; }
-    size_t size() const { return size; }
-}
+    T* data() const { return ptr; }
+    size_t size() const { return len; }
+};

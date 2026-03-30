@@ -1,25 +1,33 @@
 #pragma once
 #include "pch.h"
+#include "include/span.hpp"
 
 class ITransport_Read
 {
 public:
-    virtual void Read(uint8_t *buffer, uint32_t length) = 0;
+    virtual void read(span<uint8_t> buffer) = 0;
     virtual ~ITransport_Read() = default;
 };
 
 class ITransport_Write
 {
 public:
-    virtual void Write(const uint8_t *buffer, uint32_t length) = 0;
+    virtual void write(span<uint8_t> buffer) = 0;
     virtual ~ITransport_Write() = default;
 };
 
 class ITransport_Ioctl
 {
 public:
-    virtual void Ioctl(uint32_t flag, void *arg) = 0;
+    virtual void ioctl(uint32_t flag, void *arg) = 0;
     virtual ~ITransport_Ioctl() = default;
+};
+
+class ITransport_ReadWrite
+{
+public:
+    virtual void read_write(span<uint8_t> rx, span<uint8_t> tx) = 0;
+    virtual ~ITransport_ReadWrite() = default;
 };
 
 class Fd_Transport

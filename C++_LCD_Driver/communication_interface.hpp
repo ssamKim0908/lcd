@@ -2,40 +2,41 @@
 #include "pch.h"
 #include "include/span.hpp"
 
-class ITransport_Read
+class IRead
 {
 public:
     virtual void read(span<uint8_t> buffer) = 0;
-    virtual ~ITransport_Read() = default;
+    virtual ~IRead() = default;
 };
 
-class ITransport_Write
+class IWrite
 {
 public:
     virtual void write(const span<uint8_t> buffer) = 0;
-    virtual ~ITransport_Write() = default;
+    virtual ~IWrite() = default;
 };
 
-class ITransport_Ioctl
+class IIoctl
 {
 public:
     virtual void ioctl(uint32_t flag, void *arg) = 0;
-    virtual ~ITransport_Ioctl() = default;
+    virtual ~IIoctl() = default;
 };
 
-class ITransport_ReadWrite
+//일단 만들어 둠. 나중에 spi에서 쓸 수도 있으니, 필요하다면 이런 방식으로 쓰겠다는 뜻.
+class IReadWrite
 {
 public:
     virtual void read_write(span<uint8_t> rx, span<uint8_t> tx) = 0;
-    virtual ~ITransport_ReadWrite() = default;
+    virtual ~IReadWrite() = default;
 };
 
-class Fd_Transport
+class Fd_Object
 {
 private:
     int fd = -1;
 public:
-    Fd_Transport(const std::string &device, int flags)
+    Fd_Object(const std::string &device, int flags)
     {
         fd = open(device.c_str(), flags);
         if (fd < 0)
@@ -45,15 +46,15 @@ public:
     };
 
     
-    Fd_Transport(const Fd_Transport &) = delete;
-    Fd_Transport& operator=(const Fd_Transport &) = delete;
+    Fd_Object(const Fd_Object&) = delete;
+    Fd_Object& operator=(const Fd_Object&) = delete;
     
-    Fd_Transport(Fd_Transport &&other) noexcept : fd(other.fd) 
+    Fd_Object(Fd_Object&&other) noexcept : fd(other.fd) 
     {
         other.fd = -1;
     }
     
-    Fd_Transport& operator=(Fd_Transport &&other) noexcept
+    Fd_Object& operator=(Fd_Object&&other) noexcept
     {
         if (this != &other)
         {
@@ -70,7 +71,7 @@ public:
      
     int get_fd() const { return fd; }
     
-    ~Fd_Transport()
+    ~Fd_Object()
     {
         if (fd >= 0)
         {

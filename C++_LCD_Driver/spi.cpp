@@ -1,5 +1,4 @@
-#include "transport_interface.hpp"
-#include "transport_spi.hpp"
+#include "spi.hpp"
 #include <linux/spi/spidev.h>
 #include "pch.h"
 

@@ -2,8 +2,8 @@
  *  Seengreat 1.3 Inch LCD Display demo
  *  Author(s):Andy Li from Seengreat
  * ********************/
-#include "transport_spi.hpp"
-#include "transport_interface.hpp"
+#include "spi.hpp"
+#include "communication_interface.hpp"
 #include "pch.h"
 
 /******************************

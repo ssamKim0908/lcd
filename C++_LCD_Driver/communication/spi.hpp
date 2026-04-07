@@ -1,13 +1,13 @@
 #pragma once
 #include "pch.h"
-#include "communication_interface.hpp"
+#include "ICommunication.hpp"
 
-class Fd_Spi : public IWrite
+class FdSpi : public IWrite
 {
 private:
-    Fd_Object fd_t;
+    FdObject FdT;
 public:
-    Fd_Spi(const std::string& device, int flags) : fd_t{device, flags} {};
+    FdSpi(const std::string& device, int flags) : FdT{device, flags} {};
 
     void write(const span<uint8_t> buffer) override;
 };

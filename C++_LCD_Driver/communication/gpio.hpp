@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "communication_interface.hpp"
+#include "ICommunication.hpp"
 #include <linux/gpio.h>
 
 enum class GpioDirection
@@ -15,11 +15,11 @@ enum class GpioValue
     High
 };
 
-class Fd_Gpio : public IRead
+class FdGpio : public IRead
 {
 private:
-    Fd_Object fd_t;
+    FdObject FdT;
 public:
-    Fd_Gpio(const std::string& device, int flags);
+    FdGpio(const std::string& device, int flags);
     void read(span<uint8_t> buffer) override;
 };

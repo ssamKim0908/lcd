@@ -1,18 +1,22 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall
+CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Icommunication -Ifactory -Ilcd
 
-SRCS = $(wildcard *.cpp)
 BUILD_DIR = build
-OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
-
 TARGET = $(BUILD_DIR)/lcd_driver
+
+SRCS = $(wildcard *.cpp) \
+       $(wildcard communication/*.cpp) \
+       $(wildcard factory/*.cpp) \
+       $(wildcard lcd/*.cpp)
+
+OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 
 .PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)

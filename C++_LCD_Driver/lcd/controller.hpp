@@ -6,16 +6,12 @@
 class Controller
 {
 private:
-    std::shared_ptr<IFactoryCommunication> Factory;
-    std::shared_ptr<IRead>  ReadInterface;
-    std::shared_ptr<IWrite> WriteInterface;
+    std::unique_ptr<IFactoryCommunication> Factory;
+    std::unique_ptr<IRead>  ReadInterface;
+    std::unique_ptr<IWrite> WriteInterface;
 public:
-    Controller(std::shared_ptr<IFactoryCommunication> factory) : Factory{factory}
-    {
-        ReadInterface = Factory->create_read_interface();
-        WriteInterface = Factory->create_write_interface();
-    }
-
+    Controller(std::unique_ptr<IFactoryCommunication> factory);
+    
     ~Controller() = default;
 };
 

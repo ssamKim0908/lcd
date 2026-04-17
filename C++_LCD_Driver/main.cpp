@@ -19,7 +19,7 @@
 
 int main(void)
 {
-    auto factory = std::make_shared<LcdFactoryCommunication>();
-    Controller controller(factory);
+    auto factory = std::make_unique<LcdFactoryCommunication>();
+    Controller controller(std::move(factory));
     return 0;
 }

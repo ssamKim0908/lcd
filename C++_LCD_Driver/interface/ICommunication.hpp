@@ -29,6 +29,10 @@ public:
         {
             throw std::runtime_error("Failed to open device");
         }
+        else
+        {
+            std::cout << "Opened file descriptor: " << Fd << std::endl;
+        }
     };
 
 

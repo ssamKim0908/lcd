@@ -20,5 +20,5 @@ private:
     FdObject FdT;
 public:
     FdGpio(const std::string& device, int flags);
-    void read(span<uint8_t> buffer) override;
+    void read(span<std::byte> buffer) override;
 };

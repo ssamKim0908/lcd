@@ -5,8 +5,13 @@ class FdSpi : public IWrite
 {
 private:
     FdObject FdT;
+    
+    uint8_t  mode;
+    uint8_t  bits;
+    uint32_t speed;
+    uint8_t  lsb;
 public:
-    FdSpi(const std::string& device, int flags) : FdT{device, flags} {};
+    FdSpi(const std::string& device, int flags);
 
-    void write(const span<uint8_t> buffer) override;
+    void write(span<const std::byte> buffer) override;
 };

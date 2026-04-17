@@ -1,5 +1,6 @@
 #pragma once
-#include "../include/pch.h"
+
+#include "../include/common.h"
 #include "../include/span.hpp"
 
 class IRead

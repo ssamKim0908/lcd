@@ -1,5 +1,5 @@
 #pragma once
-#include "../include/pch.h"
+#include "../include/common.h"
 #include "../interface/ICommunication.hpp"
 #include "../interface/IFactory.hpp"
 

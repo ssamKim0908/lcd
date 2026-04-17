@@ -1,5 +1,4 @@
 #pragma once
-#include "pch.h"
 #include "ICommunication.hpp"
 
 class FdSpi : public IWrite

@@ -1,6 +1,4 @@
 #pragma once
-#include "../include/pch.h"
-#include "../interface/ICommunication.hpp"
 #include "../interface/IFactory.hpp"
 
 class LcdFactoryCommunication : public IFactoryCommunication

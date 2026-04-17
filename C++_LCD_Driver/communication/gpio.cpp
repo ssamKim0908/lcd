@@ -1,5 +1,4 @@
 #include "gpio.hpp"
-#include "pch.h"
 
 FdGpio::FdGpio(const std::string& device, int flags) : FdT(device, flags) {}
 

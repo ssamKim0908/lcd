@@ -1,6 +1,5 @@
 #pragma once
-#include "pch.h"
-#include "ICommunication.hpp"
+#include "../interface/ICommunication.hpp"
 #include <linux/gpio.h>
 
 enum class GpioDirection

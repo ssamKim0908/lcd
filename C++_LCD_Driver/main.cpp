@@ -2,7 +2,7 @@
  *  Seengreat 1.3 Inch LCD Display demo
  *  Author(s):Andy Li from Seengreat
  * ********************/
-#include "include/pch.h"
+#include "include/common.h"
 #include "lcd/controller.hpp"
 #include "factory/communication.hpp"
 

@@ -1,7 +1,5 @@
 #pragma once
-#include "../include/pch.h"
-#include "../interface/ICommunication.hpp"
-
+#include "ICommunication.hpp"
 
 class IFactoryCommunication
 {

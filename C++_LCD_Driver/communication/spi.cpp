@@ -1,6 +1,5 @@
 #include "spi.hpp"
 #include <linux/spi/spidev.h>
-#include "pch.h"
 
 void FdSpi::write(const span<uint8_t> buffer)
 {

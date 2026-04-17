@@ -1,6 +1,11 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Icommunication -Ifactory -Ilcd
 
+PLATFORM ?= host
+ifeq ($(PLATFORM),device)
+    CXXFLAGS += -DTARGET_DEVICE
+endif
+
 BUILD_DIR = build
 TARGET = $(BUILD_DIR)/lcd_driver
 

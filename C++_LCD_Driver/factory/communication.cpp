@@ -1,6 +1,6 @@
 #include "communication.hpp"
-#include "../communication/spi.hpp"
-#include "../communication/gpio.hpp"
+#include "../hal/spi.hpp"
+#include "../hal/gpio.hpp"
 
 std::unique_ptr<IRead> LcdFactoryCommunication::create_read_interface()
 {

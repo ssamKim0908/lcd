@@ -14,11 +14,16 @@ enum class GpioValue
     High
 };
 
-class FdGpio : public IRead
+class gpio : public IRead
 {
 private:
-    FdObject FdT;
+    int fd = -1;
 public:
-    FdGpio(const std::string& device, int flags);
+    gpio(const std::string& device, int flags);
+    ~gpio();
+
+    gpio(const gpio&)            = delete;
+    gpio& operator=(const gpio&) = delete;
+
     void read(span<std::byte> buffer) override;
 };

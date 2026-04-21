@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Icommunication -Ifactory -Ilcd
+CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Ihal -Ifactory -Ilcd
 
 PLATFORM ?= host
 ifeq ($(PLATFORM),device)
@@ -10,7 +10,7 @@ BUILD_DIR = build
 TARGET = $(BUILD_DIR)/lcd_driver
 
 SRCS = $(wildcard *.cpp) \
-       $(wildcard communication/*.cpp) \
+       $(wildcard hal/*.cpp) \
        $(wildcard factory/*.cpp) \
        $(wildcard lcd/*.cpp)
 

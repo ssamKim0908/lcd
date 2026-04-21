@@ -1,17 +1,21 @@
 #pragma once
 #include "ICommunication.hpp"
 
-class FdSpi : public IWrite
+class spi : public IWrite
 {
 private:
-    FdObject FdT;
-    
+    int fd = -1;
+
     uint8_t  mode;
     uint8_t  bits;
     uint32_t speed;
     uint8_t  lsb;
 public:
-    FdSpi(const std::string& device, int flags);
+    spi(const std::string& device, int flags);
+    ~spi();
+
+    spi(const spi&)            = delete;
+    spi& operator=(const spi&) = delete;
 
     void write(span<const std::byte> buffer) override;
 };

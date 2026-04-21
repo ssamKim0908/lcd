@@ -22,7 +22,7 @@ int main(void)
     auto factory = std::make_unique<LcdFactoryCommunication>();
     Controller controller(std::move(factory));
 
-    std::vector<long long> x{1, 2, 3, 4, 5};
+    std::vector<long long> x{1, 2, 3, 4, 5, 6, 7,8};
 
     controller.read(x);
     controller.write(x);

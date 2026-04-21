@@ -26,7 +26,7 @@ Gpio::~Gpio()
 }
 
 // GpioRead implementation
-GpioRead::GpioRead(const std::shared_ptr<Gpio>& gpio) : gpio_(gpio)
+GpioRead::GpioRead(int gpio_fd)
 {
 #ifdef TARGET_DEVICE
     struct gpiohandle_request req;
@@ -49,7 +49,7 @@ GpioRead::GpioRead(const std::shared_ptr<Gpio>& gpio) : gpio_(gpio)
     req.flags = GPIOHANDLE_REQUEST_INPUT;
     strncpy(req.consumer_label, "lcd_input_keys", sizeof(req.consumer_label));
 
-    if (ioctl(gpio_->get_fd(), GPIO_GET_LINEHANDLE_IOCTL, &req) < 0)
+    if (ioctl(gpio_fd, GPIO_GET_LINEHANDLE_IOCTL, &req) < 0)
     {
         throw std::runtime_error("Failed to request GPIO input lines");
     }
@@ -86,7 +86,7 @@ void GpioRead::read(Span<std::byte> buffer)
 }
 
 // GpioWrite implementation
-GpioWrite::GpioWrite(const std::shared_ptr<Gpio>& gpio) : gpio_(gpio)
+GpioWrite::GpioWrite(int gpio_fd)
 {
 #ifdef TARGET_DEVICE
     struct gpiohandle_request req;
@@ -102,7 +102,7 @@ GpioWrite::GpioWrite(const std::shared_ptr<Gpio>& gpio) : gpio_(gpio)
     strncpy(req.consumer_label, "lcd_output_control", sizeof(req.consumer_label));
     memset(req.default_values, 0, sizeof(req.default_values));
 
-    if (ioctl(gpio_->get_fd(), GPIO_GET_LINEHANDLE_IOCTL, &req) < 0)
+    if (ioctl(gpio_fd, GPIO_GET_LINEHANDLE_IOCTL, &req) < 0)
     {
         throw std::runtime_error("Failed to request GPIO output lines");
     }

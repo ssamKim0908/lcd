@@ -1,21 +1,23 @@
 #include "LcdIO.hpp"
+#include "../hal/spi.hpp"
+#include "../hal/gpio.hpp"
 
-LcdReadService::LcdReadService(std::unique_ptr<IRead> read_interface) 
-    : read_interface_(std::move(read_interface)) {}
+LcdReadService::LcdReadService(std::unique_ptr<GpioRead> gpio_read)
+    : gpio_read(std::move(gpio_read))
+{
+}
 
 void LcdReadService::read(Span<std::byte> buffer)
 {
-    if (read_interface_) {
-        read_interface_->read(buffer);
-    }
+    gpio_read->read(buffer);
 }
 
-LcdWriteService::LcdWriteService(std::unique_ptr<IWrite> write_interface) 
-    : write_interface_(std::move(write_interface)) {}
+LcdWriteService::LcdWriteService(std::unique_ptr<Spi> spi, std::unique_ptr<GpioWrite> gpio_write)
+    : spi(std::move(spi)), gpio_write(std::move(gpio_write))
+{
+}
 
 void LcdWriteService::write(Span<const std::byte> buffer)
 {
-    if (write_interface_) {
-        write_interface_->write(buffer);
-    }
+    spi->write(buffer);
 }

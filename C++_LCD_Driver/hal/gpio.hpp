@@ -56,9 +56,8 @@ class GpioRead : public IRead
 {
 private:
     int fd = -1;
-    std::shared_ptr<Gpio> gpio_ = nullptr;
 public:
-    GpioRead(const std::shared_ptr<Gpio>& gpio);
+    GpioRead(int gpio_fd);
     ~GpioRead();
 
     void read(Span<std::byte> buffer) override;
@@ -68,9 +67,8 @@ class GpioWrite : public IWrite
 {
 private:
     int fd = -1;
-    std::shared_ptr<Gpio> gpio_ = nullptr;
 public:
-    GpioWrite(const std::shared_ptr<Gpio>& gpio);
+    GpioWrite(int gpio_fd);
     ~GpioWrite();
 
     void write(Span<const std::byte> buffer) override;

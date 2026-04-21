@@ -6,13 +6,13 @@
 class IRead
 {
 public:
-    virtual void read(span<std::byte> buffer) = 0;
+    virtual void read(Span<std::byte> buffer) = 0;
     virtual ~IRead() = default;
 };
 
 class IWrite
 {
 public:
-    virtual void write(span<const std::byte> buffer) = 0;
+    virtual void write(Span<const std::byte> buffer) = 0;
     virtual ~IWrite() = default;
 };

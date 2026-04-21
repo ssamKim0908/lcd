@@ -3,7 +3,7 @@
 #include <linux/spi/spidev.h>
 #endif
 
-spi::spi(const std::string& device, int flags)
+Spi::Spi(const std::string& device, int flags)
 {
 #ifdef TARGET_DEVICE
     fd = ::open(device.c_str(), flags);
@@ -28,7 +28,7 @@ spi::spi(const std::string& device, int flags)
 #endif
 }
 
-spi::~spi()
+Spi::~Spi()
 {
     if (fd >= 0)
     {
@@ -37,7 +37,7 @@ spi::~spi()
     }
 }
 
-void spi::write(span<const std::byte> buffer)
+void Spi::write(Span<const std::byte> buffer)
 {
 #ifdef TARGET_DEVICE
     ::write(fd, buffer.data(), buffer.size());

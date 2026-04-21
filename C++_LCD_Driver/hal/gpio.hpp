@@ -1,6 +1,5 @@
 #pragma once
 #include "../interface/ICommunication.hpp"
-#include <linux/gpio.h>
 
 enum class GpioDirection
 {
@@ -14,16 +13,66 @@ enum class GpioValue
     High
 };
 
-class gpio : public IRead
+enum class InputKey : uint32_t
+{
+    K1_PIN      = 17,
+    K2_PIN      = 18,
+    K3_PIN      = 22,
+    K4_PIN      = 23,
+    R_PIN       = 20,
+    L_PIN       = 21,
+    UP_PIN      = 13,
+    LEFT_PIN    = 5,
+    DOWN_PIN    = 26,
+    RIGHT_PIN   = 19,
+    CENTER_PIN  = 6
+};
+
+enum class OutputKey : uint32_t
+{
+    PIN_RST  = 27,   
+    PIN_DC   = 25,   
+    PIN_BL   = 24
+};
+
+class Gpio
 {
 private:
     int fd = -1;
 public:
-    gpio(const std::string& device, int flags);
-    ~gpio();
+    Gpio(const std::string& device, int flags);
+    ~Gpio();
 
-    gpio(const gpio&)            = delete;
-    gpio& operator=(const gpio&) = delete;
+    Gpio(const Gpio&)               = delete;
+    Gpio& operator=(const Gpio&)    = delete;
 
-    void read(span<std::byte> buffer) override;
+    Gpio(const Gpio&&)              = delete;
+    Gpio& operator=(const Gpio&&)   = delete;
+
+    int get_fd() const { return fd; }
 };
+
+class GpioRead : public IRead
+{
+private:
+    int fd = -1;
+    std::shared_ptr<Gpio> gpio_ = nullptr;
+public:
+    GpioRead(const std::shared_ptr<Gpio>& gpio);
+    ~GpioRead();
+
+    void read(Span<std::byte> buffer) override;
+};
+
+class GpioWrite : public IWrite
+{
+private:
+    int fd = -1;
+    std::shared_ptr<Gpio> gpio_ = nullptr;
+public:
+    GpioWrite(const std::shared_ptr<Gpio>& gpio);
+    ~GpioWrite();
+
+    void write(Span<const std::byte> buffer) override;
+}; 
+ 

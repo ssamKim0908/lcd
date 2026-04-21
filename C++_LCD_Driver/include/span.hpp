@@ -6,7 +6,7 @@
 
 
 template <class T>
-class span
+class Span
 {
     T*     ptr_;
     size_t len_;
@@ -15,9 +15,9 @@ class span
     using elem_t = std::remove_pointer_t<decltype(std::declval<C&>().data())>;
 
 public:
-    constexpr span(T* ptr, size_t len) noexcept : ptr_(ptr), len_(len) {}
+    constexpr Span(T* ptr, size_t len) noexcept : ptr_(ptr), len_(len) {}
 
-    constexpr span(std::initializer_list<std::remove_const_t<T>> il) noexcept
+    constexpr Span(std::initializer_list<std::remove_const_t<T>> il) noexcept
         : ptr_(il.begin()), len_(il.size()) {}
 
     template <class Container,
@@ -26,7 +26,7 @@ public:
                   std::is_same<std::remove_cv_t<E>, std::remove_cv_t<T>>::value &&
                   (std::is_const<T>::value || !std::is_const<E>::value),
                   int> = 0>
-    constexpr span(Container& c) noexcept
+    constexpr Span(Container& c) noexcept
         : ptr_(c.data()), len_(c.size()) {}
 
     template <class Container,
@@ -37,7 +37,7 @@ public:
                   std::is_trivially_copyable<std::remove_cv_t<E>>::value &&
                   (std::is_const<T>::value || !std::is_const<E>::value),
                   int> = 0>
-    span(Container& c) noexcept
+    Span(Container& c) noexcept
         : ptr_(reinterpret_cast<T*>(c.data())),
           len_(c.size() * sizeof(E)) {}
 
@@ -49,8 +49,8 @@ public:
     constexpr T* end()   const noexcept { return ptr_ + len_; }
 
     constexpr T& operator[](size_t i) const noexcept { return ptr_[i]; }
-    ~span()
+    ~Span()
     {
-        std::cout << "span destructor called len : " << len_ << std::endl;
+        std::cout << "Span destructor called len : " << len_ << std::endl;
     }
 };

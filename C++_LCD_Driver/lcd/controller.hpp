@@ -12,8 +12,8 @@ private:
 public:
     Controller(std::unique_ptr<IFactoryCommunication> factory);
     
-    void read   (span<std::byte> buffer);
-    void write  (span<const std::byte> buffer);
+    void read   (Span<std::byte> buffer);
+    void write  (Span<const std::byte> buffer);
 
     ~Controller() = default;
 };

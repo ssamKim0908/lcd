@@ -9,12 +9,15 @@ Controller::Controller(std::unique_ptr<IFactoryCommunication> factory) : Factory
 void Controller::read(Span<std::byte> buffer)
 {
     std::cout << "Reading from controller" << std::endl;
-    //ReadInterface->read(buffer);
+#ifdef TARGET_DEVICE
+    ReadInterface->read(buffer);
+#endif
 }
 
 void Controller::write(Span<const std::byte> buffer)
 {
     std::cout << "Writing to controller" << std::endl;
-
-    //WriteInterface->write(buffer);
+#ifdef TARGET_DEVICE
+    WriteInterface->write(buffer);
+#endif
 }

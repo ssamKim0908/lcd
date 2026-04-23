@@ -1,7 +1,7 @@
 #pragma once
 #include "ICommunication.hpp"
 
-class Spi : public IWrite
+class Spi
 {
 private:
     int fd = -1;
@@ -17,5 +17,5 @@ public:
     Spi(const Spi&)            = delete;
     Spi& operator=(const Spi&) = delete;
 
-    void write(Span<const std::byte> buffer) override;
+    void write(Span<const std::byte> buffer);
 };

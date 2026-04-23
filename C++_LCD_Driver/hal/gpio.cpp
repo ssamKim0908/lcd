@@ -67,7 +67,7 @@ GpioRead::~GpioRead()
     }
 }
 
-void GpioRead::read(Span<std::byte> buffer)
+void GpioRead::read(GpioValue buffer)
 {
 #ifdef TARGET_DEVICE
     struct gpiohandle_data data;
@@ -120,20 +120,26 @@ GpioWrite::~GpioWrite()
     }
 }
 
-void GpioWrite::write(Span<const std::byte> buffer)
+void GpioWrite::write_cmd()
 {
 #ifdef TARGET_DEVICE
-    struct gpiohandle_data data;
-    memset(&data, 0, sizeof(data));
-    for (size_t i = 0; i < buffer.size() && i < 3; ++i) {
-        data.values[i] = static_cast<uint8_t>(buffer[i]);
-    }
-    if (ioctl(fd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &data) < 0)
-    {
-        throw std::runtime_error("Failed to write GPIO line values");
-    }
+    
 #else
-    (void)buffer;
+    //(void)buffer;
     std::cout << "Simulating GPIO write to fd: " << fd << std::endl;
+#endif
+}
+
+void GpioWrite::write_data()
+{
+#ifdef TARGET_DEVICE
+#else
+#endif
+}
+
+void GpioWrite::write_pin(OutputKey pin, GpioValue buffer)
+{
+#ifdef TARGET_DEVICE
+#else
 #endif
 }

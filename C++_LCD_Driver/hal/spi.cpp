@@ -1,6 +1,8 @@
 #include "spi.hpp"
 #ifdef TARGET_DEVICE
 #include <linux/spi/spidev.h>
+#include <cerrno>
+#include <system_error>
 #endif
 
 Spi::Spi(const std::string& device, int flags)
@@ -9,7 +11,8 @@ Spi::Spi(const std::string& device, int flags)
     fd = ::open(device.c_str(), flags);
     if (fd < 0)
     {
-        throw std::runtime_error("Failed to open SPI device: " + device);
+        throw std::system_error(errno, std::generic_category(),
+            "Failed to open SPI device: " + device);
     }
     std::cout << "Opened SPI fd: " << fd << std::endl;
 
@@ -18,10 +21,18 @@ Spi::Spi(const std::string& device, int flags)
     speed = 1000000;
     lsb   = 0;
 
-    ioctl(fd, SPI_IOC_WR_MODE,          &mode);
-    ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
-    ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ,  &speed);
-    ioctl(fd, SPI_IOC_WR_LSB_FIRST,     &lsb);
+    auto test = [this](unsigned long request, void* arg, const std::string& name) {
+        if (ioctl(fd, request, arg) < 0)
+        {
+            throw std::system_error(errno, std::generic_category(),
+                "SPI ioctl failed (" + name + ")");
+        }
+    };
+
+    test(SPI_IOC_WR_MODE,          &mode,  "SPI_IOC_WR_MODE");
+    test(SPI_IOC_WR_BITS_PER_WORD, &bits,  "SPI_IOC_WR_BITS_PER_WORD");
+    test(SPI_IOC_WR_MAX_SPEED_HZ,  &speed, "SPI_IOC_WR_MAX_SPEED_HZ");
+    test(SPI_IOC_WR_LSB_FIRST,     &lsb,   "SPI_IOC_WR_LSB_FIRST");
 #else
     (void)device;
     (void)flags;

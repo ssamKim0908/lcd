@@ -1,13 +1,13 @@
 #pragma once
 #include "../interface/ICommunication.hpp"
 
-enum class GpioDirection
+enum class GpioDirection : uint32_t
 {
     Input,
     Output
 };
 
-enum class GpioValue
+enum class GpioValue : uint32_t
 {
     Low,
     High
@@ -52,7 +52,7 @@ public:
     int get_fd() const { return fd; }
 };
 
-class GpioRead : public IRead
+class GpioRead
 {
 private:
     int fd = -1;
@@ -60,10 +60,10 @@ public:
     GpioRead(int gpio_fd);
     ~GpioRead();
 
-    void read(Span<std::byte> buffer) override;
+    void read(GpioValue buffer);
 };
 
-class GpioWrite : public IWrite
+class GpioWrite
 {
 private:
     int fd = -1;
@@ -71,6 +71,8 @@ public:
     GpioWrite(int gpio_fd);
     ~GpioWrite();
 
-    void write(Span<const std::byte> buffer) override;
+    void write_cmd  ();
+    void write_data ();
+    void write_pin  (OutputKey pin, GpioValue buffer);
 }; 
  

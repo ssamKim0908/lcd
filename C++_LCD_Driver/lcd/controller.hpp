@@ -12,11 +12,11 @@ private:
 public:
     Controller(std::unique_ptr<IFactoryCommunication> factory);
     
-    Controller(const Controller&)            = delete;
-    Controller& operator=(const Controller&) = delete;
+    Controller(const Controller&)               = delete;
+    Controller& operator=(const Controller&)    = delete;
 
-    Controller(const Controller&&)            = delete;
-    Controller& operator=(const Controller&&) = delete;
+    Controller(const Controller&&)              = delete;
+    Controller& operator=(const Controller&&)   = delete;
 
     void read   (Span<std::byte> buffer);
     void write  (Span<const std::byte> buffer);

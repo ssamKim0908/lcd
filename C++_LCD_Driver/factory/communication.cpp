@@ -22,6 +22,7 @@ std::unique_ptr<IRead> LcdFactoryCommunication::create_read_interface()
 #ifdef TARGET_DEVICE
     return std::make_unique<LcdReadService>(std::make_unique<GpioRead>(get_gpio_fd()));
 #else
+    return std::make_unique<LcdReadService>(nullptr);
     return nullptr;
 #endif
 }

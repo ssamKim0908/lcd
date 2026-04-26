@@ -1,9 +1,6 @@
 #pragma once
 #include <cstddef>
 #include <type_traits>
-#include <initializer_list>
-#include <iostream>
-
 
 template <class T>
 class Span
@@ -16,9 +13,6 @@ class Span
 
 public:
     constexpr Span(T* ptr, size_t len) noexcept : ptr_(ptr), len_(len) {}
-
-    constexpr Span(std::initializer_list<std::remove_const_t<T>> il) noexcept
-        : ptr_(il.begin()), len_(il.size()) {}
 
     template <class Container,
               class E = elem_t<Container>,

@@ -73,6 +73,6 @@ public:
 
     void write_cmd  ();
     void write_data ();
-    void write_pin  (OutputKey pin, GpioValue buffer);
+    void write_pin  (OutputKey pin, GpioValue value);
 }; 
  

@@ -26,32 +26,37 @@ Android와 유사한 멀티 프로세스 구조.
 
 ## 전체 구조
 
-┌─ Layer 3 : Framework + SDK + Apps ─────────────────────┐
-│  framework/                                              │
-│   - Scene, App                     (추상화)              │
-│   - RenderServer (ILcd→IPC)                             │
-│   - InputRouter  (IKeys→IPC)                            │
-│   - FileServer   (IFileStore→IPC)                       │
-│   - AppManager   (fork/exec — 여기서만, 앱은 모름)      │
-│   - LauncherScene                                        │
-│  sdk/                                                    │
-│   - Canvas, Assets, ClientScene, ClientApp              │
-│  apps/ game, mp3                                         │
+┌─ Layer 2 : Framework ──────────────────────────────────┐
+│  framework/  (launcher 프로세스에 링크)                 │
+│   - RenderServer  (ILcd 사용 → IPC로 그림 명령 수신)    │
+│   - InputRouter   (IKeys 사용 → IPC로 키 송신)          │
+│   - AppManager    (fork/exec — 여기서만, 앱은 모름)     │
+│  sdk/  (game/mp3 프로세스에 링크)                       │
+│   - Canvas        (IPC 클라이언트 → "그려줘" 송신)      │
+│   - Scene, App    (앱 측 베이스 클래스)                 │
+│   - 이벤트 루프                                          │
+│  shared/  (양쪽 binary에 다 들어감)                     │
+│   - IPC 메시지 타입, Color, Rect, KeyEvent              │
 └────────────────────────────────────────────────────────┘
            ↑ 의존
-┌─ Layer 2 : 플랫폼 서비스 (3개 기능 = 3개 디렉토리) ─────┐
+┌─ Layer 1 : Platform ───────────────────────────────────┐
+│  hal/       Spi, Gpio (Linux C API 감싸기)              │
 │  display/   ILcd      + St7789Lcd                        │
 │  input/     IKeys     + GpioKeys                         │
-│  storage/   IFileStore + LocalFileStore                  │
+│  ipc/       Socket wrapper + send/recv 헬퍼             │
 │  util/      color, time (인터페이스 없음 — 값/함수뿐)   │
 └────────────────────────────────────────────────────────┘
-           ↑ 의존
-┌─ Layer 1 : HAL (Linux C API 감싸기) ───────────────────┐
-│  hal/                                                    │
-│   - Spi     (SPI ioctl/read/write)                      │
-│   - Gpio    (GPIO)                                       │
-│   - Socket? (Unix Domain Socket — 아래 논의)            │
-└────────────────────────────────────────────────────────┘
+
+[Apps — layer 아님, 그냥 main() 가진 binary]
+  launcher/main.cpp    → Layer 2 framework + Layer 1 직접 사용
+  apps/game/main.cpp   → Layer 2 sdk 만 사용 (LCD/GPIO 직접 X)
+  apps/mp3/main.cpp    → Layer 2 sdk 만 사용 (LCD/GPIO 직접 X)
+
+의존 규칙:
+ - Layer 2 → Layer 1 (가능)
+ - Layer 1 → Layer 2 (절대 금지)
+ - launcher binary 만 Layer 1의 LCD/GPIO 직접 사용
+ - app binary 는 Layer 2 sdk 통해서만 그림/입력 접근
 
 ---
 

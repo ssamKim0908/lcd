@@ -14,14 +14,15 @@ private:
     bool init();
 public:
     LcdReadService(std::unique_ptr<GpioRead> gpio_read);
+    ~LcdReadService();
     void read(Span<std::byte> buffer) override;
 };
 
 class LcdWriteService : public IWrite
 {
 private:
-    std::unique_ptr<Spi> spi;
-    std::unique_ptr<GpioWrite> gpio_write;
+    std::unique_ptr<Spi>        spi;
+    std::unique_ptr<GpioWrite>  gpio_write;
 private:
     bool init();
     void lcd_reset();
@@ -29,5 +30,6 @@ private:
     void spi_write_data (Span<const std::byte> buffer);
 public:
     LcdWriteService(std::unique_ptr<Spi> spi, std::unique_ptr<GpioWrite> gpio_write);
+    ~LcdWriteService();
     void write(Span<const std::byte> buffer) override;
 };

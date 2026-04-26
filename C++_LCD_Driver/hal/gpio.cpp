@@ -137,7 +137,7 @@ void GpioWrite::write_data()
 #endif
 }
 
-void GpioWrite::write_pin(OutputKey pin, GpioValue buffer)
+void GpioWrite::write_pin(OutputKey pin, GpioValue value)
 {
 #ifdef TARGET_DEVICE
 #else

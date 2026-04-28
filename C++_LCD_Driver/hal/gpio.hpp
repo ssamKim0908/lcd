@@ -85,14 +85,14 @@ private:
 private:
     int  write_request_line (int chip_fd, OutputKey pin, GpioValue default_value);
     void close_all    ();
-    void write_pin (OutputKey pin, GpioValue value);
-public:
+    public:
     GpioWrite(int gpio_fd);
     ~GpioWrite();
-
+    
     GpioWrite(const GpioWrite&)            = delete;
     GpioWrite& operator=(const GpioWrite&) = delete;
-
+    
+    void write_pin (OutputKey pin, GpioValue value);
     void write_cmd ();
     void write_data();
 };

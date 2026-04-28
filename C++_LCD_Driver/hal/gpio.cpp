@@ -188,6 +188,8 @@ void GpioWrite::close_all()
     line_fds.clear();
 }
 
+// ─── GpioWrite public ─────────────────────────────────────────────────────
+
 void GpioWrite::write_pin(OutputKey pin, GpioValue value)
 {
 #ifdef TARGET_DEVICE
@@ -210,8 +212,6 @@ void GpioWrite::write_pin(OutputKey pin, GpioValue value)
     (void)pin; (void)value;
 #endif
 }
-
-// ─── GpioWrite public ─────────────────────────────────────────────────────
 
 GpioWrite::GpioWrite(int gpio_fd)
 {

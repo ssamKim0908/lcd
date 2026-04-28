@@ -1,5 +1,7 @@
 #pragma once
 #include "../include/span.hpp"
+#include <cstdint>
+#include <string>
 
 class Spi
 {

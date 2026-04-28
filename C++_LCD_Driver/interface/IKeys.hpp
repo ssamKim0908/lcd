@@ -7,9 +7,15 @@ enum class Key
     Up, Down, Left, Right, Center
 };
 
+struct KeyEvent
+{
+    Key  key;
+    bool pressed;
+};
+
 class IKeys
 {
 public:
-    virtual bool is_pressed(Key key) = 0;
+    virtual KeyEvent next_event() = 0;
     virtual ~IKeys() = default;
 };

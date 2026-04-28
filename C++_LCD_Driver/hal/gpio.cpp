@@ -3,6 +3,8 @@
 #include <linux/gpio.h>
 #include <cerrno>
 #include <system_error>
+#include <unistd.h>
+#include <sys/epoll.h>
 #include "../include/common.h"
 
 Gpio::Gpio(const std::string& device, int flags)
@@ -41,11 +43,26 @@ GpioRead::GpioRead(int gpio_fd)
         InputKey::CENTER_PIN,
     };
 
+    epoll_fd = epoll_create1(0);
+    if (epoll_fd < 0)
+    {
+        throw std::system_error(errno, std::generic_category(), "epoll_create1");
+    }
+
     try
     {
         for (auto key : all_keys)
         {
-            line_fds[key] = read_request_line(gpio_fd, key);
+            int line_fd = read_request_line(gpio_fd, key);
+            line_fds[key] = line_fd;
+
+            struct epoll_event ev{};
+            ev.events     = EPOLLIN;
+            ev.data.u32   = static_cast<uint32_t>(key);
+            if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, line_fd, &ev) < 0)
+            {
+                throw std::system_error(errno, std::generic_category(), "epoll_ctl");
+            }
         }
     }
     catch (...)
@@ -71,6 +88,12 @@ void GpioRead::close_all()
         if (kv.second >= 0) close(kv.second);
     }
     line_fds.clear();
+
+    if (epoll_fd >= 0)
+    {
+        close(epoll_fd);
+        epoll_fd = -1;
+    }
 }
 
 int GpioRead::read_request_line(int chip_fd, InputKey pin)
@@ -81,7 +104,10 @@ int GpioRead::read_request_line(int chip_fd, InputKey pin)
 
     req.offsets[0]   = static_cast<uint32_t>(pin);
     req.num_lines    = 1;
-    req.config.flags = GPIO_V2_LINE_FLAG_INPUT | GPIO_V2_LINE_FLAG_BIAS_PULL_UP;
+    req.config.flags = GPIO_V2_LINE_FLAG_INPUT
+                     | GPIO_V2_LINE_FLAG_BIAS_PULL_UP
+                     | GPIO_V2_LINE_FLAG_EDGE_FALLING
+                     | GPIO_V2_LINE_FLAG_EDGE_RISING;
     std::strncpy(req.consumer, "lcd_input", sizeof(req.consumer));
 
     if (ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &req) < 0)
@@ -98,26 +124,28 @@ int GpioRead::read_request_line(int chip_fd, InputKey pin)
 
 // ─── GpioRead public ─────────────────────────────────────────────────────
 
-GpioValue GpioRead::read(InputKey pin)
+GpioEvent GpioRead::wait_event()
 {
 #ifdef TARGET_DEVICE
-    auto it = line_fds.find(pin);
-    if (it == line_fds.end())
+    struct epoll_event ev{};
+    if (epoll_wait(epoll_fd, &ev, 1, -1) < 0)
     {
-        throw std::invalid_argument("GpioRead::read: unknown InputKey");
+        throw std::system_error(errno, std::generic_category(), "epoll_wait");
     }
 
-    struct gpio_v2_line_values vals{};
-    vals.mask = 1;
-    if (ioctl(it->second, GPIO_V2_LINE_GET_VALUES_IOCTL, &vals) < 0)
+    InputKey key    = static_cast<InputKey>(ev.data.u32);
+    int      line_fd = line_fds.at(key);
+
+    struct gpio_v2_line_event line_ev{};
+    if (::read(line_fd, &line_ev, sizeof(line_ev)) < 0)
     {
-        throw std::system_error(errno, std::generic_category(),
-            "GPIO_V2_LINE_GET_VALUES_IOCTL");
+        throw std::system_error(errno, std::generic_category(), "gpio read event");
     }
-    return (vals.bits & 1ULL) ? GpioValue::High : GpioValue::Low;
+
+    bool pressed = (line_ev.id == GPIO_V2_LINE_EVENT_FALLING_EDGE);
+    return { key, pressed };
 #else
-    (void)pin;
-    return GpioValue::Low;
+    return { InputKey::K1_PIN, false };
 #endif
 }
 

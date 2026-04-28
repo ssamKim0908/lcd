@@ -54,13 +54,20 @@ public:
     int get_fd() const { return fd; }
 };
 
+struct GpioEvent
+{
+    InputKey key;
+    bool     pressed;
+};
+
 class GpioRead
 {
 private:
     std::map<InputKey, int> line_fds;
-private:
+    int epoll_fd = -1;
+
     int  read_request_line (int chip_fd, InputKey pin);
-    void close_all    ();
+    void close_all         ();
 public:
     GpioRead(int gpio_fd);
     ~GpioRead();
@@ -68,7 +75,7 @@ public:
     GpioRead(const GpioRead&)            = delete;
     GpioRead& operator=(const GpioRead&) = delete;
 
-    GpioValue read(InputKey pin);
+    GpioEvent wait_event();
 };
 
 class GpioWrite

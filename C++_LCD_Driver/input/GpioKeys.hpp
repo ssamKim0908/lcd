@@ -15,5 +15,5 @@ public:
     GpioKeys(const GpioKeys&)            = delete;
     GpioKeys& operator=(const GpioKeys&) = delete;
 
-    bool is_pressed(Key key) override;
+    KeyEvent next_event() override;
 };

@@ -43,8 +43,5 @@ public:
     constexpr T* end()   const noexcept { return ptr_ + len_; }
 
     constexpr T& operator[](size_t i) const noexcept { return ptr_[i]; }
-    ~Span()
-    {
-        std::cout << "Span destructor called len : " << len_ << std::endl;
-    }
+    ~Span() = default;
 };

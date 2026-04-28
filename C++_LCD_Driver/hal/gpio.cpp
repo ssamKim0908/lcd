@@ -96,6 +96,8 @@ int GpioRead::read_request_line(int chip_fd, InputKey pin)
 #endif
 }
 
+// ─── GpioRead public ─────────────────────────────────────────────────────
+
 GpioValue GpioRead::read(InputKey pin)
 {
 #ifdef TARGET_DEVICE
@@ -119,7 +121,69 @@ GpioValue GpioRead::read(InputKey pin)
 #endif
 }
 
-// ─── GpioWrite ─────────────────────────────────────────────────────
+// ─── GpioWrite private ─────────────────────────────────────────────────────
+
+int GpioWrite::write_request_line(int chip_fd, OutputKey pin, GpioValue default_value)
+{
+#ifdef TARGET_DEVICE
+    struct gpio_v2_line_request req;
+    std::memset(&req, 0, sizeof(req));
+
+    req.offsets[0]   = static_cast<uint32_t>(pin);
+    req.num_lines    = 1;
+    req.config.flags = GPIO_V2_LINE_FLAG_OUTPUT;
+    std::strncpy(req.consumer, "lcd_output", sizeof(req.consumer));
+
+    req.config.num_attrs            = 1;
+    req.config.attrs[0].attr.id     = GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES;
+    req.config.attrs[0].attr.values = (default_value == GpioValue::High) ? 1ULL : 0ULL;
+    req.config.attrs[0].mask        = 1ULL;
+
+    if (ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &req) < 0)
+    {
+        throw std::system_error(errno, std::generic_category(),
+            "GPIO_V2_GET_LINE_IOCTL (output)");
+    }
+    return req.fd;
+#else
+    (void)chip_fd; (void)pin; (void)default_value;
+    return -1;
+#endif
+}
+
+void GpioWrite::close_all()
+{
+    for (auto& kv : line_fds)
+    {
+        if (kv.second >= 0) ::close(kv.second);
+    }
+    line_fds.clear();
+}
+
+void GpioWrite::write_pin(OutputKey pin, GpioValue value)
+{
+#ifdef TARGET_DEVICE
+    auto it = line_fds.find(pin);
+    if (it == line_fds.end())
+    {
+        throw std::invalid_argument("GpioWrite::write_pin: unknown OutputKey");
+    }
+
+    struct gpio_v2_line_values vals{};
+    vals.mask = 1ULL;
+    vals.bits = (value == GpioValue::High) ? 1ULL : 0ULL;
+
+    if (ioctl(it->second, GPIO_V2_LINE_SET_VALUES_IOCTL, &vals) < 0)
+    {
+        throw std::system_error(errno, std::generic_category(),
+            "GPIO_V2_LINE_SET_VALUES_IOCTL");
+    }
+#else
+    (void)pin; (void)value;
+#endif
+}
+
+// ─── GpioWrite public ─────────────────────────────────────────────────────
 
 GpioWrite::GpioWrite(int gpio_fd)
 {
@@ -152,66 +216,6 @@ GpioWrite::GpioWrite(int gpio_fd)
 GpioWrite::~GpioWrite()
 {
     close_all();
-}
-
-void GpioWrite::close_all()
-{
-    for (auto& kv : line_fds)
-    {
-        if (kv.second >= 0) ::close(kv.second);
-    }
-    line_fds.clear();
-}
-
-int GpioWrite::write_request_line(int chip_fd, OutputKey pin, GpioValue default_value)
-{
-#ifdef TARGET_DEVICE
-    struct gpio_v2_line_request req;
-    std::memset(&req, 0, sizeof(req));
-
-    req.offsets[0]   = static_cast<uint32_t>(pin);
-    req.num_lines    = 1;
-    req.config.flags = GPIO_V2_LINE_FLAG_OUTPUT;
-    std::strncpy(req.consumer, "lcd_output", sizeof(req.consumer));
-
-    req.config.num_attrs            = 1;
-    req.config.attrs[0].attr.id     = GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES;
-    req.config.attrs[0].attr.values = (default_value == GpioValue::High) ? 1ULL : 0ULL;
-    req.config.attrs[0].mask        = 1ULL;
-
-    if (ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &req) < 0)
-    {
-        throw std::system_error(errno, std::generic_category(),
-            "GPIO_V2_GET_LINE_IOCTL (output)");
-    }
-    return req.fd;
-#else
-    (void)chip_fd; (void)pin; (void)default_value;
-    return -1;
-#endif
-}
-
-void GpioWrite::write_pin(OutputKey pin, GpioValue value)
-{
-#ifdef TARGET_DEVICE
-    auto it = line_fds.find(pin);
-    if (it == line_fds.end())
-    {
-        throw std::invalid_argument("GpioWrite::write_pin: unknown OutputKey");
-    }
-
-    struct gpio_v2_line_values vals{};
-    vals.mask = 1ULL;
-    vals.bits = (value == GpioValue::High) ? 1ULL : 0ULL;
-
-    if (ioctl(it->second, GPIO_V2_LINE_SET_VALUES_IOCTL, &vals) < 0)
-    {
-        throw std::system_error(errno, std::generic_category(),
-            "GPIO_V2_LINE_SET_VALUES_IOCTL");
-    }
-#else
-    (void)pin; (void)value;
-#endif
 }
 
 void GpioWrite::write_cmd()

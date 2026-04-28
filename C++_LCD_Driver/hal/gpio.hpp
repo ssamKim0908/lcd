@@ -78,6 +78,7 @@ private:
 private:
     int  write_request_line (int chip_fd, OutputKey pin, GpioValue default_value);
     void close_all    ();
+    void write_pin (OutputKey pin, GpioValue value);
 public:
     GpioWrite(int gpio_fd);
     ~GpioWrite();
@@ -87,5 +88,4 @@ public:
 
     void write_cmd ();
     void write_data();
-    void write_pin (OutputKey pin, GpioValue value);
 };

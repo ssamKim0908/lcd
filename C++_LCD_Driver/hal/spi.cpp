@@ -1,4 +1,5 @@
 #include "spi.hpp"
+#include "../include/common.h"
 #ifdef TARGET_DEVICE
 #include <linux/spi/spidev.h>
 #include <cerrno>
@@ -51,7 +52,15 @@ Spi::~Spi()
 void Spi::write(Span<const std::byte> buffer)
 {
 #ifdef TARGET_DEVICE
-    ::write(fd, buffer.data(), buffer.size());
+    ssize_t n = ::write(fd, buffer.data(), buffer.size());
+    if (n < 0)
+    {
+        throw std::system_error(errno, std::generic_category(), "SPI write");
+    }
+    if (static_cast<size_t>(n) != buffer.size())
+    {
+        throw std::runtime_error("SPI partial write");
+    }
 #else
     std::cout << "Writing to SPI device with file descriptor: " << fd << std::endl;
 #endif

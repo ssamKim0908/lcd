@@ -163,7 +163,7 @@ void GpioWrite::close_all()
     line_fds.clear();
 }
 
-int GpioWrite::write_request_line(int chip_fd, OutputKey pin)
+int GpioWrite::write_request_line(int chip_fd, OutputKey pin, GpioValue default_value)
 {
 #ifdef TARGET_DEVICE
     struct gpio_v2_line_request req;
@@ -176,7 +176,7 @@ int GpioWrite::write_request_line(int chip_fd, OutputKey pin)
 
     req.config.num_attrs            = 1;
     req.config.attrs[0].attr.id     = GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES;
-    req.config.attrs[0].attr.values = 1ULL;
+    req.config.attrs[0].attr.values = (default_value == GpioValue::High) ? 1ULL : 0ULL;
     req.config.attrs[0].mask        = 1ULL;
 
     if (ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &req) < 0)
@@ -186,7 +186,7 @@ int GpioWrite::write_request_line(int chip_fd, OutputKey pin)
     }
     return req.fd;
 #else
-    (void)chip_fd; (void)pin;
+    (void)chip_fd; (void)pin; (void)default_value;
     return -1;
 #endif
 }

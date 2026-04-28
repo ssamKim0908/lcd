@@ -76,7 +76,7 @@ class GpioWrite
 private:
     std::map<OutputKey, int> line_fds;
 private:
-    int  write_request_line (int chip_fd, OutputKey pin);
+    int  write_request_line (int chip_fd, OutputKey pin, GpioValue default_value);
     void close_all    ();
 public:
     GpioWrite(int gpio_fd);

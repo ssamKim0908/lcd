@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Ihal -Ifactory -Ilcd -Iservice
+CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Ihal -Idisplay -Iinput -Iutil
 
 PLATFORM ?= host
 ifeq ($(PLATFORM),device)
@@ -11,9 +11,8 @@ TARGET = $(BUILD_DIR)/lcd_driver
 
 SRCS = $(wildcard *.cpp) \
        $(wildcard hal/*.cpp) \
-       $(wildcard factory/*.cpp) \
-       $(wildcard lcd/*.cpp) \
-       $(wildcard service/*.cpp)
+       $(wildcard display/*.cpp) \
+       $(wildcard input/*.cpp)
 
 OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 

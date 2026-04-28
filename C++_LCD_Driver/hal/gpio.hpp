@@ -1,5 +1,6 @@
 #pragma once
 #include "../interface/ICommunication.hpp"
+#include <map>
 
 enum class GpioDirection : uint32_t
 {
@@ -30,8 +31,8 @@ enum class InputKey : uint32_t
 
 enum class OutputKey : uint32_t
 {
-    PIN_RST  = 27,   
-    PIN_DC   = 25,   
+    PIN_RST  = 27,
+    PIN_DC   = 25,
     PIN_BL   = 24
 };
 
@@ -55,24 +56,35 @@ public:
 class GpioRead
 {
 private:
-    int fd = -1;
+    std::map<InputKey, int> line_fds;
+private:
+    int  read_request_line (int chip_fd, InputKey pin);
+    void close_all    ();
 public:
     GpioRead(int gpio_fd);
     ~GpioRead();
 
-    void read(GpioValue buffer);
+    GpioRead(const GpioRead&)            = delete;
+    GpioRead& operator=(const GpioRead&) = delete;
+
+    GpioValue read(InputKey pin);
 };
 
 class GpioWrite
 {
 private:
-    int fd = -1;
+    std::map<OutputKey, int> line_fds;
+private:
+    int  write_request_line (int chip_fd, OutputKey pin);
+    void close_all    ();
 public:
     GpioWrite(int gpio_fd);
     ~GpioWrite();
 
-    void write_cmd  ();
-    void write_data ();
-    void write_pin  (OutputKey pin, GpioValue value);
-}; 
- 
+    GpioWrite(const GpioWrite&)            = delete;
+    GpioWrite& operator=(const GpioWrite&) = delete;
+
+    void write_cmd ();
+    void write_data();
+    void write_pin (OutputKey pin, GpioValue value);
+};

@@ -11,16 +11,25 @@ LcdReadService::LcdReadService(std::unique_ptr<GpioRead> gpio_read)
 
 LcdReadService::~LcdReadService() = default;
 
+
+// ─── GpioRead private ─────────────────────────────────────────────────────
+
 bool LcdReadService::init()
 {
 
     return true;
 }
 
+
+// ─── GpioRead public ─────────────────────────────────────────────────────
+
 void LcdReadService::read(Span<std::byte> buffer)
 {
     //gpio_read->read(buffer);
 }
+
+
+// ─── GpioWrite private ─────────────────────────────────────────────────────
 
 LcdWriteService::LcdWriteService(std::unique_ptr<Spi> spi, std::unique_ptr<GpioWrite> gpio_write)
     : spi(std::move(spi)), gpio_write(std::move(gpio_write))
@@ -141,6 +150,8 @@ void LcdWriteService::spi_write_data(Span<const std::byte> buffer)
     spi->write(buffer);
 }
 
+
+// ─── public ─────────────────────────────────────────────────────
 void LcdWriteService::write(Span<const std::byte> buffer)
 {
     spi_write_data(buffer);

@@ -1,30 +1,28 @@
-/********************************
- *  Seengreat 1.3 Inch LCD Display demo
- *  Author(s):Andy Li from Seengreat
- * ********************/
 #include "include/common.h"
-#include "lcd/controller.hpp"
-#include "factory/communication.hpp"
+#include "hal/spi.hpp"
+#include "hal/gpio.hpp"
+#include "display/LcdWriter.hpp"
+#include "display/St7789Lcd.hpp"
+#include "util/time.hpp"
+#include "util/color.hpp"
 
-/******************************
- * when set image in ROTATE_0:
- * 0------------> x (0~240) 
- * |
- * |
- * |
- * |
- * y (0~240)
- * 
- * */
-
-int main(void)
+int main()
 {
-    auto factory = std::make_unique<LcdFactoryCommunication>();
-    Controller controller(std::move(factory));
+    using namespace util::time;
+    using namespace util::color;
 
-    std::vector<long long> x{1, 2, 3, 4, 5, 6, 7,8};
+    auto spi    = std::make_unique<Spi> ("/dev/spidev0.0", O_WRONLY);
+    auto chip   = std::make_unique<Gpio>("/dev/gpiochip0", O_RDWR);
+    auto gw     = std::make_unique<GpioWrite>(chip->get_fd());
 
-    controller.read(x);
-    controller.write(x);
+    auto writer = std::make_unique<LcdWriter>(std::move(spi), std::move(gw));
+    auto lcd    = std::make_unique<St7789Lcd>(std::move(writer));
+
+    lcd->init();
+
+    lcd->clear(RED);   sleep_ms(1000);
+    lcd->clear(GREEN); sleep_ms(1000);
+    lcd->clear(BLUE);  sleep_ms(1000);
+
     return 0;
 }

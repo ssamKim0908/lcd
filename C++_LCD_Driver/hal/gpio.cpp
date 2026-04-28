@@ -1,6 +1,9 @@
 #include "gpio.hpp"
-#include <linux/gpio.h>
 #include <cstring>
+#include <linux/gpio.h>
+#include <cerrno>
+#include <system_error>
+
 
 Gpio::Gpio(const std::string& device, int flags)
 {
@@ -26,113 +29,197 @@ Gpio::~Gpio()
     }
 }
 
-// GpioRead implementation
+// ─── GpioRead ──────────────────────────────────────────────────────
+
 GpioRead::GpioRead(int gpio_fd)
 {
 #ifdef TARGET_DEVICE
-    struct gpiohandle_request req;
-    memset(&req, 0, sizeof(req));
+    constexpr InputKey all_keys[] = {
+        InputKey::K1_PIN, InputKey::K2_PIN, InputKey::K3_PIN, InputKey::K4_PIN,
+        InputKey::R_PIN,  InputKey::L_PIN,
+        InputKey::UP_PIN, InputKey::LEFT_PIN, InputKey::DOWN_PIN, InputKey::RIGHT_PIN,
+        InputKey::CENTER_PIN,
+    };
 
-    // Requesting all input pins defined in InputKey enum
-    req.lineoffsets[0]  = static_cast<uint32_t>(InputKey::K1_PIN);
-    req.lineoffsets[1]  = static_cast<uint32_t>(InputKey::K2_PIN);
-    req.lineoffsets[2]  = static_cast<uint32_t>(InputKey::K3_PIN);
-    req.lineoffsets[3]  = static_cast<uint32_t>(InputKey::K4_PIN);
-    req.lineoffsets[4]  = static_cast<uint32_t>(InputKey::R_PIN);
-    req.lineoffsets[5]  = static_cast<uint32_t>(InputKey::L_PIN);
-    req.lineoffsets[6]  = static_cast<uint32_t>(InputKey::UP_PIN);
-    req.lineoffsets[7]  = static_cast<uint32_t>(InputKey::LEFT_PIN);
-    req.lineoffsets[8]  = static_cast<uint32_t>(InputKey::DOWN_PIN);
-    req.lineoffsets[9]  = static_cast<uint32_t>(InputKey::RIGHT_PIN);
-    req.lineoffsets[10] = static_cast<uint32_t>(InputKey::CENTER_PIN);
-    
-    req.lines = 11;
-    req.flags = GPIOHANDLE_REQUEST_INPUT;
-    strncpy(req.consumer_label, "lcd_input_keys", sizeof(req.consumer_label));
-
-    if (ioctl(gpio_fd, GPIO_GET_LINEHANDLE_IOCTL, &req) < 0)
+    try
     {
-        throw std::runtime_error("Failed to request GPIO input lines");
+        for (auto key : all_keys)
+        {
+            line_fds[key] = read_request_line(gpio_fd, key);
+        }
     }
-    fd = req.fd;
-    std::cout << "GPIO input line handle opened, fd: " << fd << std::endl;
+    catch (...)
+    {
+        close_all();
+        throw;
+    }
+    std::cout << "GpioRead: opened " << line_fds.size() << " input lines" << std::endl;
+#else
+    (void)gpio_fd;
 #endif
 }
 
 GpioRead::~GpioRead()
 {
-    if (fd >= 0)
-    {
-        std::cout << "Closing GpioRead line fd: " << fd << std::endl;
-        ::close(fd);
-    }
+    close_all();
 }
 
-void GpioRead::read(GpioValue buffer)
+void GpioRead::close_all()
+{
+    for (auto& kv : line_fds)
+    {
+        if (kv.second >= 0) ::close(kv.second);
+    }
+    line_fds.clear();
+}
+
+int GpioRead::read_request_line(int chip_fd, InputKey pin)
 {
 #ifdef TARGET_DEVICE
-    std::cout << "read GPIO" << std::endl;
+    struct gpio_v2_line_request req;
+    std::memset(&req, 0, sizeof(req));
+
+    req.offsets[0]   = static_cast<uint32_t>(pin);
+    req.num_lines    = 1;
+    req.config.flags = GPIO_V2_LINE_FLAG_INPUT | GPIO_V2_LINE_FLAG_BIAS_PULL_UP;
+    std::strncpy(req.consumer, "lcd_input", sizeof(req.consumer));
+
+    if (ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &req) < 0)
+    {
+        throw std::system_error(errno, std::generic_category(),
+            "GPIO_V2_GET_LINE_IOCTL (input)");
+    }
+    return req.fd;
 #else
-    (void)buffer;
-    std::cout << "Simulating GPIO read from fd: " << fd << std::endl;
+    (void)chip_fd; (void)pin;
+    return -1;
 #endif
 }
 
-// GpioWrite implementation
+GpioValue GpioRead::read(InputKey pin)
+{
+#ifdef TARGET_DEVICE
+    auto it = line_fds.find(pin);
+    if (it == line_fds.end())
+    {
+        throw std::invalid_argument("GpioRead::read: unknown InputKey");
+    }
+
+    struct gpio_v2_line_values vals{};
+    vals.mask = 1;
+    if (ioctl(it->second, GPIO_V2_LINE_GET_VALUES_IOCTL, &vals) < 0)
+    {
+        throw std::system_error(errno, std::generic_category(),
+            "GPIO_V2_LINE_GET_VALUES_IOCTL");
+    }
+    return (vals.bits & 1ULL) ? GpioValue::High : GpioValue::Low;
+#else
+    (void)pin;
+    return GpioValue::Low;
+#endif
+}
+
+// ─── GpioWrite ─────────────────────────────────────────────────────
+
 GpioWrite::GpioWrite(int gpio_fd)
 {
 #ifdef TARGET_DEVICE
-    struct gpiohandle_request req;
-    memset(&req, 0, sizeof(req));
+    struct PinInit { OutputKey key; GpioValue defv; };
+    constexpr PinInit pins[] = {
+        { OutputKey::PIN_RST, GpioValue::High },
+        { OutputKey::PIN_DC,  GpioValue::Low  },
+        { OutputKey::PIN_BL,  GpioValue::High },
+    };
 
-    // Requesting all output pins defined in OutputKey enum
-    req.lineoffsets[0] = static_cast<uint32_t>(OutputKey::PIN_RST);
-    req.lineoffsets[1] = static_cast<uint32_t>(OutputKey::PIN_DC);
-    req.lineoffsets[2] = static_cast<uint32_t>(OutputKey::PIN_BL);
-    
-    req.lines = 3;
-    req.flags = GPIOHANDLE_REQUEST_OUTPUT;
-    strncpy(req.consumer_label, "lcd_output_control", sizeof(req.consumer_label));
-    memset(req.default_values, 0, sizeof(req.default_values));
-
-    if (ioctl(gpio_fd, GPIO_GET_LINEHANDLE_IOCTL, &req) < 0)
+    try
     {
-        throw std::runtime_error("Failed to request GPIO output lines");
+        for (auto& p : pins)
+        {
+            line_fds[p.key] = write_request_line(gpio_fd, p.key, p.defv);
+        }
     }
-    fd = req.fd;
-    std::cout << "GPIO output line handle opened, fd: " << fd << std::endl;
+    catch (...)
+    {
+        close_all();
+        throw;
+    }
+    std::cout << "GpioWrite: opened " << line_fds.size() << " output lines" << std::endl;
+#else
+    (void)gpio_fd;
 #endif
 }
 
 GpioWrite::~GpioWrite()
 {
-    if (fd >= 0)
+    close_all();
+}
+
+void GpioWrite::close_all()
+{
+    for (auto& kv : line_fds)
     {
-        std::cout << "Closing GpioWrite line fd: " << fd << std::endl;
-        ::close(fd);
+        if (kv.second >= 0) ::close(kv.second);
     }
+    line_fds.clear();
 }
 
-void GpioWrite::write_cmd()
+int GpioWrite::write_request_line(int chip_fd, OutputKey pin)
 {
 #ifdef TARGET_DEVICE
-    
-#else
-    //(void)buffer;
-    std::cout << "Simulating GPIO write to fd: " << fd << std::endl;
-#endif
-}
+    struct gpio_v2_line_request req;
+    std::memset(&req, 0, sizeof(req));
 
-void GpioWrite::write_data()
-{
-#ifdef TARGET_DEVICE
+    req.offsets[0]   = static_cast<uint32_t>(pin);
+    req.num_lines    = 1;
+    req.config.flags = GPIO_V2_LINE_FLAG_OUTPUT;
+    std::strncpy(req.consumer, "lcd_output", sizeof(req.consumer));
+
+    req.config.num_attrs            = 1;
+    req.config.attrs[0].attr.id     = GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES;
+    req.config.attrs[0].attr.values = 1ULL;
+    req.config.attrs[0].mask        = 1ULL;
+
+    if (ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &req) < 0)
+    {
+        throw std::system_error(errno, std::generic_category(),
+            "GPIO_V2_GET_LINE_IOCTL (output)");
+    }
+    return req.fd;
 #else
+    (void)chip_fd; (void)pin;
+    return -1;
 #endif
 }
 
 void GpioWrite::write_pin(OutputKey pin, GpioValue value)
 {
 #ifdef TARGET_DEVICE
+    auto it = line_fds.find(pin);
+    if (it == line_fds.end())
+    {
+        throw std::invalid_argument("GpioWrite::write_pin: unknown OutputKey");
+    }
+
+    struct gpio_v2_line_values vals{};
+    vals.mask = 1ULL;
+    vals.bits = (value == GpioValue::High) ? 1ULL : 0ULL;
+
+    if (ioctl(it->second, GPIO_V2_LINE_SET_VALUES_IOCTL, &vals) < 0)
+    {
+        throw std::system_error(errno, std::generic_category(),
+            "GPIO_V2_LINE_SET_VALUES_IOCTL");
+    }
 #else
+    (void)pin; (void)value;
 #endif
+}
+
+void GpioWrite::write_cmd()
+{
+    write_pin(OutputKey::PIN_DC, GpioValue::Low);
+}
+
+void GpioWrite::write_data()
+{
+    write_pin(OutputKey::PIN_DC, GpioValue::High);
 }

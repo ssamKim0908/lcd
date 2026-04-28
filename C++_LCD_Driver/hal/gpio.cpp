@@ -3,7 +3,7 @@
 #include <linux/gpio.h>
 #include <cerrno>
 #include <system_error>
-
+#include "../include/common.h"
 
 Gpio::Gpio(const std::string& device, int flags)
 {
@@ -25,7 +25,7 @@ Gpio::~Gpio()
     if (fd >= 0)
     {
         std::cout << "Closing GPIO fd: " << fd << std::endl;
-        ::close(fd);
+        close(fd);
     }
 }
 
@@ -68,7 +68,7 @@ void GpioRead::close_all()
 {
     for (auto& kv : line_fds)
     {
-        if (kv.second >= 0) ::close(kv.second);
+        if (kv.second >= 0) close(kv.second);
     }
     line_fds.clear();
 }

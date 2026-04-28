@@ -1,5 +1,4 @@
 #pragma once
-#include "../interface/ICommunication.hpp"
 #include <map>
 
 enum class GpioDirection : uint32_t

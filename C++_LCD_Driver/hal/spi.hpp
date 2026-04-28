@@ -1,5 +1,5 @@
 #pragma once
-#include "ICommunication.hpp"
+#include "../include/span.hpp"
 
 class Spi
 {

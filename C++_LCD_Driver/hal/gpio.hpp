@@ -1,5 +1,7 @@
 #pragma once
 #include <map>
+#include <string>
+#include <cstdint>
 
 enum class GpioDirection : uint32_t
 {

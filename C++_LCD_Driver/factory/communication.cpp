@@ -1,6 +1,7 @@
 #include "communication.hpp"
 #include "../service/LcdIO.hpp"
 #include "../hal/gpio.hpp"
+#include "../hal/spi.hpp"
 
 LcdFactoryCommunication::LcdFactoryCommunication()
 {

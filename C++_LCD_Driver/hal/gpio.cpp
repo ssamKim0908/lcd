@@ -1,5 +1,6 @@
 #include "gpio.hpp"
 #include <linux/gpio.h>
+#include <cstring>
 
 Gpio::Gpio(const std::string& device, int flags)
 {
@@ -70,15 +71,7 @@ GpioRead::~GpioRead()
 void GpioRead::read(GpioValue buffer)
 {
 #ifdef TARGET_DEVICE
-    struct gpiohandle_data data;
-    if (ioctl(fd, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &data) < 0)
-    {
-        throw std::runtime_error("Failed to read GPIO line values");
-    }
-    
-    for (size_t i = 0; i < buffer.size() && i < 11; ++i) {
-        buffer[i] = static_cast<std::byte>(data.values[i]);
-    }
+    std::cout << "read GPIO" << std::endl;
 #else
     (void)buffer;
     std::cout << "Simulating GPIO read from fd: " << fd << std::endl;

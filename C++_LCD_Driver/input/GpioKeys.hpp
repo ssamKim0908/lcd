@@ -1,13 +1,15 @@
 #pragma once
 #include "../interface/IKeys.hpp"
 #include <memory>
+#include <map>
 
 class GpioRead;
 
 class GpioKeys : public IKeys
 {
 private:
-    std::unique_ptr<GpioRead> reader;
+    std::unique_ptr<GpioRead>   reader;
+    std::map<InputKey, Key>     key_map;
 public:
     GpioKeys(std::unique_ptr<GpioRead> reader);
     ~GpioKeys() override;

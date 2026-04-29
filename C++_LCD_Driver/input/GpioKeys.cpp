@@ -1,14 +1,9 @@
 #include "GpioKeys.hpp"
 #include "../hal/gpio.hpp"
-#include <map>
+
 
 GpioKeys::GpioKeys(std::unique_ptr<GpioRead> reader)
     : reader(std::move(reader))
-{}
-
-GpioKeys::~GpioKeys() = default;
-
-KeyEvent GpioKeys::next_event()
 {
     static const std::map<InputKey, Key> key_map = {
         { InputKey::K1_PIN,     Key::K1     },
@@ -23,7 +18,12 @@ KeyEvent GpioKeys::next_event()
         { InputKey::RIGHT_PIN,  Key::Right  },
         { InputKey::CENTER_PIN, Key::Center },
     };
+}
 
+GpioKeys::~GpioKeys() = default;
+
+KeyEvent GpioKeys::next_event()
+{
     auto ev = reader->wait_event();
     return { key_map.at(ev.key), ev.pressed ? KeyState::Pressed : KeyState::Released};
 }

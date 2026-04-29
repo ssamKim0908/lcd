@@ -19,7 +19,7 @@ Spi::Spi(const std::string& device, int flags)
 
     mode  = SPI_MODE_0;
     bits  = 8;
-    speed = 8000000;
+    speed = 32000000;
     lsb   = 0;
 
     auto test = [this](unsigned long request, void* arg, const std::string& name) {

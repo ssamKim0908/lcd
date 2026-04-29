@@ -31,7 +31,7 @@ int main()
     {
         lcd->clear(c[cur]);
         auto k = key->next_event();
-        if(k.pressed)
+        if(k.state == KeyState::Pressed)
         {
             switch(k.key)
             {

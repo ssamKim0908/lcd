@@ -7,10 +7,16 @@ enum class Key
     Up, Down, Left, Right, Center
 };
 
+enum class KeyState
+{
+    Pressed,
+    Released
+};
+
 struct KeyEvent
 {
     Key  key;
-    bool pressed;
+    KeyState state;
 };
 
 class IKeys

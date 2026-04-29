@@ -25,5 +25,5 @@ KeyEvent GpioKeys::next_event()
     };
 
     auto ev = reader->wait_event();
-    return { key_map.at(ev.key), ev.pressed };
+    return { key_map.at(ev.key), ev.pressed ? KeyState::Pressed : KeyState::Released};
 }

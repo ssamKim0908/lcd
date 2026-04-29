@@ -30,6 +30,7 @@ int main()
     while(cur > 0)
     {
         lcd->clear(c[cur]);
+        lcd->render();
         auto k = key->next_event();
         if(k.state == KeyState::Pressed)
         {

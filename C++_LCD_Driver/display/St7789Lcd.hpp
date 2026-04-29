@@ -1,6 +1,7 @@
 #pragma once
 #include "../interface/ILcd.hpp"
 #include "../include/common.h"
+#include <array>
 
 class LcdWriter;
 
@@ -11,7 +12,8 @@ public:
     static constexpr uint16_t HEIGHT = 240;
 
 private:
-    std::unique_ptr<LcdWriter> writer;
+    std::unique_ptr<LcdWriter>                writer;
+    std::array<uint16_t, WIDTH * HEIGHT>      framebuf {};
 
     void set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 
@@ -25,4 +27,5 @@ public:
     void init       ()                                       override;
     void clear      (uint16_t color)                         override;
     void draw_pixel (uint16_t x, uint16_t y, uint16_t color) override;
+    void render     ()                                       override;
 };

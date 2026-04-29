@@ -4,6 +4,33 @@
 #include "../util/time.hpp"
 #include <vector>
 #include <initializer_list>
+#include <algorithm>
+
+// ----------------------------------private
+
+void St7789Lcd::set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+{
+    x1 -= 1;
+    y1 -= 2;
+
+    writer->write_cmd(std::byte{0x2A});
+    std::byte col[] = {
+        std::byte((x0 >> 8) & 0xFF), std::byte(x0 & 0xFF),
+        std::byte((x1 >> 8) & 0xFF), std::byte(x1 & 0xFF),
+    };
+    writer->write_data({col, 4});
+
+    writer->write_cmd(std::byte{0x2B});
+    std::byte row[] = {
+        std::byte((y0 >> 8) & 0xFF), std::byte(y0 & 0xFF),
+        std::byte((y1 >> 8) & 0xFF), std::byte(y1 & 0xFF),
+    };
+    writer->write_data({row, 4});
+
+    writer->write_cmd(std::byte{0x2C});
+}
+
+// ----------------------------------public
 
 St7789Lcd::St7789Lcd(std::unique_ptr<LcdWriter> writer)
     : writer(std::move(writer))
@@ -53,64 +80,29 @@ void St7789Lcd::init()
     sleep_ms(50);
 }
 
-void St7789Lcd::set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
-{
-    x1 -= 1;
-    y1 -= 2;
-
-    writer->write_cmd(std::byte{0x2A});
-    std::byte col[] = {
-        std::byte((x0 >> 8) & 0xFF), std::byte(x0 & 0xFF),
-        std::byte((x1 >> 8) & 0xFF), std::byte(x1 & 0xFF),
-    };
-    writer->write_data({col, 4});
-
-    writer->write_cmd(std::byte{0x2B});
-    std::byte row[] = {
-        std::byte((y0 >> 8) & 0xFF), std::byte(y0 & 0xFF),
-        std::byte((y1 >> 8) & 0xFF), std::byte(y1 & 0xFF),
-    };
-    writer->write_data({row, 4});
-
-    writer->write_cmd(std::byte{0x2C});
-}
-
 void St7789Lcd::clear(uint16_t color)
 {
     uint16_t be = static_cast<uint16_t>((color >> 8) | (color << 8));
-
-    std::vector<uint16_t> row(WIDTH, be);
-    Span<const std::byte> row_bytes(row);
-
-    set_window(0, 0, WIDTH, HEIGHT);
-
-    for (uint16_t y = 0; y < HEIGHT; ++y)
-    {
-        writer->write_data(row_bytes);
-    }
+    framebuf.fill(be);
 }
 
 void St7789Lcd::draw_pixel(uint16_t x, uint16_t y, uint16_t color)
 {
-    writer->write_cmd(std::byte{0x2A});
-    std::byte col[] = {
-        std::byte((x >> 8) & 0xFF), std::byte(x & 0xFF),
-        std::byte((x >> 8) & 0xFF), std::byte(x & 0xFF),
-    };
-    writer->write_data({col, 4});
+    if (x >= WIDTH || y >= HEIGHT) return;
+    uint16_t be = static_cast<uint16_t>((color >> 8) | (color << 8));
+    framebuf[y * WIDTH + x] = be;
+}
 
-    writer->write_cmd(std::byte{0x2B});
-    std::byte row[] = {
-        std::byte((y >> 8) & 0xFF), std::byte(y & 0xFF),
-        std::byte((y >> 8) & 0xFF), std::byte(y & 0xFF),
-    };
-    writer->write_data({row, 4});
+void St7789Lcd::render()
+{
+    set_window(0, 0, WIDTH, HEIGHT);
 
-    writer->write_cmd(std::byte{0x2C});
+    constexpr size_t CHUNK = 4096;
+    Span<const std::byte> bytes{framebuf};
 
-    std::byte px[] = {
-        std::byte((color >> 8) & 0xFF),
-        std::byte(color & 0xFF),
-    };
-    writer->write_data({px, 2});
+    for (size_t offset = 0; offset < bytes.size(); offset += CHUNK)
+    {
+        const size_t n = std::min(CHUNK, bytes.size() - offset);
+        writer->write_data({bytes.data() + offset, n});
+    }
 }

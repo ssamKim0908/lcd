@@ -23,17 +23,15 @@ UdsChannel::~UdsChannel()
 void UdsChannel::send(Span<const std::byte> data)
 {
 #ifdef TARGET_DEVICE
-    const std::byte* ptr = data.data();
-    size_t remaining     = data.size();
-    while (remaining > 0)
+    size_t sent = 0;
+    while (sent < data.size())
     {
-        ssize_t n = ::send(fd, ptr, remaining, 0);
+        ssize_t n = ::send(fd, data.data() + sent, data.size() - sent, 0);
         if (n < 0)
         {
             throw std::system_error(errno, std::generic_category(), "UDS send");
         }
-        ptr       += n;
-        remaining -= static_cast<size_t>(n);
+        sent += static_cast<size_t>(n);
     }
 #else
     std::cout << "Sending " << data.size() << " bytes on UDS fd: " << fd << std::endl;
@@ -43,11 +41,10 @@ void UdsChannel::send(Span<const std::byte> data)
 void UdsChannel::recv(Span<std::byte> data)
 {
 #ifdef TARGET_DEVICE
-    std::byte* ptr   = data.data();
-    size_t remaining = data.size();
-    while (remaining > 0)
+    size_t received = 0;
+    while (received < data.size())
     {
-        ssize_t n = ::recv(fd, ptr, remaining, 0);
+        ssize_t n = ::recv(fd, data.data() + received, data.size() - received, 0);
         if (n < 0)
         {
             throw std::system_error(errno, std::generic_category(), "UDS recv");
@@ -56,8 +53,7 @@ void UdsChannel::recv(Span<std::byte> data)
         {
             throw std::runtime_error("UDS connection closed by peer");
         }
-        ptr       += n;
-        remaining -= static_cast<size_t>(n);
+        received += static_cast<size_t>(n);
     }
 #else
     std::cout << "Receiving " << data.size() << " bytes on UDS fd: " << fd << std::endl;

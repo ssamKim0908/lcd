@@ -31,7 +31,50 @@ Gpio::~Gpio()
     }
 }
 
-// ─── GpioRead ──────────────────────────────────────────────────────
+// ─── GpioRead private ──────────────────────────────────────────────────────
+
+void GpioRead::close_all()
+{
+    for (auto& kv : line_fds)
+    {
+        if (kv.second >= 0) close(kv.second);
+    }
+    line_fds.clear();
+
+    if (epoll_fd >= 0)
+    {
+        close(epoll_fd);
+        epoll_fd = -1;
+    }
+}
+
+int GpioRead::read_request_line(int chip_fd, InputKey pin)
+{
+#ifdef TARGET_DEVICE
+    struct gpio_v2_line_request req;
+    std::memset(&req, 0, sizeof(req));
+
+    req.offsets[0]   = static_cast<uint32_t>(pin);
+    req.num_lines    = 1;
+    req.config.flags = GPIO_V2_LINE_FLAG_INPUT
+                     | GPIO_V2_LINE_FLAG_BIAS_PULL_UP
+                     | GPIO_V2_LINE_FLAG_EDGE_FALLING
+                     | GPIO_V2_LINE_FLAG_EDGE_RISING;
+    std::strncpy(req.consumer, "lcd_input", sizeof(req.consumer));
+
+    if (ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &req) < 0)
+    {
+        throw std::system_error(errno, std::generic_category(),
+            "GPIO_V2_GET_LINE_IOCTL (input)");
+    }
+    return req.fd;
+#else
+    (void)chip_fd; (void)pin;
+    return -1;
+#endif
+}
+
+// ─── GpioRead public ─────────────────────────────────────────────────────
 
 GpioRead::GpioRead(int gpio_fd)
 {
@@ -80,49 +123,6 @@ GpioRead::~GpioRead()
 {
     close_all();
 }
-
-void GpioRead::close_all()
-{
-    for (auto& kv : line_fds)
-    {
-        if (kv.second >= 0) close(kv.second);
-    }
-    line_fds.clear();
-
-    if (epoll_fd >= 0)
-    {
-        close(epoll_fd);
-        epoll_fd = -1;
-    }
-}
-
-int GpioRead::read_request_line(int chip_fd, InputKey pin)
-{
-#ifdef TARGET_DEVICE
-    struct gpio_v2_line_request req;
-    std::memset(&req, 0, sizeof(req));
-
-    req.offsets[0]   = static_cast<uint32_t>(pin);
-    req.num_lines    = 1;
-    req.config.flags = GPIO_V2_LINE_FLAG_INPUT
-                     | GPIO_V2_LINE_FLAG_BIAS_PULL_UP
-                     | GPIO_V2_LINE_FLAG_EDGE_FALLING
-                     | GPIO_V2_LINE_FLAG_EDGE_RISING;
-    std::strncpy(req.consumer, "lcd_input", sizeof(req.consumer));
-
-    if (ioctl(chip_fd, GPIO_V2_GET_LINE_IOCTL, &req) < 0)
-    {
-        throw std::system_error(errno, std::generic_category(),
-            "GPIO_V2_GET_LINE_IOCTL (input)");
-    }
-    return req.fd;
-#else
-    (void)chip_fd; (void)pin;
-    return -1;
-#endif
-}
-
-// ─── GpioRead public ─────────────────────────────────────────────────────
 
 GpioEvent GpioRead::wait_event()
 {

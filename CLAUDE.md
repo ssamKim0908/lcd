@@ -5,7 +5,6 @@
 
 ## 내용
 미니 스마트폰: 런처 화면에서 앱(Game, MP3)을 선택해 실행하고, 종료 시 런처로 복귀.
-Android와 유사한 멀티 프로세스 구조.
 
 ## 언어/환경
 
@@ -28,7 +27,8 @@ Android와 유사한 멀티 프로세스 구조.
 
 ┌─ Layer 2 : Framework ──────────────────────────────────┐
 │  framework/  (launcher 프로세스에 링크)                 │
-│   - RenderServer  (ILcd 사용 → IPC로 그림 명령 수신)    │
+│   - RenderServer  (ILcd 사용 → IPC로 그림 명령 수신)     | 
+|      -Rasterizer -> RenderServer에서 실제 그리는 객체    │
 │   - InputRouter   (IKeys 사용 → IPC로 키 송신)          │
 │   - AppManager    (fork/exec — 여기서만, 앱은 모름)     │
 │  sdk/  (game/mp3 프로세스에 링크)                       │
@@ -36,7 +36,7 @@ Android와 유사한 멀티 프로세스 구조.
 │   - Scene, App    (앱 측 베이스 클래스)                 │
 │   - 이벤트 루프                                          │
 │  shared/  (양쪽 binary에 다 들어감)                     │
-│   - IPC 메시지 타입, Color, Rect, KeyEvent              │
+│   - IPC 메시지 타입, Color, time, font              │
 └────────────────────────────────────────────────────────┘
            ↑ 의존
 ┌─ Layer 1 : Platform ───────────────────────────────────┐
@@ -59,10 +59,27 @@ Android와 유사한 멀티 프로세스 구조.
  - app binary 는 Layer 2 sdk 통해서만 그림/입력 접근
 
 ---
+## framework 구조
+┌─ launcher process ──────────────────────────────────────────┐
+│                                                              │
+│  Main thread        InputThread          RenderThread(s)    │
+│  ─────────────      ─────────────        ─────────────      │
+│  AppManager         GpioRead              Rasterizer         │
+│  (fork/exec,        .wait_event() ──┐    + decode loop       │
+│   focus 관리)                        │                       │
+│                                      ▼                       │
+│                                 InputRouter                  │
+│                                      │                       │
+│                                      ▼                       │
+│                            focused_app->ch.send(KeyEvent)    │
+│                                                              │
+│                                          ▲                   │
+│                                          │ ch.recv()         │
+│                                       (per app channel)      │
+└──────────────────────────────────────────────────────────────┘
 
 ## 설계 원칙
 
-- **OOP/디자인 패턴 학습이 1순위** — 실용성보다 패턴 적용 연습 우선
 - 각 레이어는 인터페이스(I-prefix) + 구체 구현으로 분리
 - `.hpp`에 `#include` 최소화 — forward declaration 선호
 - 레이어는 최소로 유지, 불필요한 중간 레이어 추가 금지

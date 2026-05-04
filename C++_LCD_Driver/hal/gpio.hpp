@@ -37,6 +37,12 @@ enum class OutputKey : uint32_t
     PIN_BL   = 24
 };
 
+struct GpioEvent
+{
+    InputKey key;
+    bool     pressed;
+};
+
 class Gpio
 {
 private:
@@ -52,12 +58,6 @@ public:
     Gpio& operator=(const Gpio&&)   = delete;
 
     int get_fd() const { return fd; }
-};
-
-struct GpioEvent
-{
-    InputKey key;
-    bool     pressed;
 };
 
 class GpioRead

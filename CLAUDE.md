@@ -27,12 +27,12 @@
 
 ┌─ Layer 2 : Framework ──────────────────────────────────┐
 │  framework/  (launcher 프로세스에 링크)                 │
-│   - RenderServer  (ILcd 사용 → IPC로 그림 명령 수신)     | 
+│   - RenderServer  (Server Stub)                       | 
 |      -Rasterizer -> RenderServer에서 실제 그리는 객체    │
 │   - InputRouter   (IKeys 사용 → IPC로 키 송신)          │
 │   - AppManager    (fork/exec — 여기서만, 앱은 모름)     │
 │  sdk/  (game/mp3 프로세스에 링크)                       │
-│   - Canvas        (IPC 클라이언트 → "그려줘" 송신)      │
+│   - Canvas        (IPC 클라이언트 Stub)      │
 │   - Scene, App    (앱 측 베이스 클래스)                 │
 │   - 이벤트 루프                                          │
 │  shared/  (양쪽 binary에 다 들어감)                     │

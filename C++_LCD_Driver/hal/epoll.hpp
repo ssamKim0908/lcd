@@ -16,5 +16,5 @@ public:
 
     void        add (int fd, uint32_t events)   override;
     void        del (int fd)                    override;
-    void        wait()                          override;
+    PollResult        wait()                          override;
 };

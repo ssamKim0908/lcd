@@ -100,8 +100,6 @@ Client → Server : RenderCommand
 종료              : client 가 close (또는 shutdown(SHUT_WR)) → server 가 EOF 감지
 ```
 
-Focus 알림 메시지 **없음**. focus 상태는 server 측 stack 과 launcher 의 호출 스택(`waitpid()` 차원)에 암묵적으로 존재.
-
 ### Focus stack
 
 - 새 client connect → `push` → top 이 자동으로 focus
@@ -113,44 +111,13 @@ Focus 알림 메시지 **없음**. focus 상태는 server 측 stack 과 launcher
 ```
 [Client]                          [Server]
 Canvas.fill_rect(...)
-  → 직렬화                         decode_one(fd)
-  → channel.send  ───────────►     channel.recv
-                                   → 역직렬화
+                                   decode_one(fd)
+  → channel.send  ───────────►     channel.recv                                   
                                    → unique_ptr<IRenderCommand>
                                    → cmd->execute(Rasterizer&)
 ```
 
 Rasterizer 는 server 프로세스의 단일 자원. 단일 스레드에서만 호출되므로 race 없음.
-
----
-
-## 동시성 모델 — Reactor 패턴 (epoll, 단일 스레드)
-
-server 프로세스는 **스레드 한 개**로 모든 fd 를 처리한다. epoll 이 깨어날 fd 를 알려주고, 해당 fd 종류에 따라 분기한다.
-
-```
-[Server 프로세스 — 단일 스레드]
-
-while (true) {
-    epoll_wait(epfd);
-    for (each ready fd) {
-        if      (fd == listen_fd) on_accept();    // 새 client 수락 → push
-        else if (fd == gpio_fd)   on_key();       // 키 → focus.top() 에 send
-        else                       on_client(fd); // render command 또는 EOF
-    }
-}
-
-on_client(fd):
-    if (fd != focus.top()) return;        // 방어적 — 보통 dead branch
-    auto cmd = decode_one(fd);
-    if (!cmd) { close_and_pop(fd); return; }   // EOF → pop
-    cmd->execute(rast);
-```
-
-**왜 reactor 인가**
-- per-session recv 스레드 + per-session stub 객체 모델보다 구조가 명백히 단순.
-- 단일 스레드라 `FocusStack` 에 mutex 불필요, 채널 동시성 고민 원천 제거.
-- Session / RenderServerStub / AcceptThread / RecvThread × N / InputDispatcher 가 전부 epoll 루프 하나로 통합.
 
 ### Launcher 프로세스 (단일 스레드)
 ```
@@ -166,18 +133,6 @@ main loop:
 
 focus 상태 변수 없음. `recv_key()` 자리에 있으면 = 내가 focus, `waitpid()` 자리에 있으면 = 자식이 focus.
 
-### App 프로세스 (단일 스레드)
-```
-main loop:
-    KeyEvent k = canvas.recv_key();
-    scene.handle_key(k);                      // 안에서 canvas 로 render command 송신
-    if (scene.done()) break;
-return 0;                                     // Canvas 소멸자가 close → server EOF
-```
-
-app 은 자기가 focus 인지 의식하지 않음. 존재 = focus.
-
----
 
 ## 종료 / 자원 관리
 
@@ -195,7 +150,3 @@ app 은 자기가 focus 인지 의식하지 않음. 존재 = focus.
 - `.hpp` 에 `#include` 최소화 — forward declaration 선호
 - 레이어는 최소로 유지, 불필요한 중간 레이어 추가 금지
 - `main()` 이 Composition Root — 구체 타입을 아는 유일한 지점
-- **server 는 client 정체를 모른다** (OCP). fd 기반으로만 동작.
-- focus 상태는 별도 플래그로 두지 않음. server 측 stack + launcher 의 call stack 으로 표현.
-- 종료는 graceful close 만 가정. 비정상 종료 처리는 범위 밖.
-- 동시성 도입 전 단일 스레드 reactor 로 충분한지 항상 먼저 점검.

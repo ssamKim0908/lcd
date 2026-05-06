@@ -5,7 +5,7 @@
 GpioKeys::GpioKeys(std::unique_ptr<GpioRead> reader)
     : reader(std::move(reader))
 {
-    static const std::map<InputKey, Key> key_map = {
+    key_map = {
         { InputKey::K1_PIN,     Key::K1     },
         { InputKey::K2_PIN,     Key::K2     },
         { InputKey::K3_PIN,     Key::K3     },

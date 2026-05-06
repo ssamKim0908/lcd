@@ -57,12 +57,17 @@ void Epoll::del(int fd)
     }
 }
 
-void Epoll::wait()
+PollResult Epoll::wait()
 {
     epoll_event ev{};
     int n = ::epoll_wait(epoll_fd, &ev, 1, -1);
     if (n < 0)
     {
+        if (errno == EINTR) return IPoller::ERROR;
         throw std::system_error(errno, std::generic_category(), "epoll_wait");
     }
+
+    if (n == 0) return IPoller::ERROR;
+
+    return {ev.data.fd, from_epoll(ev.events)};
 }

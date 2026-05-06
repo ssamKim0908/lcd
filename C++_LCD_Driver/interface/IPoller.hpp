@@ -8,12 +8,20 @@ enum class PollEvents : uint32_t
     Out = 1u << 1,
 };
 
+struct PollResult 
+{
+    int fd;
+    uint32_t events;
+};
+
 class IPoller
 {
+public:
+    static constexpr PollResult ERROR{-1,0};
 public:
     virtual ~IPoller() = default;
 
     virtual void        add (int fd, uint32_t events)   = 0;
     virtual void        del (int fd)                    = 0;
-    virtual void        wait()                          = 0;
+    virtual PollResult        wait()                          = 0;
 };

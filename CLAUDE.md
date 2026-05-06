@@ -152,11 +152,6 @@ on_client(fd):
 - 단일 스레드라 `FocusStack` 에 mutex 불필요, 채널 동시성 고민 원천 제거.
 - Session / RenderServerStub / AcceptThread / RecvThread × N / InputDispatcher 가 전부 epoll 루프 하나로 통합.
 
-**전제**
-- GPIO 가 fd 로 노출 (이미 `epoll` 기반으로 구현됨).
-- 메시지 프레이밍 명확 (header 의 length 만큼 정확히 recv).
-- 비정상 종료 미고려 — non-top 에서 EOF 안 나는 가정.
-
 ### Launcher 프로세스 (단일 스레드)
 ```
 main loop:

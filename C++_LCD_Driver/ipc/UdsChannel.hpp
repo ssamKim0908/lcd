@@ -4,7 +4,7 @@
 class UdsChannel : public IChannel
 {
 private:
-    int fd = -1;
+    int fd_ = -1;
 public:
     explicit UdsChannel(int fd);
     ~UdsChannel() override;
@@ -12,6 +12,7 @@ public:
     UdsChannel(const UdsChannel&)            = delete;
     UdsChannel& operator=(const UdsChannel&) = delete;
 
-    void send(Span<const std::byte> data) override;
-    void recv(Span<std::byte>       data) override;
+    void send   (Span<const std::byte> data) override;
+    void recv   (Span<std::byte>       data) override;
+    int  fd     () const override { return fd_; }
 };

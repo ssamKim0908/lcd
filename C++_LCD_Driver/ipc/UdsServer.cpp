@@ -12,13 +12,13 @@
 UdsServer::UdsServer(const std::string& path) : path(path)
 {
 #ifdef TARGET_DEVICE
-    fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
-    if (fd < 0)
+    fd_ = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (fd_ < 0)
     {
         throw std::system_error(errno, std::generic_category(),
             "Failed to create UDS server socket");
     }
-    std::cout << "Opened UDS server fd: " << fd << std::endl;
+    std::cout << "Opened UDS server fd: " << fd_ << std::endl;
 
     sockaddr_un addr{};
     addr.sun_family = AF_UNIX;
@@ -26,13 +26,13 @@ UdsServer::UdsServer(const std::string& path) : path(path)
 
     ::unlink(path.c_str());
 
-    if (::bind(fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0)
+    if (::bind(fd_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0)
     {
         throw std::system_error(errno, std::generic_category(),
             "Failed to bind UDS socket: " + path);
     }
 
-    if (::listen(fd, 5) < 0)
+    if (::listen(fd_, 5) < 0)
     {
         throw std::system_error(errno, std::generic_category(),
             "Failed to listen UDS socket: " + path);
@@ -42,10 +42,10 @@ UdsServer::UdsServer(const std::string& path) : path(path)
 
 UdsServer::~UdsServer()
 {
-    if (fd >= 0)
+    if (fd_ >= 0)
     {
-        std::cout << "Closing UDS server fd: " << fd << std::endl;
-        ::close(fd);
+        std::cout << "Closing UDS server fd: " << fd_ << std::endl;
+        ::close(fd_);
 #ifdef TARGET_DEVICE
         ::unlink(path.c_str());
 #endif
@@ -55,7 +55,7 @@ UdsServer::~UdsServer()
 std::unique_ptr<IChannel> UdsServer::accept()
 {
 #ifdef TARGET_DEVICE
-    int client_fd = ::accept(fd, nullptr, nullptr);
+    int client_fd = ::accept(fd_, nullptr, nullptr);
     if (client_fd < 0)
     {
         throw std::system_error(errno, std::generic_category(),

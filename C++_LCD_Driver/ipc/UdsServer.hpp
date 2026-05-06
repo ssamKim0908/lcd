@@ -5,7 +5,7 @@
 class UdsServer : public IServer
 {
 private:
-    int         fd = -1;
+    int         fd_ = -1;
     std::string path;
 public:
     UdsServer(const std::string& path);
@@ -15,4 +15,5 @@ public:
     UdsServer& operator=(const UdsServer&) = delete;
 
     std::unique_ptr<IChannel> accept() override;
+    int                       fd() const override { return fd_; }
 };

@@ -41,22 +41,6 @@
 namespace util::font
 {
 
-
-static const Font Font16 = {
-    11,
-    16,
-    Span<const uint8_t>(Font16_Table, sizeof(Font16_Table)),
-};
-
-const Font& get_font(TextSize size)
-{
-    switch (size)
-    {
-        case TextSize::Small: return Font16;
-    }
-    return Font16;
-}
-
 //
 //  Font data for Courier New 12pt
 //
@@ -1774,6 +1758,21 @@ static const uint8_t Font16_Table[] =
 	0x00, 0x00, //            
 };
 
+
+static const Font Font16 = {
+    11,
+    16,
+    Span<const uint8_t>(Font16_Table, sizeof(Font16_Table)),
+};
+
+const Font& get_font(TextSize size)
+{
+    switch (size)
+    {
+        case TextSize::Small: return Font16;
+    }
+    return Font16;
+}
 
 } // namespace util::font
 

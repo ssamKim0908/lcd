@@ -13,6 +13,7 @@
 #include "hal/spi.hpp"
 #include "input/GpioKeys.hpp"
 #include "util/span.hpp"
+#include "util/Font.hpp"
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -61,6 +62,18 @@ std::vector<std::byte> encode_fill_rect(int32_t x, int32_t y,
     return v;
 }
 
+std::vector<std::byte> encode_draw_rect(int32_t x, int32_t y,
+                                        int32_t w, int32_t h,
+                                        uint16_t color)
+{
+    std::vector<std::byte> v;
+    put(v, static_cast<uint8_t>(shared::DrawCommand::DrawRect));
+    put(v, x); put(v, y);
+    put(v, w); put(v, h);
+    put(v, color);
+    return v;
+}
+
 std::vector<std::byte> encode_fill_circle(int32_t cx, int32_t cy, int32_t r,
                                           uint16_t color)
 {
@@ -68,6 +81,32 @@ std::vector<std::byte> encode_fill_circle(int32_t cx, int32_t cy, int32_t r,
     put(v, static_cast<uint8_t>(shared::DrawCommand::FillCircle));
     put(v, cx); put(v, cy); put(v, r);
     put(v, color);
+    return v;
+}
+
+std::vector<std::byte> encode_draw_circle(int32_t cx, int32_t cy, int32_t r,
+                                          uint16_t color)
+{
+    std::vector<std::byte> v;
+    put(v, static_cast<uint8_t>(shared::DrawCommand::DrawCircle));
+    put(v, cx); put(v, cy); put(v, r);
+    put(v, color);
+    return v;
+}
+
+std::vector<std::byte> encode_draw_text(int32_t x, int32_t y,
+                                        util::font::TextSize size,
+                                        uint16_t color,
+                                        const std::string& text)
+{
+    std::vector<std::byte> v;
+    put(v, static_cast<uint8_t>(shared::DrawCommand::DrawText));
+    put(v, x); put(v, y);
+    put(v, static_cast<uint8_t>(size));
+    put(v, color);
+    put(v, static_cast<uint16_t>(text.size()));
+    const auto* p = reinterpret_cast<const std::byte*>(text.data());
+    v.insert(v.end(), p, p + text.size());
     return v;
 }
 
@@ -86,26 +125,61 @@ void send_packet(IChannel& ch, const std::vector<std::byte>& data)
 // 한 frame = 화면 그리기 명령들 + render
 void draw_frame(IChannel& ch, int frame)
 {
-    switch (frame % 5)
+    switch (frame % 8)
     {
-    case 0:
+    case 0: // Clear
         send_packet(ch, encode_clear(COLOR_RED));
         break;
-    case 1:
-        send_packet(ch, encode_clear(COLOR_GREEN));
-        break;
-    case 2:
-        send_packet(ch, encode_clear(COLOR_BLUE));
+    case 1: // FillRect
+        send_packet(ch, encode_clear(COLOR_BLACK));
         send_packet(ch, encode_fill_rect(60, 60, 120, 120, COLOR_WHITE));
         break;
-    case 3:
+    case 2: // DrawRect (테두리만)
+        send_packet(ch, encode_clear(COLOR_BLACK));
+        send_packet(ch, encode_draw_rect(40, 40, 160, 160, COLOR_GREEN));
+        send_packet(ch, encode_draw_rect(80, 80,  80,  80, COLOR_YELLOW));
+        break;
+    case 3: // FillCircle
         send_packet(ch, encode_clear(COLOR_BLACK));
         send_packet(ch, encode_fill_circle(120, 120, 80, COLOR_YELLOW));
         break;
-    case 4:
-        send_packet(ch, encode_clear(COLOR_CYAN));
-        send_packet(ch, encode_fill_rect(40, 40, 160, 160, COLOR_BLACK));
+    case 4: // DrawCircle (테두리만)
+        send_packet(ch, encode_clear(COLOR_BLACK));
+        send_packet(ch, encode_draw_circle(120, 120, 100, COLOR_CYAN));
+        send_packet(ch, encode_draw_circle(120, 120,  60, COLOR_RED));
+        break;
+    case 5: // DrawText
+        send_packet(ch, encode_clear(COLOR_BLACK));
+        send_packet(ch, encode_draw_text(20,  40,
+                                         util::font::TextSize::Small,
+                                         COLOR_WHITE, "Hello, LCD!"));
+        send_packet(ch, encode_draw_text(20,  80,
+                                         util::font::TextSize::Small,
+                                         COLOR_GREEN, "Frame 5"));
+        send_packet(ch, encode_draw_text(20, 120,
+                                         util::font::TextSize::Small,
+                                         COLOR_YELLOW, "0123456789"));
+        break;
+    case 6: // 모든 도형 조합
+        send_packet(ch, encode_clear(COLOR_BLUE));
+        send_packet(ch, encode_fill_rect (40, 40, 160, 160, COLOR_BLACK));
+        send_packet(ch, encode_draw_rect (40, 40, 160, 160, COLOR_WHITE));
         send_packet(ch, encode_fill_circle(120, 120, 50, COLOR_RED));
+        send_packet(ch, encode_draw_circle(120, 120, 70, COLOR_YELLOW));
+        send_packet(ch, encode_draw_text(60, 200,
+                                         util::font::TextSize::Small,
+                                         COLOR_WHITE, "all-in-one"));
+        break;
+    case 7: // 경계 케이스: 화면 끝, r=0/1, 빈 문자열
+        send_packet(ch, encode_clear(COLOR_CYAN));
+        send_packet(ch, encode_fill_rect (  0,   0,   1,   1, COLOR_RED));
+        send_packet(ch, encode_fill_rect (239, 239,   1,   1, COLOR_RED));
+        send_packet(ch, encode_draw_rect (  0,   0, 240, 240, COLOR_BLACK));
+        send_packet(ch, encode_fill_circle(120, 120,   1, COLOR_BLACK));
+        send_packet(ch, encode_draw_circle(120, 120, 119, COLOR_BLACK));
+        send_packet(ch, encode_draw_text(  4,   4,
+                                         util::font::TextSize::Small,
+                                         COLOR_BLACK, "edge"));
         break;
     }
     send_packet(ch, encode_render());
@@ -159,7 +233,7 @@ int main()
 
         ++frame;
         std::cout << "[client] key=" << static_cast<int>(ev.key)
-                  << " -> frame " << (frame % 5) << std::endl;
+                  << " -> frame " << (frame % 8) << std::endl;
         draw_frame(*channel, frame);
     }
 

@@ -1,6 +1,8 @@
 #pragma once
 #include "../interface/IChannel.hpp"
 
+struct Packet;
+
 class UdsChannel : public IChannel
 {
 private:
@@ -12,7 +14,7 @@ public:
     UdsChannel(const UdsChannel&)            = delete;
     UdsChannel& operator=(const UdsChannel&) = delete;
 
-    void send   (util::Span<const std::byte> data) override;
-    void recv   (util::Span<std::byte>       data) override;
-    int  fd     () const override { return fd_; }
+    void   send (util::Span<const std::byte> data) override;
+    Packet recv ()                                 override;
+    int    fd   () const override { return fd_; }
 };

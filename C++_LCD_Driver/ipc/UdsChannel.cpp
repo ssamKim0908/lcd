@@ -1,4 +1,5 @@
 #include "UdsChannel.hpp"
+#include "../shared/Packet.hpp"
 #include <iostream>
 #include <unistd.h>
 #ifdef TARGET_DEVICE
@@ -6,6 +7,8 @@
 #include <cerrno>
 #include <system_error>
 #endif
+
+namespace { constexpr std::size_t MAX_PACKET = 4096; }
 
 UdsChannel::UdsChannel(int fd_) : fd_(fd_)
 {
@@ -39,24 +42,26 @@ void UdsChannel::send(util::Span<const std::byte> data)
 #endif
 }
 
-void UdsChannel::recv(util::Span<std::byte> data)
+Packet UdsChannel::recv()
 {
 #ifdef TARGET_DEVICE
-    size_t received = 0;
-    while (received < data.size())
+    Packet pkt;
+    pkt.data.resize(MAX_PACKET);
+
+    ssize_t n = ::recv(fd_, pkt.data.data(), pkt.data.size(), 0);
+    if (n < 0)
     {
-        ssize_t n = ::recv(fd_, data.data() + received, data.size() - received, 0);
-        if (n < 0)
-        {
-            throw std::system_error(errno, std::generic_category(), "UDS recv");
-        }
-        if (n == 0)
-        {
-            throw std::runtime_error("UDS connection closed by peer");
-        }
-        received += static_cast<size_t>(n);
+        throw std::system_error(errno, std::generic_category(), "UDS recv");
     }
+    if (n == 0)
+    {
+        throw std::runtime_error("UDS connection closed by peer");
+    }
+
+    pkt.data.resize(static_cast<std::size_t>(n));
+    return pkt;
 #else
-    std::cout << "Receiving " << data.size() << " bytes on UDS fd: " << fd_ << std::endl;
+    std::cout << "Receiving one message on UDS fd: " << fd_ << std::endl;
+    return Packet{};
 #endif
 }

@@ -13,7 +13,7 @@
 UdsServer::UdsServer(const std::string& path) : path(path)
 {
 #ifdef TARGET_DEVICE
-    fd_ = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    fd_ = ::socket(AF_UNIX, SOCK_SEQPACKET, 0);
     if (fd_ < 0)
     {
         throw std::system_error(errno, std::generic_category(),

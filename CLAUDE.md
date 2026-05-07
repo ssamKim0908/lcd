@@ -18,7 +18,7 @@
 - OOP
 - SOLID
 - STL Container
-- Class 맴버 변수 참조자 금지
+- Class 맴버 변수 참조자, raw pointer 금지
 ---
 
 ## 이름

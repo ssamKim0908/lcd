@@ -3,6 +3,7 @@
 #include "ipc/UdsClient.hpp"
 #include "interface/IChannel.hpp"
 #include "interface/IKeys.hpp"
+#include "shared/Packet.hpp"
 #include "hal/epoll.hpp"
 #include "hal/gpio.hpp"
 #include "input/GpioKeys.hpp"
@@ -12,6 +13,7 @@
 #include <thread>
 #include <chrono>
 #include <string>
+#include <cstring>
 #include <fcntl.h>
 
 int main()
@@ -40,8 +42,9 @@ int main()
     std::cout << "[client] connected. press buttons..." << std::endl;
     while (true)
     {
+        Packet pkt = channel->recv();
         KeyEvent ev;
-        channel->recv(util::as_writable_bytes(ev));
+        std::memcpy(&ev, pkt.data.data(), sizeof(ev));
         std::cout << "[client] key=" << static_cast<int>(ev.key)
                   << " state=" << static_cast<int>(ev.state) << std::endl;
     }

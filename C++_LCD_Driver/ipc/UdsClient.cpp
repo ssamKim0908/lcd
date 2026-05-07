@@ -15,7 +15,7 @@ UdsClient::UdsClient(const std::string& path) : path(path) {}
 std::unique_ptr<IChannel> UdsClient::connect()
 {
 #ifdef TARGET_DEVICE
-    int fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    int fd = ::socket(AF_UNIX, SOCK_SEQPACKET, 0);
     if (fd < 0)
     {
         throw std::system_error(errno, std::generic_category(),

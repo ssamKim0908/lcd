@@ -4,11 +4,11 @@
 #include <stack>
 #include <mutex>
 
-class IClient;
 class IServer;
 class IChannel;
 class IPoller;
-class Ikeys;
+class IKeys;
+class FocusStack;
 
 class Server
 {
@@ -26,7 +26,9 @@ private:
     void send_loop();
 
 public:
-    Server(std::unique_ptr<IServer> server);
+    Server(std::unique_ptr<IServer> server,
+           std::unique_ptr<IPoller> poller,
+           std::unique_ptr<IKeys>   keys);
     ~Server();
 
     Server(const Server &) = delete;

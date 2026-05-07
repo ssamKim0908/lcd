@@ -3,8 +3,9 @@
 #include <linux/gpio.h>
 #include <cerrno>
 #include <system_error>
-#include <unistd.h>
 #include <sys/epoll.h>
+#include <iostream>
+#include <unistd.h>
 
 Gpio::Gpio(const std::string& device, int flags)
 {

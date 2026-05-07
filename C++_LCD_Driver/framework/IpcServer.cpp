@@ -11,7 +11,8 @@ void Server::recv_loop()
 {
     while(1)
     {
-        if(focus_stack->empty()) {
+        if(focus_stack->empty()) 
+        {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
         }
@@ -34,13 +35,23 @@ void Server::send_loop()
     while(1)
     {
         auto key_input = keys->next_event();
-        focus_stack->top()->send(key_input);
+        if(focus_stack->empty()) 
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            continue;
+        }
+        focus_stack->top()->send(util::as_bytes(key_input));
     }    
 }
 
 //Server public
-Server::Server(std::unique_ptr<IServer> server)
+Server::Server(std::unique_ptr<IServer> server,
+               std::unique_ptr<IPoller> poller,
+               std::unique_ptr<IKeys>   keys)
     : server(std::move(server))
+    , poller(std::move(poller))
+    , keys(std::move(keys))
+    , focus_stack(std::make_unique<FocusStack>())
 {
     recv_thread = std::thread(&Server::recv_loop, this);
     send_thread = std::thread(&Server::send_loop, this);

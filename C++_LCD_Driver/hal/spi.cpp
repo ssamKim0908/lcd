@@ -1,4 +1,6 @@
 #include "spi.hpp"
+#include <iostream>
+#include <unistd.h>
 #ifdef TARGET_DEVICE
 #include <linux/spi/spidev.h>
 #include <cerrno>

@@ -1,5 +1,7 @@
 #include "UdsServer.hpp"
 #include "UdsChannel.hpp"
+#include <iostream>
+#include <unistd.h>
 #ifdef TARGET_DEVICE
 #include <sys/socket.h>
 #include <sys/un.h>

@@ -1,44 +1,51 @@
-#include "hal/spi.hpp"
+#include "framework/Ipcserver.hpp"
+#include "ipc/UdsServer.hpp"
+#include "ipc/UdsClient.hpp"
+#include "interface/IChannel.hpp"
+#include "interface/IKeys.hpp"
+#include "hal/epoll.hpp"
 #include "hal/gpio.hpp"
-#include "display/LcdWriter.hpp"
-#include "display/St7789Lcd.hpp"
 #include "input/GpioKeys.hpp"
-#include "util/time.hpp"
-#include "util/color.hpp"
+#include "util/span.hpp"
+#include <iostream>
+#include <memory>
+#include <thread>
+#include <chrono>
+#include <string>
+#include <fcntl.h>
 
 int main()
 {
-    using namespace util::time;
-    using namespace util::color;
+    const std::string sock_path = "/tmp/lcd-test.sock";
 
-    auto spi    = std::make_unique<Spi> ("/dev/spidev0.0", O_WRONLY);
+    // --- Server side ---
+    auto uds    = std::make_unique<UdsServer>(sock_path);
+    auto poller = std::make_unique<Epoll>();
     auto chip   = std::make_unique<Gpio>("/dev/gpiochip0", O_RDWR);
-    auto gw     = std::make_unique<GpioWrite>(chip->get_fd());
+    auto reader = std::make_unique<GpioRead>(chip->get_fd());
+    auto keys   = std::make_unique<GpioKeys>(std::move(reader));
 
-    auto writer = std::make_unique<LcdWriter>(std::move(spi), std::move(gw));
-    auto lcd    = std::make_unique<St7789Lcd>(std::move(writer));
+    Server server(std::move(uds), std::move(poller), std::move(keys));
 
-    auto input  = std::make_unique<GpioRead>(chip->get_fd());
-    auto key    = std::make_unique<GpioKeys>(std::move(input));
+    // accept loop is its own thread
+    std::thread accept_thread([&]{ server.accept(); });
 
-    lcd->init();
+    // give the listener a moment
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    auto c = std::vector<uint16_t>({RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA});
+    // --- Client side (same process, connects to the server) ---
+    UdsClient client(sock_path);
+    auto channel = client.connect();
 
-    int cur = 1;
-    while(cur > 0)
+    std::cout << "[client] connected. press buttons..." << std::endl;
+    while (true)
     {
-        lcd->clear(c[cur]);
-        lcd->render();
-        auto k = key->next_event();
-        if(k.state == KeyState::Pressed)
-        {
-            switch(k.key)
-            {
-            case Key::Left : cur = cur > 0 ? cur - 1 : cur; break;
-            case Key::Right: cur = cur < c.size() - 1 ? cur + 1 : cur; break;
-            }
-        }
+        KeyEvent ev;
+        channel->recv(util::as_writable_bytes(ev));
+        std::cout << "[client] key=" << static_cast<int>(ev.key)
+                  << " state=" << static_cast<int>(ev.state) << std::endl;
     }
+
+    accept_thread.join();
     return 0;
 }

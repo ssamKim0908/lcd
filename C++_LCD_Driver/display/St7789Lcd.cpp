@@ -10,20 +10,26 @@
 
 void St7789Lcd::set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
-    x1 -= 1;
-    y1 -= 2;
+    // MADCTL=0xA0 (MY=1, MV=1): 패널이 RAM row 80..319 영역을 본다
+    constexpr uint16_t X_OFFSET = 0;
+    constexpr uint16_t Y_OFFSET = 80;
+
+    uint16_t xs = x0 + X_OFFSET;
+    uint16_t xe = (x1 - 1) + X_OFFSET;
+    uint16_t ys = y0 + Y_OFFSET;
+    uint16_t ye = (y1 - 1) + Y_OFFSET;
 
     writer->write_cmd(std::byte{0x2A});
     std::byte col[] = {
-        std::byte((x0 >> 8) & 0xFF), std::byte(x0 & 0xFF),
-        std::byte((x1 >> 8) & 0xFF), std::byte(x1 & 0xFF),
+        std::byte((xs >> 8) & 0xFF), std::byte(xs & 0xFF),
+        std::byte((xe >> 8) & 0xFF), std::byte(xe & 0xFF),
     };
     writer->write_data({col, 4});
 
     writer->write_cmd(std::byte{0x2B});
     std::byte row[] = {
-        std::byte((y0 >> 8) & 0xFF), std::byte(y0 & 0xFF),
-        std::byte((y1 >> 8) & 0xFF), std::byte(y1 & 0xFF),
+        std::byte((ys >> 8) & 0xFF), std::byte(ys & 0xFF),
+        std::byte((ye >> 8) & 0xFF), std::byte(ye & 0xFF),
     };
     writer->write_data({row, 4});
 
@@ -55,7 +61,7 @@ void St7789Lcd::init()
     cmd(0x11);                                          // sleep out
     sleep_ms(1000);
 
-    cmd(0x36); data({0x60});                            // MADCTL: MY=0,MX=1,MV=1,ML=0,RGB
+    cmd(0x36); data({0xA0});                            // MADCTL: MY=1,MX=0,MV=1,ML=0,RGB
     sleep_ms(50);
     cmd(0x3A); data({0x05});                            // 65k colors
 

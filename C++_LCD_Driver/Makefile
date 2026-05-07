@@ -14,7 +14,8 @@ SRCS = $(wildcard *.cpp) \
        $(wildcard display/*.cpp) \
        $(wildcard input/*.cpp) \
        $(wildcard framework/*.cpp) \
-       $(wildcard ipc/*.cpp)
+       $(wildcard ipc/*.cpp) \
+       $(wildcard util/*.cpp)
 
 OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 

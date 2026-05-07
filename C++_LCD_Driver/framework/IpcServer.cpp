@@ -4,6 +4,7 @@
 #include "../interface/IPoller.hpp"
 #include "../interface/IKeys.hpp"
 #include "../util/span.hpp"
+#include <iostream>
 
 
 //Server private
@@ -24,7 +25,8 @@ void Server::recv_loop()
             if (focus_stack->top()->fd() == result.fd)
             {
                 std::byte buffer[1024];
-                focus_stack->top()->recv(util::Span<std::byte>(buffer, sizeof(buffer)));
+                //focus_stack->top()->recv(util::Span<std::byte>(buffer, sizeof(buffer)));
+                std::cout << "recv done!" << std::endl;
             }
         }
     }

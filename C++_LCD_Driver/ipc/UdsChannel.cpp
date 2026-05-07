@@ -8,7 +8,7 @@
 #include <system_error>
 #endif
 
-namespace { constexpr std::size_t MAX_PACKET = 4096; }
+namespace { constexpr std::size_t MAX_PACKET = 256; }
 
 UdsChannel::UdsChannel(int fd_) : fd_(fd_)
 {

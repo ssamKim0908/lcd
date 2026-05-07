@@ -5,6 +5,7 @@
 #include "../interface/IKeys.hpp"
 #include "../shared/Packet.hpp"
 #include "../util/span.hpp"
+#include "CommandFactory.hpp"
 #include <iostream>
 
 
@@ -26,7 +27,12 @@ void Server::recv_loop()
             if (focus_stack->top()->fd() == result.fd)
             {
                 Packet packet = focus_stack->top()->recv();
-                std::cout << "recv done! size=" << packet.data.size() << std::endl;
+                if (!packet.data.empty())
+                {
+                    std::cout << "recv done! size=" << packet.data.size() << std::endl;
+                    auto command = simple_command_factory.create(packet);
+                    command->execute();
+                }
             }
         }
     }
@@ -49,11 +55,13 @@ void Server::send_loop()
 //Server public
 Server::Server(std::unique_ptr<IServer> server,
                std::unique_ptr<IPoller> poller,
-               std::unique_ptr<IKeys>   keys)
+               std::unique_ptr<IKeys>   keys,
+            std::shared_ptr<Rasterizer> receiver)
     : server(std::move(server))
     , poller(std::move(poller))
     , keys(std::move(keys))
     , focus_stack(std::make_unique<FocusStack>())
+    , simple_command_factory(receiver)
 {
     recv_thread = std::thread(&Server::recv_loop, this);
     send_thread = std::thread(&Server::send_loop, this);

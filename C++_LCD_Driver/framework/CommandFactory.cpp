@@ -19,15 +19,15 @@ namespace
     }
 }
 
-CommandFactory::CommandFactory(std::shared_ptr<Rasterizer> receiver)
+SimpleCommandFactory::SimpleCommandFactory(std::shared_ptr<Rasterizer> receiver)
     : receiver(std::move(receiver)) {}
 
-CommandFactory::~CommandFactory() = default;
+SimpleCommandFactory::~SimpleCommandFactory() = default;
 
-std::unique_ptr<IRenderCommand> CommandFactory::create(const Packet& packet)
+std::unique_ptr<IRenderCommand> SimpleCommandFactory::create(const Packet& packet)
 {
     if (packet.data.empty())
-        throw std::runtime_error("CommandFactory: empty packet");
+        throw std::runtime_error("SimpleCommandFactory: empty packet");
 
     const auto       op   = static_cast<shared::DrawCommand>(packet.data[0]);
     const std::byte* body = packet.data.data() + sizeof(shared::DrawCommand);
@@ -93,5 +93,5 @@ std::unique_ptr<IRenderCommand> CommandFactory::create(const Packet& packet)
         return std::make_unique<RenderCommand>(receiver);
     }
     }
-    throw std::runtime_error("CommandFactory: unknown DrawCommand");
+    throw std::runtime_error("SimpleCommandFactory: unknown DrawCommand");
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "CommandFactory.hpp"
 #include <memory>
 #include <thread>
 #include <stack>
@@ -9,6 +10,7 @@ class IChannel;
 class IPoller;
 class IKeys;
 class FocusStack;
+class Rasterizer;
 
 class Server
 {
@@ -21,6 +23,7 @@ private:
     std::thread recv_thread;
     std::thread send_thread;
 
+    SimpleCommandFactory simple_command_factory;
 private:
     void recv_loop();
     void send_loop();
@@ -28,7 +31,8 @@ private:
 public:
     Server(std::unique_ptr<IServer> server,
            std::unique_ptr<IPoller> poller,
-           std::unique_ptr<IKeys>   keys);
+           std::unique_ptr<IKeys>   keys,
+           std::shared_ptr<Rasterizer> receiver);
     ~Server();
 
     Server(const Server &) = delete;

@@ -5,16 +5,16 @@
 class Rasterizer;
 struct Packet;
 
-class CommandFactory
+class SimpleCommandFactory
 {
 private:
     std::shared_ptr<Rasterizer> receiver;
 public:
-    explicit CommandFactory(std::shared_ptr<Rasterizer> receiver);
-    ~CommandFactory();
+    explicit SimpleCommandFactory(std::shared_ptr<Rasterizer> receiver);
+    ~SimpleCommandFactory();
 
-    CommandFactory(const CommandFactory&)            = delete;
-    CommandFactory& operator=(const CommandFactory&) = delete;
+    SimpleCommandFactory(const SimpleCommandFactory&)            = delete;
+    SimpleCommandFactory& operator=(const SimpleCommandFactory&) = delete;
 
     std::unique_ptr<IRenderCommand> create(const Packet& packet);
 };

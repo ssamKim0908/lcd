@@ -1,6 +1,9 @@
 #include "spi.hpp"
 #include <iostream>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
 #ifdef TARGET_DEVICE
 #include <linux/spi/spidev.h>
 #include <cerrno>
@@ -24,7 +27,7 @@ Spi::Spi(const std::string& device, int flags)
     lsb   = 0;
 
     auto test = [this](unsigned long request, void* arg, const std::string& name) {
-        if (ioctl(fd, request, arg) < 0)
+        if (::ioctl(fd, request, arg) < 0)
         {
             throw std::system_error(errno, std::generic_category(),
                 "SPI ioctl failed (" + name + ")");

@@ -4,6 +4,7 @@
 #include <map>
 
 class GpioRead;
+enum class InputKey : uint32_t;
 
 class GpioKeys : public IKeys
 {

@@ -6,6 +6,8 @@
 #include <sys/epoll.h>
 #include <iostream>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 Gpio::Gpio(const std::string& device, int flags)
 {

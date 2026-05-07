@@ -1,6 +1,7 @@
 #pragma once
 #include "../util/span.hpp"
 #include <cstddef>
+#include <memory>
 
 class Spi;
 class GpioWrite;

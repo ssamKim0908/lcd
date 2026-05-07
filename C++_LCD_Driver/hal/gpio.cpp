@@ -5,7 +5,6 @@
 #include <system_error>
 #include <unistd.h>
 #include <sys/epoll.h>
-#include "../include/common.h"
 
 Gpio::Gpio(const std::string& device, int flags)
 {

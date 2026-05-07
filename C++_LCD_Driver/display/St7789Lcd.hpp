@@ -1,6 +1,5 @@
 #pragma once
 #include "../interface/ILcd.hpp"
-#include "../include/common.h"
 #include <array>
 
 class LcdWriter;

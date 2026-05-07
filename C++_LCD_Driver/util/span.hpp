@@ -2,6 +2,9 @@
 #include <cstddef>
 #include <type_traits>
 
+namespace util
+{
+
 template <class T>
 class Span
 {
@@ -45,3 +48,25 @@ public:
     constexpr T& operator[](size_t i) const noexcept { return ptr_[i]; }
     ~Span() = default;
 };
+
+template <class T>
+Span<const std::byte> as_bytes(const T& v) noexcept
+{
+    static_assert(std::is_trivially_copyable<T>::value,
+                  "as_bytes requires a trivially copyable type");
+    return Span<const std::byte>(
+        reinterpret_cast<const std::byte*>(&v), sizeof(T));
+}
+
+template <class T>
+Span<std::byte> as_writable_bytes(T& v) noexcept
+{
+    static_assert(std::is_trivially_copyable<T>::value,
+                  "as_writable_bytes requires a trivially copyable type");
+    static_assert(!std::is_const<T>::value,
+                  "as_writable_bytes requires a non-const object");
+    return Span<std::byte>(
+        reinterpret_cast<std::byte*>(&v), sizeof(T));
+}
+
+} // namespace util

@@ -1,5 +1,4 @@
 #include "spi.hpp"
-#include "../include/common.h"
 #ifdef TARGET_DEVICE
 #include <linux/spi/spidev.h>
 #include <cerrno>
@@ -49,7 +48,7 @@ Spi::~Spi()
     }
 }
 
-void Spi::write(Span<const std::byte> buffer)
+void Spi::write(util::Span<const std::byte> buffer)
 {
 #ifdef TARGET_DEVICE
     ssize_t n = ::write(fd, buffer.data(), buffer.size());

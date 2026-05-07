@@ -1,5 +1,4 @@
 #include "UdsChannel.hpp"
-#include "../include/common.h"
 #ifdef TARGET_DEVICE
 #include <sys/socket.h>
 #include <cerrno>
@@ -20,7 +19,7 @@ UdsChannel::~UdsChannel()
     }
 }
 
-void UdsChannel::send(Span<const std::byte> data)
+void UdsChannel::send(util::Span<const std::byte> data)
 {
 #ifdef TARGET_DEVICE
     size_t sent = 0;
@@ -38,7 +37,7 @@ void UdsChannel::send(Span<const std::byte> data)
 #endif
 }
 
-void UdsChannel::recv(Span<std::byte> data)
+void UdsChannel::recv(util::Span<std::byte> data)
 {
 #ifdef TARGET_DEVICE
     size_t received = 0;

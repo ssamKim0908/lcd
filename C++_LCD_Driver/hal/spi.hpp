@@ -1,5 +1,5 @@
 #pragma once
-#include "../include/span.hpp"
+#include "../util/span.hpp"
 #include <cstdint>
 #include <string>
 
@@ -19,5 +19,5 @@ public:
     Spi(const Spi&)            = delete;
     Spi& operator=(const Spi&) = delete;
 
-    void write(Span<const std::byte> buffer);
+    void write(util::Span<const std::byte> buffer);
 };

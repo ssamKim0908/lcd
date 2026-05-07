@@ -1,4 +1,3 @@
-#include "include/common.h"
 #include "hal/spi.hpp"
 #include "hal/gpio.hpp"
 #include "display/LcdWriter.hpp"

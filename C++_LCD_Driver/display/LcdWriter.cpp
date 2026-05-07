@@ -25,7 +25,7 @@ void LcdWriter::write_cmd(std::byte cmd)
     spi->write({&cmd, 1});
 }
 
-void LcdWriter::write_data(Span<const std::byte> data)
+void LcdWriter::write_data(util::Span<const std::byte> data)
 {
     gpio->write_data();
     spi->write(data);

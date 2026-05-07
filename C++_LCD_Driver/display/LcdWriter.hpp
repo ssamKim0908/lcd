@@ -1,6 +1,5 @@
 #pragma once
-#include "../include/common.h"
-#include "../include/span.hpp"
+#include "../util/span.hpp"
 #include <cstddef>
 
 class Spi;
@@ -20,5 +19,5 @@ public:
 
     void reset      ();
     void write_cmd  (std::byte cmd);
-    void write_data (Span<const std::byte> data);
+    void write_data (util::Span<const std::byte> data);
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "../include/span.hpp"
+#include "span.hpp"
 #include <cstdint>
 
 namespace util::font

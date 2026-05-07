@@ -1,6 +1,6 @@
 #include "St7789Lcd.hpp"
 #include "LcdWriter.hpp"
-#include "../include/span.hpp"
+#include "../util/span.hpp"
 #include "../util/time.hpp"
 #include <vector>
 #include <initializer_list>
@@ -98,7 +98,7 @@ void St7789Lcd::render()
     set_window(0, 0, WIDTH, HEIGHT);
 
     constexpr size_t CHUNK = 4096;
-    Span<const std::byte> bytes{framebuf};
+    util::Span<const std::byte> bytes{framebuf};
 
     for (size_t offset = 0; offset < bytes.size(); offset += CHUNK)
     {

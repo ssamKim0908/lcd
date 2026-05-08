@@ -12,6 +12,7 @@ struct App::Impl
 {
     std::shared_ptr<internal::IpcClient> ipc;
     std::unique_ptr<Draw>                draw;
+    bool                                 running = false;
 };
 
 App::App()
@@ -29,13 +30,20 @@ Draw& App::draw()
     return *impl_->draw;
 }
 
+void App::exit()
+{
+    impl_->running = false;
+}
+
 void App::run()
 {
+    impl_->running = true;
     on_render();
-    while (true)
+    while (impl_->running)
     {
         KeyEvent ev = impl_->ipc->recv_key();
         on_key(ev);
+        if (!impl_->running) break;
         on_render();
     }
 }

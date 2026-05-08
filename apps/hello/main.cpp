@@ -57,6 +57,9 @@ protected:
             y_ = (SCREEN_H - CURSOR_SZ) / 2;
             centered_ = !centered_;
             break;
+        case Key::K4:
+            exit();
+            return;
         default: break;
         }
 

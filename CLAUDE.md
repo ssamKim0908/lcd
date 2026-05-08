@@ -130,15 +130,6 @@ main loop:
 
 focus 상태 변수 없음. `recv_key()` 자리에 있으면 = 내가 focus, `waitpid()` 자리에 있으면 = 자식이 focus.
 
-
-## 종료 / 자원 관리
-
-- **종료 시작**: app 이 자기 의지로 종료. `shutdown(SHUT_WR)` 로 EOF 통지 후 `close` → `exit`.
-- **Server 측 감지**: `recv()==0` → `close(fd)` + `epoll_ctl(DEL)` + `focus.pop()`.
-- **close 의 의미**: 자기 fd 만 닫음. peer fd 는 별도로 close 해야 자원 회수. 우리 모델에선 launcher 의 `shared_ptr` RAII 가 처리.
-- **SIGPIPE**: server 시작 시 `SIG_IGN` 또는 send 시 `MSG_NOSIGNAL` — 끊어진 fd 에 send 시 server 가 죽지 않도록.
-- **fd table**: 같은 프로세스 스레드는 fd table 공유 (`CLONE_FILES`). 단일 스레드면 동시 접근 자체가 없으므로 무관.
-
 ---
 
 ## 설계 원칙

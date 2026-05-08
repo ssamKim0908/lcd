@@ -22,6 +22,7 @@ public:
 
 protected:
     Draw& draw();
+    void  exit();
 
     virtual void on_key   (const KeyEvent& ev) = 0;
     virtual void on_render()                   = 0;

@@ -7,7 +7,6 @@
 #include "interface/IChannel.hpp"
 #include "interface/IKeys.hpp"
 #include "shared/Packet.hpp"
-#include "shared/RecvResult.hpp"
 #include "shared/DrawCommand.hpp"
 #include "shared/Paths.hpp"
 #include "hal/epoll.hpp"
@@ -25,6 +24,7 @@
 #include <cstdint>
 #include <vector>
 #include <fcntl.h>
+#include <csignal>
 
 namespace
 {
@@ -191,6 +191,8 @@ void draw_frame(IChannel& ch, int frame)
 
 int main()
 {
+    std::signal(SIGPIPE, SIG_IGN);
+
     const std::string sock_path = shared::SOCK_PATH;
 
     // --- HAL ---
@@ -213,7 +215,7 @@ int main()
     Server server(std::move(uds_server), std::move(poller),
                   std::move(keys), rasterizer);
 
-    std::thread accept_thread([&]{ server.accept(); });
+    std::thread server_thread([&]{ server.run(); });
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     // --- Test client (같은 프로세스 안에서 server 에 connect) ---
@@ -240,6 +242,6 @@ int main()
         draw_frame(*channel, frame);
     }
 
-    accept_thread.join();
+    server_thread.join();
     return 0;
 }

@@ -14,7 +14,7 @@ public:
     UdsChannel(const UdsChannel&)            = delete;
     UdsChannel& operator=(const UdsChannel&) = delete;
 
-    void       send (util::Span<const std::byte> data) override;
+    SendStatus send (util::Span<const std::byte> data) override;
     RecvResult recv ()                                 override;
     int        fd   () const override { return fd_; }
 };

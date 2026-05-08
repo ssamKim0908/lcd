@@ -1,7 +1,7 @@
 #include "UdsChannel.hpp"
 #include <iostream>
 #include <unistd.h>
-#include "../../shared/Packet.hpp"
+#include "../shared/Packet.hpp"
 #ifdef TARGET_DEVICE
 #include <sys/socket.h>
 #include <cerrno>
@@ -24,21 +24,25 @@ UdsChannel::~UdsChannel()
     }
 }
 
-void UdsChannel::send(util::Span<const std::byte> data)
+SendStatus UdsChannel::send(util::Span<const std::byte> data)
 {
 #ifdef TARGET_DEVICE
     size_t sent = 0;
     while (sent < data.size())
     {
-        ssize_t n = ::send(fd_, data.data() + sent, data.size() - sent, 0);
+        ssize_t n = ::send(fd_, data.data() + sent, data.size() - sent, MSG_NOSIGNAL);
         if (n < 0)
         {
+            if (errno == EPIPE || errno == ECONNRESET)
+                return SendStatus::Closed;
             throw std::system_error(errno, std::generic_category(), "UDS send");
         }
         sent += static_cast<size_t>(n);
     }
+    return SendStatus::Ok;
 #else
     std::cout << "Sending " << data.size() << " bytes on UDS fd: " << fd_ << std::endl;
+    return SendStatus::Ok;
 #endif
 }
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../interface/IRenderCommand.hpp"
+#include "../../interface/ICommand.hpp"
 #include "../../util/Font.hpp"
 #include <memory>
 #include <string>
@@ -7,7 +7,7 @@
 
 class Rasterizer;
 
-class ClearCommand : public IRenderCommand
+class ClearCommand : public ICommand
 {
 private:
     std::shared_ptr<Rasterizer> receiver;
@@ -18,7 +18,7 @@ public:
     void execute() override;
 };
 
-class FillRectCommand : public IRenderCommand
+class FillRectCommand : public ICommand
 {
 private:
     std::shared_ptr<Rasterizer> receiver;
@@ -31,7 +31,7 @@ public:
     void execute() override;
 };
 
-class DrawRectCommand : public IRenderCommand
+class DrawRectCommand : public ICommand
 {
 private:
     std::shared_ptr<Rasterizer> receiver;
@@ -44,7 +44,7 @@ public:
     void execute() override;
 };
 
-class FillCircleCommand : public IRenderCommand
+class FillCircleCommand : public ICommand
 {
 private:
     std::shared_ptr<Rasterizer> receiver;
@@ -57,7 +57,7 @@ public:
     void execute() override;
 };
 
-class DrawCircleCommand : public IRenderCommand
+class DrawCircleCommand : public ICommand
 {
 private:
     std::shared_ptr<Rasterizer> receiver;
@@ -70,7 +70,7 @@ public:
     void execute() override;
 };
 
-class DrawTextCommand : public IRenderCommand
+class DrawTextCommand : public ICommand
 {
 private:
     std::shared_ptr<Rasterizer> receiver;
@@ -88,7 +88,7 @@ public:
     void execute() override;
 };
 
-class RenderCommand : public IRenderCommand
+class RenderCommand : public ICommand
 {
 private:
     std::shared_ptr<Rasterizer> receiver;

@@ -1,9 +1,10 @@
 #pragma once
+#include "IFdReadable.hpp"
 #include "../sdk/KeyEvent.hpp"
 
-class IKeys
+class IKeys : public IFdReadable
 {
 public:
     virtual KeyEvent next_event() = 0;
-    virtual ~IKeys() = default;
+    ~IKeys() override = default;
 };

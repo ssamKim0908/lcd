@@ -18,5 +18,6 @@ public:
     GpioKeys(const GpioKeys&)            = delete;
     GpioKeys& operator=(const GpioKeys&) = delete;
 
-    KeyEvent next_event() override;
+    int      fd        () const override;
+    KeyEvent next_event()       override;
 };

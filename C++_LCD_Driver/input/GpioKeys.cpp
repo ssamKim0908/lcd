@@ -22,6 +22,11 @@ GpioKeys::GpioKeys(std::unique_ptr<GpioRead> reader)
 
 GpioKeys::~GpioKeys() = default;
 
+int GpioKeys::fd() const
+{
+    return reader->fd();
+}
+
 KeyEvent GpioKeys::next_event()
 {
     auto ev = reader->wait_event();

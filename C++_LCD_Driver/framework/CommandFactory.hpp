@@ -1,5 +1,5 @@
 #pragma once
-#include "../interface/IRenderCommand.hpp"
+#include "../interface/ICommand.hpp"
 #include <memory>
 
 class Rasterizer;
@@ -16,5 +16,5 @@ public:
     SimpleCommandFactory(const SimpleCommandFactory&)            = delete;
     SimpleCommandFactory& operator=(const SimpleCommandFactory&) = delete;
 
-    std::unique_ptr<IRenderCommand> create(const Packet& packet);
+    std::unique_ptr<ICommand> create(const Packet& packet);
 };

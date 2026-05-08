@@ -1,14 +1,16 @@
 #pragma once
+#include "IFdReadable.hpp"
 #include "../util/span.hpp"
 #include <cstddef>
 
 struct RecvResult;
 
-class IChannel
+enum class SendStatus { Ok, Closed };
+
+class IChannel : public IFdReadable
 {
 public:
-    virtual void       send(util::Span<const std::byte> data) = 0;
+    virtual SendStatus send(util::Span<const std::byte> data) = 0;
     virtual RecvResult recv()                                 = 0;
-    virtual int        fd  () const                           = 0;
-    virtual ~IChannel() = default;
+    ~IChannel() override = default;
 };

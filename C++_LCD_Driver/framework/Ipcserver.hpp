@@ -1,9 +1,7 @@
 #pragma once
 #include "CommandFactory.hpp"
 #include <memory>
-#include <thread>
 #include <stack>
-#include <mutex>
 
 class IServer;
 class IChannel;
@@ -15,48 +13,47 @@ class Rasterizer;
 class Server
 {
 private:
-    std::unique_ptr<IServer> server;
-    std::unique_ptr<FocusStack> focus_stack;
-    std::unique_ptr<IPoller> poller;
-    std::unique_ptr<IKeys> keys;
-    
-    std::thread recv_thread;
-    std::thread send_thread;
+    std::unique_ptr<IServer>      server_;
+    std::unique_ptr<IKeys>        keys_;
+    std::unique_ptr<IPoller>      poller_;
+    std::unique_ptr<FocusStack>   focus_;
+    SimpleCommandFactory          factory_;
+    bool                          running_ = true;
 
-    SimpleCommandFactory simple_command_factory;
 private:
-    void recv_loop();
-    void send_loop();
+    void on_accept     ();
+    void on_key        ();
+    void on_recv       (int fd);
+    void disconnect_top();
 
 public:
-    Server(std::unique_ptr<IServer> server,
-           std::unique_ptr<IPoller> poller,
-           std::unique_ptr<IKeys>   keys,
-           std::shared_ptr<Rasterizer> receiver);
+    Server(std::unique_ptr<IServer>    server,
+           std::unique_ptr<IPoller>    poller,
+           std::unique_ptr<IKeys>      keys,
+           std::shared_ptr<Rasterizer> rasterizer);
     ~Server();
 
-    Server(const Server &) = delete;
-    Server &operator=(const Server &) = delete;
-    Server(Server &&) = delete;
-    Server &operator=(Server &&) = delete;
+    Server(const Server&)            = delete;
+    Server& operator=(const Server&) = delete;
+    Server(Server&&)                 = delete;
+    Server& operator=(Server&&)      = delete;
 
-    void accept();
+    void run();
 };
 
 class FocusStack
 {
 private:
-    std::stack<std::shared_ptr<IChannel>> focus_stack;
-    std::mutex mtx;
+    std::stack<std::shared_ptr<IChannel>> stack_;
 public:
     FocusStack();
     ~FocusStack();
 
-    FocusStack(const FocusStack&) = delete;
+    FocusStack(const FocusStack&)            = delete;
     FocusStack& operator=(const FocusStack&) = delete;
 
-    void push(std::unique_ptr<IChannel> channel);
-    void pop();
-    bool empty();
-    std::shared_ptr<IChannel> top();
+    void                       push (std::unique_ptr<IChannel> channel);
+    void                       pop  ();
+    bool                       empty() const;
+    std::shared_ptr<IChannel>  top  () const;
 };

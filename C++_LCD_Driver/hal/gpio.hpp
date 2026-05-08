@@ -75,6 +75,7 @@ public:
     GpioRead(const GpioRead&)            = delete;
     GpioRead& operator=(const GpioRead&) = delete;
 
+    int       fd        () const { return epoll_fd; }
     GpioEvent wait_event();
 };
 

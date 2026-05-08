@@ -24,7 +24,7 @@ SimpleCommandFactory::SimpleCommandFactory(std::shared_ptr<Rasterizer> receiver)
 
 SimpleCommandFactory::~SimpleCommandFactory() = default;
 
-std::unique_ptr<IRenderCommand> SimpleCommandFactory::create(const Packet& packet)
+std::unique_ptr<ICommand> SimpleCommandFactory::create(const Packet& packet)
 {
     if (packet.data.empty())
         throw std::runtime_error("SimpleCommandFactory: empty packet");

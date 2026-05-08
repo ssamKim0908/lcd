@@ -10,7 +10,7 @@ BUILD_DIR = build
 DIST_DIR  = dist
 
 # --- paths injected at compile time ---
-APP_MANAGER_PATH ?= $(abspath $(BUILD_DIR)/app_manager)
+APP_MANAGER_PATH ?= $(abspath $(BUILD_DIR)/bin/app_manager)
 APPS_CONF_PATH   ?= $(abspath app_manager/apps.conf)
 
 SERVER_DEFINES = -DAPP_MANAGER_PATH='"$(APP_MANAGER_PATH)"'
@@ -41,7 +41,9 @@ PUBLIC_HDRS = $(wildcard sdk/*.hpp)
 DIST_HDRS   = $(patsubst sdk/%.hpp,$(DIST_DIR)/include/sdk/%.hpp,$(PUBLIC_HDRS))
 
 # --- app_manager (bundled with server, fork/exec'd at boot) ---
-APPMGR_BIN  = $(BUILD_DIR)/app_manager
+# 바이너리는 $(BUILD_DIR)/bin/ 아래로 두고, .o 는 $(BUILD_DIR)/app_manager/
+# 폴더에 둬서 이름 충돌을 피한다.
+APPMGR_BIN  = $(BUILD_DIR)/bin/app_manager
 APPMGR_SRCS = $(wildcard app_manager/*.cpp) \
               $(wildcard app_manager/FileReader/*.cpp)
 APPMGR_OBJS = $(addprefix $(BUILD_DIR)/, $(APPMGR_SRCS:.cpp=.o))

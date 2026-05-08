@@ -1,14 +1,10 @@
 #pragma once
 #include "span.hpp"
+#include "../sdk/TextSize.hpp"
 #include <cstdint>
 
 namespace util::font
 {
-    enum class TextSize : uint8_t
-    {
-        Small,
-    };
-
     struct Font
     {
         uint8_t             width;

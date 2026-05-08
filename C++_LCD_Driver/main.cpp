@@ -8,6 +8,7 @@
 #include "interface/IKeys.hpp"
 #include "shared/Packet.hpp"
 #include "shared/DrawCommand.hpp"
+#include "shared/Paths.hpp"
 #include "hal/epoll.hpp"
 #include "hal/gpio.hpp"
 #include "hal/spi.hpp"
@@ -189,7 +190,7 @@ void draw_frame(IChannel& ch, int frame)
 
 int main()
 {
-    const std::string sock_path = "/tmp/lcd-test.sock";
+    const std::string sock_path = shared::SOCK_PATH;
 
     // --- HAL ---
     auto chip       = std::make_unique<Gpio>("/dev/gpiochip0", O_RDWR);

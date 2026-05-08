@@ -1,5 +1,5 @@
 #include "Manifest.hpp"
-#include "../util/IFileReader.hpp"
+#include "../interface/IFileReader.hpp"
 
 #include <stdexcept>
 

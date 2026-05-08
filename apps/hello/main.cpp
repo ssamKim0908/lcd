@@ -58,7 +58,7 @@ protected:
             centered_ = !centered_;
             break;
         case Key::K4:
-            exit();
+            App::exit();
             return;
         default: break;
         }

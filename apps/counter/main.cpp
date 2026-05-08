@@ -60,7 +60,7 @@ protected:
         case Key::Left:  value_ -=  1; break;
         case Key::Up:    value_ += 10; break;
         case Key::Down:  value_ -= 10; break;
-        case Key::K4:    exit(); return;
+        case Key::K4:    App::exit(); return;
         default: break;
         }
     }

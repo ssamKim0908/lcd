@@ -20,13 +20,17 @@ void IpcClient::send_bytes(util::Span<const std::byte> data)
 
 KeyEvent IpcClient::recv_key()
 {
-    Packet pkt = channel_->recv();
-    if (pkt.data.size() < sizeof(KeyEvent))
+    RecvResult r = channel_->recv();
+    if (r.status == RecvResult::Status::Closed)
+    {
+        throw std::runtime_error("IpcClient::recv_key: server closed connection");
+    }
+    if (r.packet.data.size() < sizeof(KeyEvent))
     {
         throw std::runtime_error("IpcClient::recv_key: short packet");
     }
     KeyEvent ev;
-    std::memcpy(&ev, pkt.data.data(), sizeof(ev));
+    std::memcpy(&ev, r.packet.data.data(), sizeof(ev));
     return ev;
 }
 

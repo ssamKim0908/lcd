@@ -1,7 +1,7 @@
 #include "UdsChannel.hpp"
-#include "../shared/Packet.hpp"
 #include <iostream>
 #include <unistd.h>
+#include "../../shared/Packet.hpp"
 #ifdef TARGET_DEVICE
 #include <sys/socket.h>
 #include <cerrno>
@@ -42,26 +42,30 @@ void UdsChannel::send(util::Span<const std::byte> data)
 #endif
 }
 
-Packet UdsChannel::recv()
+RecvResult UdsChannel::recv()
 {
 #ifdef TARGET_DEVICE
-    Packet pkt;
-    pkt.data.resize(MAX_PACKET);
+    RecvResult r;
+    r.packet.data.resize(MAX_PACKET);
 
-    ssize_t n = ::recv(fd_, pkt.data.data(), pkt.data.size(), 0);
+    ssize_t n = ::recv(fd_, r.packet.data.data(), r.packet.data.size(), 0);
     if (n < 0)
     {
         throw std::system_error(errno, std::generic_category(), "UDS recv");
     }
     if (n == 0)
     {
-        throw std::runtime_error("UDS connection closed by peer");
+        r.status = RecvResult::Status::Closed;
     }
+    else
+    {
+        r.status = RecvResult::Status::Data;
+    }
+    r.packet.data.resize(static_cast<std::size_t>(n));
 
-    pkt.data.resize(static_cast<std::size_t>(n));
-    return pkt;
+    return r;
 #else
     std::cout << "Receiving one message on UDS fd: " << fd_ << std::endl;
-    return Packet{};
+    return RecvResult{ RecvResult::Status::Data, Packet{} };
 #endif
 }

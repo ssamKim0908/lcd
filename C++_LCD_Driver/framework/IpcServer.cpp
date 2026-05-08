@@ -14,26 +14,36 @@ void Server::recv_loop()
 {
     while(1)
     {
-        if(focus_stack->empty()) 
+        if(focus_stack->empty())
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
         }
 
         PollResult result = poller->wait();
+        if (result.fd == IPoller::ERROR.fd) continue;
+        if ((result.events & static_cast<uint32_t>(PollEvents::In)) == 0) continue;
 
-        if (result.fd != IPoller::ERROR.fd && (result.events & static_cast<uint32_t>(PollEvents::In)) != 0)
+        auto top = focus_stack->top();
+        if (!top || top->fd() != result.fd) continue;
+
+        RecvResult r = top->recv();
+        switch (r.status)
         {
-            if (focus_stack->top()->fd() == result.fd)
-            {
-                Packet packet = focus_stack->top()->recv();
-                if (!packet.data.empty())
-                {
-                    std::cout << "recv done! size=" << packet.data.size() << std::endl;
-                    auto command = simple_command_factory.create(packet);
-                    command->execute();
-                }
-            }
+        case RecvResult::Status::Data:
+        {
+            std::cout << "recv done! size=" << r.packet.data.size() << std::endl;
+            auto command = simple_command_factory.create(r.packet);
+            command->execute();
+            break;
+        }
+        case RecvResult::Status::Closed:
+        {
+            std::cout << "client closed fd: " << top->fd() << std::endl;
+            poller->del(top->fd());
+            focus_stack->pop();
+            break;
+        }
         }
     }
 }

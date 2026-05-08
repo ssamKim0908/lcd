@@ -7,6 +7,7 @@
 #include "interface/IChannel.hpp"
 #include "interface/IKeys.hpp"
 #include "shared/Packet.hpp"
+#include "shared/RecvResult.hpp"
 #include "shared/DrawCommand.hpp"
 #include "shared/Paths.hpp"
 #include "hal/epoll.hpp"
@@ -226,9 +227,10 @@ int main()
 
     while (true)
     {
-        Packet pkt = channel->recv();
+        RecvResult r = channel->recv();
+        if (r.status == RecvResult::Status::Closed) break;
         KeyEvent ev;
-        std::memcpy(&ev, pkt.data.data(), sizeof(ev));
+        std::memcpy(&ev, r.packet.data.data(), sizeof(ev));
 
         if (ev.state != KeyState::Pressed) continue;
 

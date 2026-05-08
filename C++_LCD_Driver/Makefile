@@ -43,7 +43,7 @@ DIST_HDRS   = $(patsubst sdk/%.hpp,$(DIST_DIR)/include/sdk/%.hpp,$(PUBLIC_HDRS))
 # --- app_manager (bundled with server, fork/exec'd at boot) ---
 APPMGR_BIN  = $(BUILD_DIR)/app_manager
 APPMGR_SRCS = $(wildcard app_manager/*.cpp) \
-              util/LocalFileReader.cpp
+              $(wildcard app_manager/FileReader/*.cpp)
 APPMGR_OBJS = $(addprefix $(BUILD_DIR)/, $(APPMGR_SRCS:.cpp=.o))
 
 .PHONY: all clean server sdk app_manager

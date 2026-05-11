@@ -5,7 +5,7 @@
 namespace sdk
 {
 
-class Draw;
+class Draw; //header file 전방 선언
 
 class App
 {

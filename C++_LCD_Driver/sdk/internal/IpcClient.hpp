@@ -1,6 +1,6 @@
 #pragma once
 #include "../../shared/KeyEvent.hpp"
-#include "../TextSize.hpp"
+#include "../../util/Font.hpp"
 #include "../../shared/DrawCommand.hpp"
 #include "../../util/span.hpp"
 #include <cstddef>

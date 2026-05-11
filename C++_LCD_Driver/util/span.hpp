@@ -17,26 +17,11 @@ class Span
 public:
     constexpr Span(T* ptr, size_t len) noexcept : ptr_(ptr), len_(len) {}
 
-    template <class Container,
-              class E = elem_t<Container>,
-              std::enable_if_t<
-                  std::is_same<std::remove_cv_t<E>, std::remove_cv_t<T>>::value &&
-                  (std::is_const<T>::value || !std::is_const<E>::value),
-                  int> = 0>
-    constexpr Span(Container& c) noexcept
-        : ptr_(c.data()), len_(c.size()) {}
+    template <size_t N>
+    constexpr Span(T (&arr)[N]) noexcept : ptr_(arr), len_(N) {}
 
-    template <class Container,
-              class E = elem_t<Container>,
-              std::enable_if_t<
-                  std::is_same<std::remove_cv_t<T>, std::byte>::value &&
-                  !std::is_same<std::remove_cv_t<E>, std::byte>::value &&
-                  std::is_trivially_copyable<std::remove_cv_t<E>>::value &&
-                  (std::is_const<T>::value || !std::is_const<E>::value),
-                  int> = 0>
-    Span(Container& c) noexcept
-        : ptr_(reinterpret_cast<T*>(c.data())),
-          len_(c.size() * sizeof(E)) {}
+    template <class Container>
+    constexpr Span(Container& c) noexcept : ptr_(c.data()), len_(c.size()) {}
 
     constexpr T*     data()  const noexcept { return ptr_; }
     constexpr size_t size()  const noexcept { return len_; }
@@ -46,6 +31,7 @@ public:
     constexpr T* end()   const noexcept { return ptr_ + len_; }
 
     constexpr T& operator[](size_t i) const noexcept { return ptr_[i]; }
+
     ~Span() = default;
 };
 

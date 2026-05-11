@@ -4,9 +4,9 @@
 #include "display/St7789Lcd.hpp"
 #include "display/LcdWriter.hpp"
 #include "shared/Paths.hpp"
-#include "hal/epoll.hpp"
-#include "hal/gpio.hpp"
-#include "hal/spi.hpp"
+#include "osal/epoll.hpp"
+#include "osal/gpio.hpp"
+#include "osal/spi.hpp"
 #include "input/GpioKeys.hpp"
 
 #include <cerrno>

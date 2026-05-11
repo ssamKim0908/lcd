@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include "../sdk/TextSize.hpp"
+#include "../util/Font.hpp"
 
 /**
  * @brief IDrawContract defines the common drawing interface.

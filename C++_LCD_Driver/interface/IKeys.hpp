@@ -1,6 +1,6 @@
 #pragma once
 #include "IFdReadable.hpp"
-#include "../sdk/KeyEvent.hpp"
+#include "../shared/KeyEvent.hpp"
 
 class IKeys : public IFdReadable
 {

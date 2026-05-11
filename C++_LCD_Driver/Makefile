@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Ihal -Idisplay -Iinput -Iutil -Iframework -Iipc -Ishared
+CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Iosal -Idisplay -Iinput -Iutil -Iframework -Iipc -Ishared
 
 PLATFORM ?= host
 ifeq ($(PLATFORM),device)
@@ -19,7 +19,7 @@ APPMGR_DEFINES = -DAPPS_CONF_PATH='"$(APPS_CONF_PATH)"'
 # --- server (init) ---
 SERVER_BIN  = $(BUILD_DIR)/lcd_driver
 SERVER_SRCS = main.cpp \
-              $(wildcard hal/*.cpp) \
+              $(wildcard osal/*.cpp) \
               $(wildcard display/*.cpp) \
               $(wildcard input/*.cpp) \
               $(wildcard framework/*.cpp) \

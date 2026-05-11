@@ -45,17 +45,20 @@
 .
 ├── C_LCD_Driver/        # 원본 C 언어 드라이버 (Reference)
 ├── C++_LCD_Driver/      # 핵심 프레임워크 소스 코드
+│   ├── main.cpp         # 서버 실행 엔트리 포인트
 │   ├── app_manager/     # 앱 실행 및 관리 매니저
 │   ├── display/         # ST7789 LCD 제어 및 드라이버 로직
 │   ├── framework/       # 서버 핵심 로직 및 명령어 처리
-│   ├── hal/             # Hardware Abstraction Layer (SPI, GPIO)
+│   ├── input/           # GPIO 키 입력 처리 모듈
+│   ├── interface/       # 프레임워크 전반에서 사용되는 인터페이스 정의
+│   ├── ipc/             # UDS 기반 통신 모듈 (Server/Client)
+│   ├── osal/            # OS Abstraction Layer (SPI, GPIO, Epoll)
 │   ├── sdk/             # 앱 개발자를 위한 Client SDK
-│   ├── ipc/             # UDS 기반 통신 모듈
-│   ├── util/            # Font, Color, Span 등 유틸리티
-│   └── main.cpp         # 서버 실행 엔트리 포인트
+│   ├── shared/          # 서버와 클라이언트 간 공유 데이터 구조체
+│   └── util/            # Font, Color, Span 등 유틸리티
 └── example/             # SDK 활용 예제 앱
-    ├── hello/           # "Hello World" 출력 예제
-    └── counter/         # 버튼 입력을 활용한 카운터 예제
+    ├── hello/            
+    └── counter/         
 ```
 
 ---

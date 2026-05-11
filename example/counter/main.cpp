@@ -31,21 +31,21 @@ protected:
     void on_render() override
     {
         draw().clear(COLOR_BG);
-        draw().draw_text(TITLE_X, TITLE_Y, util::font::TextSize::Small,
-                         COLOR_TITLE, "Counter");
+        draw().draw_text(TITLE_X, TITLE_Y, "Counter",
+                         util::font::TextSize::Small, COLOR_TITLE);
 
-        draw().draw_text(VALUE_X, VALUE_Y, util::font::TextSize::Small,
-                         COLOR_VALUE, std::to_string(value_));
+        draw().draw_text(VALUE_X, VALUE_Y, std::to_string(value_),
+                         util::font::TextSize::Small, COLOR_VALUE);
 
         draw().draw_text(HINT_X, HINT_Y_BASE + HINT_LH * 0,
-                         util::font::TextSize::Small, COLOR_HINT,
-                         "L/R: -1/+1");
+                         "L/R: -1/+1", util::font::TextSize::Small,
+                         COLOR_HINT);
         draw().draw_text(HINT_X, HINT_Y_BASE + HINT_LH * 1,
-                         util::font::TextSize::Small, COLOR_HINT,
-                         "U/D: +10/-10");
+                         "U/D: +10/-10", util::font::TextSize::Small,
+                         COLOR_HINT);
         draw().draw_text(HINT_X, HINT_Y_BASE + HINT_LH * 2,
-                         util::font::TextSize::Small, COLOR_HINT,
-                         "K4: exit");
+                         "K4: exit", util::font::TextSize::Small,
+                         COLOR_HINT);
 
         draw().render();
     }

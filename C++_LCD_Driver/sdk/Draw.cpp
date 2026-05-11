@@ -23,30 +23,30 @@ void Draw::clear(uint16_t color)
     impl_->ipc->send_command(shared::DrawCommand::Clear, color);
 }
 
-void Draw::fill_rect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t color)
+void Draw::fill_rect(int x, int y, int w, int h, uint16_t color)
 {
     impl_->ipc->send_command(shared::DrawCommand::FillRect, x, y, w, h, color);
 }
 
-void Draw::draw_rect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t color)
+void Draw::draw_rect(int x, int y, int w, int h, uint16_t color)
 {
     impl_->ipc->send_command(shared::DrawCommand::DrawRect, x, y, w, h, color);
 }
 
-void Draw::fill_circle(int32_t cx, int32_t cy, int32_t r, uint16_t color)
+void Draw::fill_circle(int cx, int cy, int r, uint16_t color)
 {
     impl_->ipc->send_command(shared::DrawCommand::FillCircle, cx, cy, r, color);
 }
 
-void Draw::draw_circle(int32_t cx, int32_t cy, int32_t r, uint16_t color)
+void Draw::draw_circle(int cx, int cy, int r, uint16_t color)
 {
     impl_->ipc->send_command(shared::DrawCommand::DrawCircle, cx, cy, r, color);
 }
 
-void Draw::draw_text(int32_t x, int32_t y, util::font::TextSize size,
-                     uint16_t color, std::string_view text)
+void Draw::draw_text(int x, int y, const std::string& text, util::font::TextSize size,
+                     uint16_t color)
 {
-    impl_->ipc->send_command(shared::DrawCommand::DrawText, x, y, size, color, text);
+    impl_->ipc->send_command(shared::DrawCommand::DrawText, x, y, text, size, color);
 }
 
 void Draw::render()

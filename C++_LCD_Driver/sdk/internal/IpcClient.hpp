@@ -1,5 +1,5 @@
 #pragma once
-#include "../KeyEvent.hpp"
+#include "../../shared/KeyEvent.hpp"
 #include "../TextSize.hpp"
 #include "../../shared/DrawCommand.hpp"
 #include "../../util/span.hpp"

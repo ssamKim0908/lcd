@@ -1,31 +1,31 @@
 #pragma once
-#include "TextSize.hpp"
+#include "../interface/IDrawContract.hpp"
 #include <cstdint>
 #include <memory>
-#include <string_view>
+#include <string>
 
 namespace sdk
 {
 
 namespace internal { class IpcClient; }
 
-class Draw
+class Draw : public IDrawContract
 {
 public:
     explicit Draw(std::shared_ptr<internal::IpcClient> ipc);
-    ~Draw();
+    ~Draw() override;
 
     Draw(const Draw&)            = delete;
     Draw& operator=(const Draw&) = delete;
 
-    void clear      (uint16_t color);
-    void fill_rect  (int32_t x, int32_t y, int32_t w, int32_t h, uint16_t color);
-    void draw_rect  (int32_t x, int32_t y, int32_t w, int32_t h, uint16_t color);
-    void fill_circle(int32_t cx, int32_t cy, int32_t r, uint16_t color);
-    void draw_circle(int32_t cx, int32_t cy, int32_t r, uint16_t color);
-    void draw_text  (int32_t x, int32_t y, util::font::TextSize size,
-                     uint16_t color, std::string_view text);
-    void render     ();
+    void clear      (uint16_t color) override;
+    void fill_rect  (int x, int y, int w, int h, uint16_t color) override;
+    void draw_rect  (int x, int y, int w, int h, uint16_t color) override;
+    void fill_circle(int cx, int cy, int r, uint16_t color) override;
+    void draw_circle(int cx, int cy, int r, uint16_t color) override;
+    void draw_text  (int x, int y, const std::string& text, util::font::TextSize size,
+                     uint16_t color) override;
+    void render     () override;
 
 private:
     struct Impl;

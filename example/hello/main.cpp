@@ -28,8 +28,8 @@ protected:
     {
         draw().clear(COLOR_BLACK);
 
-        draw().draw_text(8, 8, util::font::TextSize::Small,
-                         COLOR_WHITE, "Hello SDK");
+        draw().draw_text(8, 8, "Hello SDK", util::font::TextSize::Small,
+                         COLOR_WHITE);
 
         draw().fill_rect(x_, y_, CURSOR_SZ, CURSOR_SZ, COLOR_GREEN);
         draw().draw_rect(x_, y_, CURSOR_SZ, CURSOR_SZ, COLOR_WHITE);

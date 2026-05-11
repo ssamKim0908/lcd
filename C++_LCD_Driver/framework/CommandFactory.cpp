@@ -77,13 +77,14 @@ std::unique_ptr<ICommand> SimpleCommandFactory::create(const Packet& packet)
     {
         auto x        = read_le<int32_t> (body + 0);
         auto y        = read_le<int32_t> (body + 4);
-        auto size     = static_cast<util::font::TextSize>(
-                            read_le<uint8_t>(body + 8));
-        auto color    = read_le<uint16_t>(body +  9);
-        auto text_len = read_le<uint16_t>(body + 11);
-
-        const char* chars = reinterpret_cast<const char*>(body + 13);
+        auto text_len = read_le<uint16_t>(body + 8);
+        
+        const char* chars = reinterpret_cast<const char*>(body + 10);
         std::string text(chars, text_len);
+
+        auto size     = static_cast<util::font::TextSize>(
+                            read_le<uint8_t>(body + 10 + text_len));
+        auto color    = read_le<uint16_t>(body + 11 + text_len);
 
         return std::make_unique<DrawTextCommand>(
             receiver, x, y, std::move(text), size, color);

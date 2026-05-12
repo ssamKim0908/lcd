@@ -30,7 +30,7 @@ void Server::on_key()
     auto top = focus_->top();
     if (!top) return;
 
-    if (top->send(util::as_bytes(k)) == SendStatus::Closed)
+    if (top->send(util::as_bytes(util::Span<const KeyEvent>(&k, 1))) == SendStatus::Closed)
         disconnect_top();
 }
 

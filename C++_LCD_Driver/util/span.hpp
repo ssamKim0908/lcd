@@ -11,9 +11,6 @@ class Span
     T*     ptr_;
     size_t len_;
 
-    template <class C>
-    using elem_t = std::remove_pointer_t<decltype(std::declval<C&>().data())>;
-
 public:
     constexpr Span(T* ptr, size_t len) noexcept : ptr_(ptr), len_(len) {}
 
@@ -36,23 +33,23 @@ public:
 };
 
 template <class T>
-Span<const std::byte> as_bytes(const T& v) noexcept
+Span<const std::byte> as_bytes(Span<T> s) noexcept
 {
     static_assert(std::is_trivially_copyable<T>::value,
                   "as_bytes requires a trivially copyable type");
     return Span<const std::byte>(
-        reinterpret_cast<const std::byte*>(&v), sizeof(T));
+        reinterpret_cast<const std::byte*>(s.data()), s.size() * sizeof(T));
 }
 
 template <class T>
-Span<std::byte> as_writable_bytes(T& v) noexcept
+Span<std::byte> as_writable_bytes(Span<T> s) noexcept
 {
     static_assert(std::is_trivially_copyable<T>::value,
                   "as_writable_bytes requires a trivially copyable type");
     static_assert(!std::is_const<T>::value,
                   "as_writable_bytes requires a non-const object");
     return Span<std::byte>(
-        reinterpret_cast<std::byte*>(&v), sizeof(T));
+        reinterpret_cast<std::byte*>(s.data()), s.size() * sizeof(T));
 }
 
 } // namespace util

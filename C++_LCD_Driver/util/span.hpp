@@ -32,6 +32,12 @@ public:
     ~Span() = default;
 };
 
+template <class Container>
+Span(Container& c) -> Span<typename Container::value_type>;
+
+template <class Container>
+Span(const Container& c) -> Span<const typename Container::value_type>;
+
 template <class T>
 Span<const std::byte> as_bytes(Span<T> s) noexcept
 {

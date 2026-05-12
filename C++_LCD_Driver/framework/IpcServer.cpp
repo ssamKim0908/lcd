@@ -4,7 +4,7 @@
 #include "../interface/IPoller.hpp"
 #include "../interface/IKeys.hpp"
 #include "../shared/Packet.hpp"
-#include "../sdk/KeyEvent.hpp"
+#include "../shared/KeyEvent.hpp"
 #include "../util/span.hpp"
 #include "CommandFactory.hpp"
 #include <iostream>

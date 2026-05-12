@@ -104,8 +104,8 @@ void St7789Lcd::render()
     set_window(0, 0, WIDTH, HEIGHT);
 
     constexpr size_t CHUNK = 4096;
-    util::Span<const std::byte> bytes{framebuf};
-
+    util::Span<const std::byte> bytes = util::as_bytes(util::Span(framebuf));
+    
     for (size_t offset = 0; offset < bytes.size(); offset += CHUNK)
     {
         const size_t n = std::min(CHUNK, bytes.size() - offset);

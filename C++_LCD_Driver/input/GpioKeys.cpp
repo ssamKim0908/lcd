@@ -1,5 +1,5 @@
 #include "GpioKeys.hpp"
-#include "../hal/gpio.hpp"
+#include "../osal/gpio.hpp"
 
 
 GpioKeys::GpioKeys(std::unique_ptr<GpioRead> reader)

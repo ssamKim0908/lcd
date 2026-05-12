@@ -44,8 +44,8 @@ protected:
     void on_render() override
     {
         draw().clear(COLOR_BG);
-        draw().draw_text(TITLE_X, TITLE_Y, util::font::TextSize::Small,
-                         COLOR_TITLE, "App Manager");
+        draw().draw_text(TITLE_X, TITLE_Y, "App Manager",
+                         util::font::TextSize::Small, COLOR_TITLE);
 
         int32_t y = LIST_Y;
         for (std::size_t i = 0; i < apps_.size(); ++i)
@@ -53,7 +53,7 @@ protected:
             const bool     selected = (i == selected_);
             const uint16_t color    = selected ? COLOR_HIGHLIGHT : COLOR_FG;
             const std::string line  = (selected ? "> " : "  ") + apps_[i].name;
-            draw().draw_text(LIST_X, y, util::font::TextSize::Small, color, line);
+            draw().draw_text(LIST_X, y, line, util::font::TextSize::Small, color);
             y += ROW_H;
         }
         draw().render();

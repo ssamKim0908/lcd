@@ -61,7 +61,7 @@ void St7789Lcd::init()
     cmd(0x11);                                          // sleep out
     sleep_ms(1000);
 
-    cmd(0x36); data({0xA0});                            // MADCTL: MY=1,MX=0,MV=1,ML=0,RGB
+    cmd(0x36); data({0x60});                            // MADCTL: MY=0,MX=1,MV=1,ML=0,RGB
     sleep_ms(50);
     cmd(0x3A); data({0x05});                            // 65k colors
 
@@ -105,7 +105,7 @@ void St7789Lcd::render()
 
     constexpr size_t CHUNK = 4096;
     util::Span<const std::byte> bytes = util::as_bytes(util::Span(framebuf));
-    
+
     for (size_t offset = 0; offset < bytes.size(); offset += CHUNK)
     {
         const size_t n = std::min(CHUNK, bytes.size() - offset);

@@ -3,7 +3,7 @@
 #include "internal/IpcClient.hpp"
 #include "../interface/IChannel.hpp"
 #include "../ipc/UdsClient.hpp"
-#include "../shared/Paths.hpp"
+#include "../shared/SocketPaths.hpp"
 
 namespace sdk
 {

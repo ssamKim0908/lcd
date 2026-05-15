@@ -3,7 +3,7 @@
 #include "ipc/UdsServer.hpp"
 #include "display/St7789Lcd.hpp"
 #include "display/LcdWriter.hpp"
-#include "shared/Paths.hpp"
+#include "shared/SocketPaths.hpp"
 #include "osal/epoll.hpp"
 #include "osal/gpio.hpp"
 #include "osal/spi.hpp"

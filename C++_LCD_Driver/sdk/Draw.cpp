@@ -1,6 +1,6 @@
 #include "Draw.hpp"
 #include "internal/IpcClient.hpp"
-#include "../shared/DrawCommand.hpp"
+#include "../shared/MsgType.hpp"
 
 namespace sdk
 {

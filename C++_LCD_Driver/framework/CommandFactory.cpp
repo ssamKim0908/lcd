@@ -1,7 +1,7 @@
 #include "CommandFactory.hpp"
 #include "commands/RenderCommands.hpp"
 #include "../shared/Packet.hpp"
-#include "../shared/DrawCommand.hpp"
+#include "../shared/MsgType.hpp"
 #include "../util/Font.hpp"
 
 #include <cstring>

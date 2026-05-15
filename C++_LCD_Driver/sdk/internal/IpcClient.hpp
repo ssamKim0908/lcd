@@ -1,7 +1,7 @@
 #pragma once
 #include "../../shared/KeyEvent.hpp"
 #include "../../util/Font.hpp"
-#include "../../shared/DrawCommand.hpp"
+#include "../../shared/MsgType.hpp"
 #include "../../util/span.hpp"
 #include <cstddef>
 #include <cstdint>

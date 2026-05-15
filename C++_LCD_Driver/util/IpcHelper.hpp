@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-namespace shared::ipc
+namespace util::ipc
 {
 
 class Writer

@@ -2,7 +2,7 @@
 #include <cstring>
 #include <stdexcept>
 
-namespace shared::ipc
+namespace util::ipc
 {
 // ===== Writer : private =====
 

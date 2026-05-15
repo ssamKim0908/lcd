@@ -31,21 +31,9 @@ inline void put(std::vector<std::byte>& v, int32_t x)
     v.insert(v.end(), p, p + 4);
 }
 
-inline void put(std::vector<std::byte>& v, int x)
-{
-    put(v, static_cast<int32_t>(x));
-}
-
 inline void put(std::vector<std::byte>& v, util::font::TextSize size)
 {
     v.push_back(static_cast<std::byte>(size));
-}
-
-inline void put(std::vector<std::byte>& v, std::string_view text)
-{
-    put(v, static_cast<uint16_t>(text.size()));
-    const auto* p = reinterpret_cast<const std::byte*>(text.data());
-    v.insert(v.end(), p, p + text.size());
 }
 
 inline void put(std::vector<std::byte>& v, const std::string& text)

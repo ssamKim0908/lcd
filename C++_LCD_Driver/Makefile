@@ -1,5 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Iosal -Idisplay -Iinput -Iutil -Iframework -Iipc -Ishared
+CXXFLAGS += -MMD
 
 PLATFORM ?= host
 ifeq ($(PLATFORM),device)

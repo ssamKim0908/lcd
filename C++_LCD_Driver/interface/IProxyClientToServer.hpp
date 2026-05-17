@@ -7,10 +7,10 @@
  * @brief IDrawContract defines the common drawing interface.
  * Aligned with Rasterizer's parameter ordering and types.
  */
-class IDrawContract
+class IProxyClientToServer
 {
 public:
-    virtual ~IDrawContract() = default;
+    virtual ~IProxyClientToServer() = default;
 
     virtual void clear      (uint16_t color) = 0;
     virtual void fill_rect  (int x, int y, int w, int h, uint16_t color) = 0;

@@ -1,57 +1,58 @@
 #include "Draw.hpp"
 #include "internal/IpcClient.hpp"
 #include "../shared/MsgType.hpp"
+#include "../interface/IProxyClientToServer.hpp"
 
 namespace sdk
 {
 
 struct Draw::Impl
 {
-    std::shared_ptr<internal::IpcClient> ipc;
+    std::unique_ptr<IProxyClientToServer> proxy;
 };
 
-Draw::Draw(std::shared_ptr<internal::IpcClient> ipc)
+Draw::Draw()
     : impl_(std::make_unique<Impl>())
 {
-    impl_->ipc = std::move(ipc);
+    impl_->proxy; 
 }
 
 Draw::~Draw() = default;
 
 void Draw::clear(uint16_t color)
 {
-    impl_->ipc->send_command(shared::DrawCommand::Clear, color);
+    impl_->proxy->clear(color);
 }
 
 void Draw::fill_rect(int x, int y, int w, int h, uint16_t color)
 {
-    impl_->ipc->send_command(shared::DrawCommand::FillRect, x, y, w, h, color);
+    impl_->proxy->fill_rect(x, y, w, h, color);
 }
 
 void Draw::draw_rect(int x, int y, int w, int h, uint16_t color)
 {
-    impl_->ipc->send_command(shared::DrawCommand::DrawRect, x, y, w, h, color);
+    impl_->proxy->draw_rect(x, y, w, h, color);
 }
 
 void Draw::fill_circle(int cx, int cy, int r, uint16_t color)
 {
-    impl_->ipc->send_command(shared::DrawCommand::FillCircle, cx, cy, r, color);
+    impl_->proxy->fill_circle(cx, cy, r, color);
 }
 
 void Draw::draw_circle(int cx, int cy, int r, uint16_t color)
 {
-    impl_->ipc->send_command(shared::DrawCommand::DrawCircle, cx, cy, r, color);
+    impl_->proxy->draw_circle(cx, cy, r, color);
 }
 
 void Draw::draw_text(int x, int y, const std::string& text, util::font::TextSize size,
                      uint16_t color)
 {
-    impl_->ipc->send_command(shared::DrawCommand::DrawText, x, y, text, size, color);
+    impl_->proxy->draw_text(x, y, text, size, color);
 }
 
 void Draw::render()
 {
-    impl_->ipc->send_command(shared::DrawCommand::Render);
+    impl_->proxy->render();
 }
 
 }

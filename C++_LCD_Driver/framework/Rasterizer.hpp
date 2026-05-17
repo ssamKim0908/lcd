@@ -1,5 +1,5 @@
 #pragma once
-#include "../interface/IDrawContract.hpp"
+#include "../interface/IProxyClientToServer.hpp"
 #include "../util/Font.hpp"
 #include <memory>
 #include <string>
@@ -7,7 +7,7 @@
 
 class ILcd;
 
-class Rasterizer : public IDrawContract
+class Rasterizer : public IProxyClientToServer
 {
 private:
     std::unique_ptr<ILcd> lcd;

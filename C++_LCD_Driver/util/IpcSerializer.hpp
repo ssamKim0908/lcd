@@ -12,16 +12,15 @@ namespace util::ipc
 
 class Writer
 {
-private:
-    std::vector<std::byte> buf_;
 public:
-    Writer() = default;
-
-    void put_u8         (uint8_t  x);
-    void put_u16        (uint16_t x);
-    void put_ui32       (uint32_t  x);
-    void put_text_size  (util::font::TextSize size);
-    void put_string     (std::string_view s);
+    void put_u8        (std::vector<std::byte>& buf, uint8_t  x)             const;
+    void put_u16       (std::vector<std::byte>& buf, uint16_t x)             const;
+    void put_ui32      (std::vector<std::byte>& buf, uint32_t x)             const;
+    void put_i8        (std::vector<std::byte>& buf, int8_t  x)              const;
+    void put_i16       (std::vector<std::byte>& buf, int16_t x)              const;
+    void put_i32       (std::vector<std::byte>& buf, int32_t x)              const;
+    void put_text_size (std::vector<std::byte>& buf, util::font::TextSize s) const;
+    void put_string    (std::vector<std::byte>& buf, std::string_view s)     const;
 };
 
 class Reader
@@ -32,13 +31,16 @@ private:
 public:
     Reader(const std::byte* data, std::size_t size)
         : cur_(data), end_(data + size) {}
-    
+
     Reader(const std::byte* start, const std::byte* end)
         : cur_(start), end_(end) {}
 
     uint8_t              get_u8       ();
     uint16_t             get_u16      ();
     uint32_t             get_ui32     ();
+    int8_t               get_i8       ();
+    int16_t              get_i16      ();
+    int32_t              get_i32      ();
     util::font::TextSize get_text_size();
     std::string          get_string   ();
 

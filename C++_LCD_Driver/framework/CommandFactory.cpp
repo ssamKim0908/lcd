@@ -2,22 +2,10 @@
 #include "commands/RenderCommands.hpp"
 #include "../shared/Packet.hpp"
 #include "../shared/MsgType.hpp"
-#include "../util/Font.hpp"
+#include "../util/IpcSerializer.hpp"
 
-#include <cstring>
 #include <stdexcept>
 #include <utility>
-
-namespace
-{
-    template <typename T>
-    T read_le(const std::byte* p)
-    {
-        T v{};
-        std::memcpy(&v, p, sizeof(T));
-        return v;
-    }
-}
 
 SimpleCommandFactory::SimpleCommandFactory(std::shared_ptr<Rasterizer> receiver)
     : receiver(std::move(receiver)) {}
@@ -29,70 +17,62 @@ std::unique_ptr<ICommand> SimpleCommandFactory::create(const Packet& packet)
     if (packet.data.empty())
         throw std::runtime_error("SimpleCommandFactory: empty packet");
 
-    const auto       op   = static_cast<shared::DrawCommand>(packet.data[0]);
-    const std::byte* body = packet.data.data() + sizeof(shared::DrawCommand);
+    util::ipc::Reader r(packet.data.data(), packet.data.size());
+    const auto type = static_cast<shared::C2S>(r.get_u8());
 
-    switch (op)
+    switch (type)
     {
-    case shared::DrawCommand::Clear:
+    case shared::C2S::Clear:
     {
-        auto color = read_le<uint16_t>(body);
+        auto color = r.get_u16();
         return std::make_unique<ClearCommand>(receiver, color);
     }
-    case shared::DrawCommand::FillRect:
+    case shared::C2S::FillRect:
     {
-        auto x = read_le<int32_t> (body +  0);
-        auto y = read_le<int32_t> (body +  4);
-        auto w = read_le<int32_t> (body +  8);
-        auto h = read_le<int32_t> (body + 12);
-        auto c = read_le<uint16_t>(body + 16);
+        auto x = r.get_i32();
+        auto y = r.get_i32();
+        auto w = r.get_i32();
+        auto h = r.get_i32();
+        auto c = r.get_u16();
         return std::make_unique<FillRectCommand>(receiver, x, y, w, h, c);
     }
-    case shared::DrawCommand::DrawRect:
+    case shared::C2S::DrawRect:
     {
-        auto x = read_le<int32_t> (body +  0);
-        auto y = read_le<int32_t> (body +  4);
-        auto w = read_le<int32_t> (body +  8);
-        auto h = read_le<int32_t> (body + 12);
-        auto c = read_le<uint16_t>(body + 16);
+        auto x = r.get_i32();
+        auto y = r.get_i32();
+        auto w = r.get_i32();
+        auto h = r.get_i32();
+        auto c = r.get_u16();
         return std::make_unique<DrawRectCommand>(receiver, x, y, w, h, c);
     }
-    case shared::DrawCommand::FillCircle:
+    case shared::C2S::FillCircle:
     {
-        auto cx = read_le<int32_t> (body +  0);
-        auto cy = read_le<int32_t> (body +  4);
-        auto r  = read_le<int32_t> (body +  8);
-        auto c  = read_le<uint16_t>(body + 12);
-        return std::make_unique<FillCircleCommand>(receiver, cx, cy, r, c);
+        auto cx = r.get_i32();
+        auto cy = r.get_i32();
+        auto rr = r.get_i32();
+        auto c  = r.get_u16();
+        return std::make_unique<FillCircleCommand>(receiver, cx, cy, rr, c);
     }
-    case shared::DrawCommand::DrawCircle:
+    case shared::C2S::DrawCircle:
     {
-        auto cx = read_le<int32_t> (body +  0);
-        auto cy = read_le<int32_t> (body +  4);
-        auto r  = read_le<int32_t> (body +  8);
-        auto c  = read_le<uint16_t>(body + 12);
-        return std::make_unique<DrawCircleCommand>(receiver, cx, cy, r, c);
+        auto cx = r.get_i32();
+        auto cy = r.get_i32();
+        auto rr = r.get_i32();
+        auto c  = r.get_u16();
+        return std::make_unique<DrawCircleCommand>(receiver, cx, cy, rr, c);
     }
-    case shared::DrawCommand::DrawText:
+    case shared::C2S::DrawText:
     {
-        auto x        = read_le<int32_t> (body + 0);
-        auto y        = read_le<int32_t> (body + 4);
-        auto text_len = read_le<uint16_t>(body + 8);
-        
-        const char* chars = reinterpret_cast<const char*>(body + 10);
-        std::string text(chars, text_len);
-
-        auto size     = static_cast<util::font::TextSize>(
-                            read_le<uint8_t>(body + 10 + text_len));
-        auto color    = read_le<uint16_t>(body + 11 + text_len);
-
+        auto x     = r.get_i32();
+        auto y     = r.get_i32();
+        auto size  = r.get_text_size();
+        auto text  = r.get_string();
+        auto color = r.get_u16();
         return std::make_unique<DrawTextCommand>(
             receiver, x, y, std::move(text), size, color);
     }
-    case shared::DrawCommand::Render:
-    {
+    case shared::C2S::Render:
         return std::make_unique<RenderCommand>(receiver);
     }
-    }
-    throw std::runtime_error("SimpleCommandFactory: unknown DrawCommand");
+    throw std::runtime_error("SimpleCommandFactory: unknown C2S type");
 }

@@ -1,11 +1,12 @@
 #pragma once
 #include "../interface/ICommand.hpp"
+#include "../interface/IProxyServer.hpp"
 #include <memory>
 
 class Rasterizer;
 struct Packet;
 
-class SimpleCommandFactory
+class SimpleCommandFactory : public IProxyServerFromClient
 {
 private:
     std::shared_ptr<Rasterizer> receiver;

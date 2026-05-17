@@ -45,7 +45,7 @@ void Server::on_recv(int fd)
     case RecvResult::Status::Data:
     {
         std::cout << "recv done! size=" << r.packet.data.size() << std::endl;
-        auto command = factory_.create(r.packet);
+        auto command = proxy_->create(r.packet);
         command->execute();
         break;
     }

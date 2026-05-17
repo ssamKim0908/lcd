@@ -1,7 +1,7 @@
 #include "Draw.hpp"
 #include "internal/IpcClient.hpp"
 #include "../shared/MsgType.hpp"
-#include "../interface/IProxyClientToServer.hpp"
+#include "../interface/IProxyClient.hpp"
 
 namespace sdk
 {

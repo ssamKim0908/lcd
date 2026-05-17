@@ -1,5 +1,5 @@
 #pragma once
-#include "../interface/IProxyClientToServer.hpp"
+#include "../interface/IProxyClient.hpp"
 #include "../util/Font.hpp"
 #include <memory>
 #include <string>

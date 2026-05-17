@@ -7,18 +7,19 @@ class IServer;
 class IChannel;
 class IPoller;
 class IKeys;
+class IProxyServerFromClient;
 class FocusStack;
 class Rasterizer;
 
 class Server
 {
 private:
-    std::unique_ptr<IServer>      server_;
-    std::unique_ptr<IKeys>        keys_;
-    std::unique_ptr<IPoller>      poller_;
-    std::unique_ptr<FocusStack>   focus_;
-    SimpleCommandFactory          factory_;
-    bool                          running_ = true;
+    std::unique_ptr<IServer>                        server_;
+    std::unique_ptr<IKeys>                          keys_;
+    std::unique_ptr<IPoller>                        poller_;
+    std::unique_ptr<FocusStack>                     focus_;
+    std::unique_ptr<IProxyServerFromClient>         proxy_;
+    bool                                            running_ = true;
 
 private:
     void on_accept     ();

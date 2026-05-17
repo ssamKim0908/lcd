@@ -19,7 +19,7 @@ void Writer::put_u16(uint16_t x)
     buf_.insert(buf_.end(), p, p + sizeof(x));
 }
 
-void Writer::put_i32(int32_t x)
+void Writer::put_ui32(uint32_t x)
 {
     const auto* p = reinterpret_cast<const std::byte*>(&x);
     buf_.insert(buf_.end(), p, p + sizeof(x));
@@ -65,7 +65,7 @@ uint16_t Reader::get_u16()
     return v;
 }
 
-int32_t Reader::get_i32()
+uint32_t Reader::get_ui32()
 {
     ensure(sizeof(int32_t));
     int32_t v{};

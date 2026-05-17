@@ -17,11 +17,11 @@ private:
 public:
     Writer() = default;
 
-    void put_u8       (uint8_t  x);
-    void put_u16      (uint16_t x);
-    void put_i32      (int32_t  x);
-    void put_text_size(util::font::TextSize size);
-    void put_string   (std::string_view s);
+    void put_u8         (uint8_t  x);
+    void put_u16        (uint16_t x);
+    void put_ui32       (uint32_t  x);
+    void put_text_size  (util::font::TextSize size);
+    void put_string     (std::string_view s);
 };
 
 class Reader
@@ -38,7 +38,7 @@ public:
 
     uint8_t              get_u8       ();
     uint16_t             get_u16      ();
-    int32_t              get_i32      ();
+    uint32_t             get_ui32     ();
     util::font::TextSize get_text_size();
     std::string          get_string   ();
 

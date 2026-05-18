@@ -1,7 +1,7 @@
 #include "St7789Lcd.hpp"
 #include "LcdWriter.hpp"
-#include "../util/span.hpp"
-#include "../util/time.hpp"
+#include "../../../util/span.hpp"
+#include "../../../util/time.hpp"
 #include <vector>
 #include <initializer_list>
 #include <algorithm>

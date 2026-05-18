@@ -1,22 +1,22 @@
 #pragma once
-#include "../util/Font.hpp"
+#include "../../util/Font.hpp"
 #include <cstdint>
 #include <memory>
 #include <string>
 
+class IProxyClientToServer;
+
 namespace sdk
 {
 
-class DrawImpl;
-
-class Draw
+class DrawImpl
 {
 public:
-    explicit Draw(std::unique_ptr<DrawImpl> impl);
-    ~Draw();
+    explicit DrawImpl(std::unique_ptr<IProxyClientToServer> proxy);
+    ~DrawImpl();
 
-    Draw(const Draw&)            = delete;
-    Draw& operator=(const Draw&) = delete;
+    DrawImpl(const DrawImpl&)            = delete;
+    DrawImpl& operator=(const DrawImpl&) = delete;
 
     void clear      (uint16_t color);
     void fill_rect  (int x, int y, int w, int h, uint16_t color);
@@ -28,7 +28,7 @@ public:
     void render     ();
 
 private:
-    std::unique_ptr<DrawImpl> impl_;
+    std::unique_ptr<IProxyClientToServer> proxy_;
 };
 
 }

@@ -1,7 +1,7 @@
 #include "LcdWriter.hpp"
-#include "../osal/spi.hpp"
-#include "../osal/gpio.hpp"
-#include "../util/time.hpp"
+#include "../../spi.hpp"
+#include "../../gpio.hpp"
+#include "../../../util/time.hpp"
 
 LcdWriter::LcdWriter(std::unique_ptr<Spi> spi, std::unique_ptr<GpioWrite> gpio)
     : spi(std::move(spi)), gpio(std::move(gpio))

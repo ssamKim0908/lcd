@@ -1,13 +1,13 @@
 #include "framework/Server.hpp"
 #include "framework/Rasterizer.hpp"
-#include "ipc/UdsServer.hpp"
-#include "display/St7789Lcd.hpp"
-#include "display/LcdWriter.hpp"
+#include "osal/ipc/UdsServer.hpp"
+#include "osal/facade/display/St7789Lcd.hpp"
+#include "osal/facade/display/LcdWriter.hpp"
 #include "shared/SocketPaths.hpp"
 #include "osal/epoll.hpp"
 #include "osal/gpio.hpp"
 #include "osal/spi.hpp"
-#include "input/GpioKeys.hpp"
+#include "osal/facade/input/GpioKeys.hpp"
 
 #include <cerrno>
 #include <csignal>

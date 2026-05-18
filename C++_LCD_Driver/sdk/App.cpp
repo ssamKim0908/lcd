@@ -1,49 +1,29 @@
 #include "App.hpp"
-#include "Draw.hpp"
-#include "internal/IpcClient.hpp"
-#include "../interface/IChannel.hpp"
-#include "../ipc/UdsClient.hpp"
-#include "../shared/SocketPaths.hpp"
+#include "Key.hpp"
+#include "internal/AppImpl.hpp"
 
 namespace sdk
 {
 
-struct App::Impl
-{
-    std::shared_ptr<internal::IpcClient> ipc;
-    std::unique_ptr<Draw>                draw;
-    bool                                 running = false;
-};
-
 App::App()
-    : impl_(std::make_unique<Impl>())
-{
-    auto channel = UdsClient(shared::SOCK_PATH).connect();
-    impl_->ipc   = std::make_shared<internal::IpcClient>(std::move(channel));
-    impl_->draw  = std::make_unique<Draw>(impl_->ipc);
-}
+    : impl_(std::make_unique<AppImpl>()) {}
 
 App::~App() = default;
 
-Draw& App::draw()
-{
-    return *impl_->draw;
-}
+Draw& App::draw() { return impl_->draw(); }
+Key&  App::key()  { return impl_->key();  }
 
-void App::exit()
-{
-    impl_->running = false;
-}
+void App::exit() { running_ = false; }
 
 void App::run()
 {
-    impl_->running = true;
+    running_ = true;
     on_render();
-    while (impl_->running)
+    while (running_)
     {
-        KeyEvent ev = impl_->ipc->recv_key();
+        KeyEvent ev = key().get_key();
         on_key(ev);
-        if (!impl_->running) break;
+        if (!running_) break;
         on_render();
     }
 }

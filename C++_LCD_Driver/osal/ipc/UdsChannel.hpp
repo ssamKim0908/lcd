@@ -1,5 +1,5 @@
 #pragma once
-#include "../interface/IChannel.hpp"
+#include "../../interface/IChannel.hpp"
 
 struct RecvResult;
 

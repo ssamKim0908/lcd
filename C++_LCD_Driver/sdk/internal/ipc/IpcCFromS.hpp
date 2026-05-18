@@ -1,5 +1,5 @@
 #pragma once
-#include "../../interface/IProxyClient.hpp"
+#include "../../../interface/IProxyClient.hpp"
 #include <memory>
 
 class IReceiver;

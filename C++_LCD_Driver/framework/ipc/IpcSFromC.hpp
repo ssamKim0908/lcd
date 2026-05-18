@@ -1,6 +1,6 @@
 #pragma once
-#include "../interface/ICommand.hpp"
-#include "../interface/IProxyServer.hpp"
+#include "../../interface/ICommand.hpp"
+#include "../../interface/IProxyServer.hpp"
 #include <memory>
 
 class Rasterizer;

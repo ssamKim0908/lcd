@@ -1,8 +1,8 @@
 #include "IpcSFromC.hpp"
 #include "../commands/RenderCommands.hpp"
-#include "../shared/Packet.hpp"
-#include "../shared/MsgType.hpp"
-#include "../util/IpcSerializer.hpp"
+#include "../../shared/Packet.hpp"
+#include "../../shared/MsgType.hpp"
+#include "../../util/IpcSerializer.hpp"
 
 #include <stdexcept>
 #include <utility>

@@ -1,6 +1,6 @@
 #pragma once
-#include "../interface/IProxyServer.hpp"
-#include "../util/IpcSerializer.hpp"
+#include "../../interface/IProxyServer.hpp"
+#include "../../util/IpcSerializer.hpp"
 #include <cstddef>
 #include <memory>
 #include <vector>

@@ -8,8 +8,24 @@ class IPoller;
 class IKeys;
 class IProxyServerFromClient;
 class IProxyServerToClient;
-class FocusStack;
 class Rasterizer;
+
+class FocusStack
+{
+private:
+    std::stack<std::shared_ptr<IChannel>> stack_;
+public:
+    FocusStack();
+    ~FocusStack();
+
+    FocusStack(const FocusStack&)            = delete;
+    FocusStack& operator=(const FocusStack&) = delete;
+
+    void                       push (std::unique_ptr<IChannel> channel);
+    void                       pop  ();
+    bool                       empty() const;
+    std::shared_ptr<IChannel>  top  () const;
+};
 
 class Server
 {
@@ -41,21 +57,4 @@ public:
     Server& operator=(Server&&)      = delete;
 
     void run();
-};
-
-class FocusStack
-{
-private:
-    std::stack<std::shared_ptr<IChannel>> stack_;
-public:
-    FocusStack();
-    ~FocusStack();
-
-    FocusStack(const FocusStack&)            = delete;
-    FocusStack& operator=(const FocusStack&) = delete;
-
-    void                       push (std::unique_ptr<IChannel> channel);
-    void                       pop  ();
-    bool                       empty() const;
-    std::shared_ptr<IChannel>  top  () const;
 };

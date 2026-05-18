@@ -1,7 +1,7 @@
 #include "IpcCToS.hpp"
-#include "../../interface/IChannel.hpp"
-#include "../../shared/MsgType.hpp"
-#include "../../util/span.hpp"
+#include "../../../interface/IChannel.hpp"
+#include "../../../shared/MsgType.hpp"
+#include "../../../util/span.hpp"
 
 #include <utility>
 

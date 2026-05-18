@@ -11,7 +11,7 @@
 void St7789Lcd::set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
     // MADCTL=0xA0 (MY=1, MV=1): 패널이 RAM row 80..319 영역을 본다
-    constexpr uint16_t X_OFFSET = 0;
+    constexpr uint16_t X_OFFSET = 80;
     constexpr uint16_t Y_OFFSET = 0;
 
     uint16_t xs = x0 + X_OFFSET;

@@ -65,8 +65,8 @@ std::unique_ptr<ICommand> SimpleCommandFactory::create(const Packet& packet)
     {
         auto x     = r.get_i32();
         auto y     = r.get_i32();
-        auto size  = r.get_text_size();
         auto text  = r.get_string();
+        auto size  = r.get_text_size();
         auto color = r.get_u16();
         return std::make_unique<DrawTextCommand>(
             receiver, x, y, std::move(text), size, color);

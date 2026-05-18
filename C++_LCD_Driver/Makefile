@@ -67,6 +67,7 @@ $(BUILD_DIR)/main.o: main.cpp
 
 $(SDK_LIB): $(SDK_OBJS)
 	@mkdir -p $(@D)
+    rm -f $@
 	ar rcs $@ $^
 
 # Generic header copy (handles sdk/, shared/, util/)

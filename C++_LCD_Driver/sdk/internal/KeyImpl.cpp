@@ -11,7 +11,7 @@ KeyImpl::KeyImpl(std::unique_ptr<IProxyClientFromServer> proxy)
 
 KeyImpl::~KeyImpl() = default;
 
-KeyEvent KeyImpl::next()
+KeyEvent KeyImpl::get_key()
 {
     return proxy_->recv_key();
 }

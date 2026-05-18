@@ -1,6 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinterface -Iosal -Idisplay -Iinput -Iutil -Iframework -Iipc -Ishared
-CXXFLAGS += -MMD
+CXXFLAGS = -std=c++17 -Wall -I. -MMD
 
 PLATFORM ?= host
 ifeq ($(PLATFORM),device)
@@ -21,12 +20,12 @@ APPMGR_DEFINES = -DAPPS_CONF_PATH='"$(APPS_CONF_PATH)"'
 SERVER_BIN  = $(BUILD_DIR)/lcd_driver
 SERVER_SRCS = main.cpp \
               $(wildcard osal/*.cpp) \
-              $(wildcard display/*.cpp) \
-              $(wildcard input/*.cpp) \
+              $(wildcard osal/ipc/*.cpp) \
+              $(wildcard osal/facade/display/*.cpp) \
+              $(wildcard osal/facade/input/*.cpp) \
               $(wildcard framework/*.cpp) \
               $(wildcard framework/ipc/*.cpp) \
               $(wildcard framework/commands/*.cpp) \
-              $(wildcard ipc/*.cpp) \
               $(wildcard util/*.cpp)
 SERVER_OBJS = $(addprefix $(BUILD_DIR)/, $(SERVER_SRCS:.cpp=.o))
 
@@ -34,17 +33,19 @@ SERVER_OBJS = $(addprefix $(BUILD_DIR)/, $(SERVER_SRCS:.cpp=.o))
 SDK_LIB  = $(DIST_DIR)/lib/libsdk.a
 SDK_SRCS = $(wildcard sdk/*.cpp) \
            $(wildcard sdk/internal/*.cpp) \
-           ipc/UdsClient.cpp \
-           ipc/UdsChannel.cpp
+           $(wildcard sdk/internal/ipc/*.cpp) \
+           osal/ipc/UdsClient.cpp \
+           osal/ipc/UdsChannel.cpp \
+           util/IpcSerializer.cpp \
+           util/Font16.cpp
 SDK_OBJS = $(addprefix $(BUILD_DIR)/, $(SDK_SRCS:.cpp=.o))
 
 # --- public headers exported to dist ---
-PUBLIC_HDRS = $(wildcard sdk/*.hpp)
-DIST_HDRS   = $(patsubst sdk/%.hpp,$(DIST_DIR)/include/sdk/%.hpp,$(PUBLIC_HDRS))
+SDK_HDRS  = $(wildcard sdk/*.hpp)
+EXT_HDRS  = shared/KeyEvent.hpp util/Font.hpp util/span.hpp
+DIST_HDRS = $(patsubst %,$(DIST_DIR)/include/%,$(SDK_HDRS) $(EXT_HDRS))
 
-# --- app_manager (bundled with server, fork/exec'd at boot) ---
-# 바이너리는 $(BUILD_DIR)/bin/ 아래로 두고, .o 는 $(BUILD_DIR)/app_manager/
-# 폴더에 둬서 이름 충돌을 피한다.
+# --- app_manager ---
 APPMGR_BIN  = $(BUILD_DIR)/bin/app_manager
 APPMGR_SRCS = $(wildcard app_manager/*.cpp) \
               $(wildcard app_manager/FileReader/*.cpp)
@@ -56,8 +57,6 @@ server:      $(SERVER_BIN)
 sdk:         $(SDK_LIB) $(DIST_HDRS)
 app_manager: $(APPMGR_BIN)
 
-# server objects need APP_MANAGER_PATH define (only main.cpp uses it,
-# but applying to all server objs is harmless)
 $(SERVER_BIN): $(SERVER_OBJS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -o $@ $^
@@ -70,7 +69,8 @@ $(SDK_LIB): $(SDK_OBJS)
 	@mkdir -p $(@D)
 	ar rcs $@ $^
 
-$(DIST_DIR)/include/sdk/%.hpp: sdk/%.hpp
+# Generic header copy (handles sdk/, shared/, util/)
+$(DIST_DIR)/include/%.hpp: %.hpp
 	@mkdir -p $(@D)
 	cp $< $@
 
@@ -85,6 +85,8 @@ $(BUILD_DIR)/app_manager/%.o: app_manager/%.cpp $(DIST_HDRS)
 $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+-include $(SERVER_OBJS:.o=.d) $(SDK_OBJS:.o=.d) $(APPMGR_OBJS:.o=.d)
 
 clean:
 	rm -rf $(BUILD_DIR) $(DIST_DIR)

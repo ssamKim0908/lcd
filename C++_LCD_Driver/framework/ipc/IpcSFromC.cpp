@@ -1,4 +1,4 @@
-#include "CommandFactory.hpp"
+#include "IpcSFromC.hpp"
 #include "commands/RenderCommands.hpp"
 #include "../shared/Packet.hpp"
 #include "../shared/MsgType.hpp"

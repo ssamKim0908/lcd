@@ -1,4 +1,4 @@
-#include "Ipcserver.hpp"
+#include "Server.hpp"
 #include "../interface/IServer.hpp"
 #include "../interface/IChannel.hpp"
 #include "../interface/IPoller.hpp"
@@ -6,7 +6,8 @@
 #include "../shared/Packet.hpp"
 #include "../shared/KeyEvent.hpp"
 #include "../util/span.hpp"
-#include "CommandFactory.hpp"
+#include "ipc/IpcSFromC.hpp"
+#include "ipc/IpcSToC.hpp"
 #include <iostream>
 
 //-----------------Server Private--------------------------
@@ -30,7 +31,8 @@ void Server::on_key()
     auto top = focus_->top();
     if (!top) return;
 
-    if (top->send(util::as_bytes(util::Span<const KeyEvent>(&k, 1))) == SendStatus::Closed)
+    IpcSToC s2c(top);
+    if (s2c.on_key(k) == SendStatus::Closed)
         disconnect_top();
 }
 
@@ -80,7 +82,7 @@ Server::Server(std::unique_ptr<IServer>    server,
     , keys_   (std::move(keys))
     , poller_ (std::move(poller))
     , focus_  (std::make_unique<FocusStack>())
-    , factory_(rasterizer)
+    , proxy_  (std::make_unique<SimpleCommandFactory>(rasterizer))
 {}
 
 Server::~Server() = default;

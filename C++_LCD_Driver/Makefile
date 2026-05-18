@@ -24,6 +24,7 @@ SERVER_SRCS = main.cpp \
               $(wildcard display/*.cpp) \
               $(wildcard input/*.cpp) \
               $(wildcard framework/*.cpp) \
+              $(wildcard framework/ipc/*.cpp) \
               $(wildcard framework/commands/*.cpp) \
               $(wildcard ipc/*.cpp) \
               $(wildcard util/*.cpp)

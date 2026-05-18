@@ -1,5 +1,4 @@
 #pragma once
-#include "CommandFactory.hpp"
 #include <memory>
 #include <stack>
 
@@ -17,8 +16,8 @@ private:
     std::unique_ptr<IServer>                        server_;
     std::unique_ptr<IKeys>                          keys_;
     std::unique_ptr<IPoller>                        poller_;
-    std::unique_ptr<FocusStack>                     focus_;
     std::unique_ptr<IProxyServerFromClient>         proxy_;
+    FocusStack                                      focus_;
     bool                                            running_ = true;
 
 private:

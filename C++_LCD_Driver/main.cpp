@@ -1,4 +1,4 @@
-#include "framework/Ipcserver.hpp"
+#include "framework/Server.hpp"
 #include "framework/Rasterizer.hpp"
 #include "ipc/UdsServer.hpp"
 #include "display/St7789Lcd.hpp"

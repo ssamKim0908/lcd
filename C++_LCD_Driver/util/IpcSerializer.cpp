@@ -122,7 +122,7 @@ util::font::TextSize Reader::get_text_size()
 
 std::string Reader::get_string()
 {
-    auto len = get_u16();
+    auto len = get_u8();
     ensure(len);
     std::string s(reinterpret_cast<const char*>(cur_), len);
     cur_ += len;

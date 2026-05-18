@@ -75,8 +75,8 @@ void IpcCToS::draw_text(int x, int y, const std::string& text,
     writer_.put_u8       (buffer_, static_cast<uint8_t>(shared::C2S::DrawText));
     writer_.put_i32      (buffer_, x);
     writer_.put_i32      (buffer_, y);
-    writer_.put_string   (buffer_, text);
     writer_.put_text_size(buffer_, size);
+    writer_.put_string   (buffer_, text);
     writer_.put_u16      (buffer_, color);
     sender_->send(util::Span<const std::byte>{ buffer_.data(), buffer_.size() });
 }

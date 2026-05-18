@@ -5,12 +5,12 @@
 
 #include <utility>
 
-IpcSToC::IpcSToC(std::shared_ptr<ISender> sender)
-    : sender_(std::move(sender)) {}
+IpcSToC::IpcSToC()
+{}
 
 IpcSToC::~IpcSToC() = default;
 
-SendStatus IpcSToC::on_key(KeyEvent ev)
+SendStatus IpcSToC::send_key(KeyEvent ev, const std::shared_ptr<ISender>& channel)
 {
     buffer_.clear();
     writer_.put_u8(buffer_, static_cast<uint8_t>(shared::S2C::KeyEvent));

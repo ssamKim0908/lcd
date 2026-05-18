@@ -17,5 +17,5 @@ class IProxyServerToClient
 {
 public:
     virtual ~IProxyServerToClient() = default;
-    virtual SendStatus on_key(KeyEvent ev) = 0;
+    virtual SendStatus send_key(KeyEvent ev, const std::shared_ptr<ISender>& channel) = 0;
 };

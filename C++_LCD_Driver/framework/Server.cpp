@@ -16,10 +16,10 @@ void Server::on_accept()
     auto channel = server_->accept();
     int  new_fd  = channel->fd();
 
-    if (auto old_top = focus_->top())
+    if (auto old_top = focus_.top())
         poller_->del(old_top->fd());
 
-    focus_->push(std::move(channel));
+    focus_.push(std::move(channel));
     poller_->add(new_fd, static_cast<uint32_t>(PollEvents::In));
 
     std::cout << "client connected: fd=" << new_fd << std::endl;
@@ -28,17 +28,16 @@ void Server::on_accept()
 void Server::on_key()
 {
     KeyEvent k = keys_->next_event();
-    auto top = focus_->top();
+    auto top = focus_.top();
     if (!top) return;
 
-    IpcSToC s2c(top);
-    if (s2c.on_key(k) == SendStatus::Closed)
+    if (sToC->send_key(k, top) == SendStatus::Closed)
         disconnect_top();
 }
 
 void Server::on_recv(int fd)
 {
-    auto top = focus_->top();
+    auto top = focus_.top();
     if (!top || top->fd() != fd) return;
 
     RecvResult r = top->recv();
@@ -47,7 +46,7 @@ void Server::on_recv(int fd)
     case RecvResult::Status::Data:
     {
         std::cout << "recv done! size=" << r.packet.data.size() << std::endl;
-        auto command = proxy_->create(r.packet);
+        auto command = sFromC->create(r.packet);
         command->execute();
         break;
     }
@@ -59,14 +58,14 @@ void Server::on_recv(int fd)
 
 void Server::disconnect_top()
 {
-    auto closing = focus_->top();
+    auto closing = focus_.top();
     if (!closing) return;
 
     int fd = closing->fd();
     poller_->del(fd);
-    focus_->pop();
+    focus_.pop();
 
-    if (auto new_top = focus_->top())
+    if (auto new_top = focus_.top())
         poller_->add(new_top->fd(), static_cast<uint32_t>(PollEvents::In));
 
     std::cout << "client disconnected: fd=" << fd << std::endl;
@@ -81,8 +80,8 @@ Server::Server(std::unique_ptr<IServer>    server,
     : server_ (std::move(server))
     , keys_   (std::move(keys))
     , poller_ (std::move(poller))
-    , focus_  (std::make_unique<FocusStack>())
-    , proxy_  (std::make_unique<SimpleCommandFactory>(rasterizer))
+    , sFromC  (std::make_unique<SimpleCommandFactory>(rasterizer))
+    , sToC    (std::make_unique<IpcSToC>())
 {}
 
 Server::~Server() = default;

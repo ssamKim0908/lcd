@@ -10,16 +10,15 @@ class ISender;
 class IpcSToC : public IProxyServerToClient
 {
 private:
-    std::shared_ptr<ISender>  sender_;
     std::vector<std::byte>    buffer_;
     util::ipc::Writer         writer_;
 
 public:
-    explicit IpcSToC(std::shared_ptr<ISender> sender);
+    explicit IpcSToC();
     ~IpcSToC() override;
 
     IpcSToC(const IpcSToC&)            = delete;
     IpcSToC& operator=(const IpcSToC&) = delete;
 
-    SendStatus on_key(KeyEvent ev) override;
+    SendStatus send_key(KeyEvent ev, const std::shared_ptr<ISender>& sender_) override;
 };

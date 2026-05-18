@@ -7,6 +7,7 @@ class IChannel;
 class IPoller;
 class IKeys;
 class IProxyServerFromClient;
+class IProxyServerToClient;
 class FocusStack;
 class Rasterizer;
 
@@ -16,7 +17,8 @@ private:
     std::unique_ptr<IServer>                        server_;
     std::unique_ptr<IKeys>                          keys_;
     std::unique_ptr<IPoller>                        poller_;
-    std::unique_ptr<IProxyServerFromClient>         proxy_;
+    std::unique_ptr<IProxyServerFromClient>         sFromC;
+    std::unique_ptr<IProxyServerToClient>           sToC;
     FocusStack                                      focus_;
     bool                                            running_ = true;
 

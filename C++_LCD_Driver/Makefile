@@ -23,6 +23,7 @@ SERVER_SRCS = main.cpp \
               $(wildcard osal/ipc/*.cpp) \
               $(wildcard osal/facade/display/*.cpp) \
               $(wildcard osal/facade/input/*.cpp) \
+              $(wildcard osal/process/*.cpp) \
               $(wildcard framework/*.cpp) \
               $(wildcard framework/ipc/*.cpp) \
               $(wildcard framework/commands/*.cpp) \
@@ -48,7 +49,8 @@ DIST_HDRS = $(patsubst %,$(DIST_DIR)/include/%,$(SDK_HDRS) $(EXT_HDRS))
 # --- app_manager ---
 APPMGR_BIN  = $(BUILD_DIR)/bin/app_manager
 APPMGR_SRCS = $(wildcard app_manager/*.cpp) \
-              $(wildcard app_manager/FileReader/*.cpp)
+              $(wildcard app_manager/FileReader/*.cpp) \
+              $(wildcard osal/process/*.cpp)
 APPMGR_OBJS = $(addprefix $(BUILD_DIR)/, $(APPMGR_SRCS:.cpp=.o))
 
 .PHONY: all clean server sdk app_manager

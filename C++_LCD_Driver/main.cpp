@@ -3,56 +3,28 @@
 #include "osal/ipc/UdsServer.hpp"
 #include "osal/facade/display/St7789Lcd.hpp"
 #include "osal/facade/display/LcdWriter.hpp"
-#include "shared/SocketPaths.hpp"
+#include "osal/facade/input/GpioKeys.hpp"
+#include "osal/process/NonBlockingProcessLauncher.hpp"
 #include "osal/epoll.hpp"
 #include "osal/gpio.hpp"
 #include "osal/spi.hpp"
-#include "osal/facade/input/GpioKeys.hpp"
+#include "shared/SocketPaths.hpp"
 
-#include <cerrno>
 #include <csignal>
-#include <cstring>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 #include <string>
-#include <system_error>
 
 #include <fcntl.h>
-#include <sys/wait.h>
-#include <unistd.h>
 
 #ifndef APP_MANAGER_PATH
 #define APP_MANAGER_PATH "/usr/local/bin/app_manager"
 #endif
 
-namespace
-{
-
-void launch_app_manager()
-{
-    pid_t pid = ::fork();
-    if (pid < 0)
-        throw std::system_error(errno, std::generic_category(), "fork app_manager");
-
-    if (pid == 0)
-    {
-        const char* path = APP_MANAGER_PATH;
-        ::execl(path, path, static_cast<char*>(nullptr));
-        std::cerr << "[server] exec " << path << " failed: "
-                  << std::strerror(errno) << std::endl;
-        ::_exit(127);
-    }
-
-    std::cout << "[server] launched app_manager pid=" << pid << std::endl;
-}
-
-}
-
 int main()
 {
     std::signal(SIGPIPE, SIG_IGN);
-    std::signal(SIGCHLD, SIG_IGN);   // app_manager 자식 zombie 방지
+    std::signal(SIGCHLD, SIG_IGN);   // NonBlockingProcessLauncher 자식 zombie 자동 reap
 
     const std::string sock_path = shared::SOCK_PATH;
 
@@ -77,7 +49,9 @@ int main()
                   std::move(keys), rasterizer);
 
     // --- Bring up app_manager (init's first child) ---
-    launch_app_manager();
+    auto launcher = std::make_unique<NonBlockingProcessLauncher>();
+    launcher->launch(APP_MANAGER_PATH);
+    std::cout << "[server] launched app_manager" << std::endl;
 
     // --- Reactor loop (blocks forever) ---
     server.run();

@@ -21,7 +21,7 @@ public:
 public:
     virtual ~IPoller() = default;
 
-    virtual void        add (int fd, uint32_t events)   = 0;
-    virtual void        del (int fd)                    = 0;
-    virtual PollResult        wait()                          = 0;
+    virtual void            add (int fd, uint32_t events)   = 0;
+    virtual void            del (int fd)                    = 0;
+    virtual PollResult      wait()                          = 0;
 };

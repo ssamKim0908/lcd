@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <csignal>
 
 #ifndef APPS_CONF_PATH
 #define APPS_CONF_PATH "apps.conf"
@@ -16,6 +17,8 @@
 
 int main(int argc, char** argv)
 {
+    std::signal(SIGCHLD, SIG_DFL);
+
     const std::string manifest_path = (argc > 1) ? argv[1] : APPS_CONF_PATH;
 
     std::vector<AppEntry> apps;

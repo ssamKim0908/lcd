@@ -1,0 +1,17 @@
+/* epoll_stat.bt */
+
+BEGIN
+{
+    printf("epoll_wait 모니터링을 시작합니다... (종료하려면 Ctrl+C를 누르세요)\n");
+}
+
+tracepoint:syscalls:sys_enter_epoll_pwait
+{
+    @call_count[comm, pid] = count();
+}
+
+tracepoint:syscalls:sys_exit_epoll_pwait
+/args->ret >= 0/  /* 에러(-1)가 아닌 정상 반환인 경우만 필터링 */
+{
+    @returned_events_hist[comm, pid] = hist(args->ret);
+}

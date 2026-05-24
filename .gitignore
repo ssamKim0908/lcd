@@ -18,6 +18,9 @@ dist/
 bin/
 target/ (Rust 전용)
 
+# --- example: 드라이버 dist 에서 복사해온 SDK 스냅샷 (sync-sdk 로 생성) ---
+example/sdk/
+
 # --- IDE & Editor Files (VSCode) ---
 .vscode/
 !.vscode/settings.json

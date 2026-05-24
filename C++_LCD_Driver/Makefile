@@ -11,10 +11,10 @@ DIST_DIR  = dist
 
 # --- paths injected at compile time ---
 APP_MANAGER_PATH ?= $(abspath $(BUILD_DIR)/bin/app_manager)
-APPS_CONF_PATH   ?= $(abspath app_manager/apps.conf)
+APPS_DIR_PATH    ?= $(abspath app_manager/apps.d)
 
 SERVER_DEFINES = -DAPP_MANAGER_PATH='"$(APP_MANAGER_PATH)"'
-APPMGR_DEFINES = -DAPPS_CONF_PATH='"$(APPS_CONF_PATH)"'
+APPMGR_DEFINES = -DAPPS_DIR_PATH='"$(APPS_DIR_PATH)"'
 
 # --- server (init) ---
 SERVER_BIN  = $(BUILD_DIR)/lcd_driver

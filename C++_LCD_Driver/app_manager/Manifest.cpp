@@ -2,6 +2,7 @@
 
 #include "interface/IFileReader.hpp"
 
+#include <iterator>
 #include <stdexcept>
 
 namespace
@@ -20,12 +21,7 @@ std::string trim(const std::string& s)
 
 }
 
-Manifest::Manifest(std::unique_ptr<IFileReader> reader)
-    : reader_(std::move(reader))
-{}
-
-Manifest::~Manifest() = default;
-
+// Private methods
 std::vector<AppEntry> Manifest::load(const std::string& path)
 {
     std::vector<std::string> lines = reader_->read_lines(path);
@@ -53,4 +49,27 @@ std::vector<AppEntry> Manifest::load(const std::string& path)
     }
 
     return apps;
+}
+
+
+// Public methods
+Manifest::Manifest(std::unique_ptr<IFileReader> reader)
+    : reader_(std::move(reader))
+{}
+
+Manifest::~Manifest() = default;
+
+std::vector<AppEntry> Manifest::load_dir(const std::string& dir)
+{
+    const std::vector<std::string> files = reader_->list_files(dir, ".conf");
+
+    std::vector<AppEntry> all;
+    for (const std::string& f : files)
+    {
+        std::vector<AppEntry> entries = load(f);
+        all.insert(all.end(),
+                   std::make_move_iterator(entries.begin()),
+                   std::make_move_iterator(entries.end()));
+    }
+    return all;
 }

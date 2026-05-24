@@ -11,21 +11,21 @@
 #include <vector>
 #include <csignal>
 
-#ifndef APPS_CONF_PATH
-#define APPS_CONF_PATH "apps.conf"
+#ifndef APPS_DIR_PATH
+#define APPS_DIR_PATH "apps.d"
 #endif
 
 int main(int argc, char** argv)
 {
     std::signal(SIGCHLD, SIG_DFL);
 
-    const std::string manifest_path = (argc > 1) ? argv[1] : APPS_CONF_PATH;
+    const std::string manifest_dir = (argc > 1) ? argv[1] : APPS_DIR_PATH;
 
     std::vector<AppEntry> apps;
     try
     {
         Manifest manifest(std::make_unique<LocalFileReader>());
-        apps = manifest.load(manifest_path);
+        apps = manifest.load_dir(manifest_dir);
     }
     catch (const std::exception& e)
     {

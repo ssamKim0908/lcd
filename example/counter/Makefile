@@ -13,7 +13,11 @@ TARGET    = $(BUILD_DIR)/counter
 SRCS = $(wildcard *.cpp)
 OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 
-.PHONY: all clean
+APPS_D_DIR ?= ../../C++_LCD_Driver/app_manager/apps.d
+APP_NAME   ?= Counter
+REG_FILE    = $(APPS_D_DIR)/$(APP_NAME).conf
+
+.PHONY: all clean register unregister
 all: $(TARGET)
 
 $(SDK_LIB):
@@ -30,3 +34,12 @@ $(BUILD_DIR)/%.o: %.cpp $(SDK_LIB)
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+register: $(TARGET)
+	@mkdir -p $(APPS_D_DIR)
+	@printf "%s | %s\n" "$(APP_NAME)" "$(abspath $(TARGET))" > $(REG_FILE)
+	@echo "[register] $(REG_FILE) <- $(APP_NAME) | $(abspath $(TARGET))"
+
+unregister:
+	@rm -f $(REG_FILE)
+	@echo "[unregister] $(REG_FILE) 제거"

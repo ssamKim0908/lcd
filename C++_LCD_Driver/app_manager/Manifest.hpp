@@ -20,6 +20,9 @@ public:
     Manifest(const Manifest&)            = delete;
     Manifest& operator=(const Manifest&) = delete;
 
+    std::vector<AppEntry> load_dir(const std::string& dir);
+    
+private:
     std::vector<AppEntry> load(const std::string& path);
 
 private:

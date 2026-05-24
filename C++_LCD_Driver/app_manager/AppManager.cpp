@@ -33,7 +33,7 @@ AppManager::AppManager(std::vector<AppEntry> apps,
 
 AppManager::~AppManager() = default;
 
-void AppManager::on_render()
+void AppManager::on_draw()
 {
     draw().clear(COLOR_BG);
     draw().draw_text(TITLE_X, TITLE_Y, "App Manager",
@@ -48,7 +48,6 @@ void AppManager::on_render()
         draw().draw_text(LIST_X, y, line, util::font::TextSize::Small, color);
         y += ROW_H;
     }
-    draw().render();
 }
 
 void AppManager::on_key(const KeyEvent& ev)

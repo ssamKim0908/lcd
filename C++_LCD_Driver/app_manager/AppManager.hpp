@@ -15,7 +15,7 @@ public:
     ~AppManager() override;
 
 protected:
-    void on_render() override;
+    void on_draw() override;
     void on_key(const KeyEvent& ev) override;
 
 private:

@@ -25,7 +25,6 @@ public:
     void draw_circle(int cx, int cy, int r, uint16_t color);
     void draw_text  (int x, int y, const std::string& text, util::font::TextSize size,
                      uint16_t color);
-    void render     ();
 
 private:
     std::unique_ptr<DrawImpl> impl_;

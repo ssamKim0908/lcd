@@ -1,6 +1,7 @@
 #include "App.hpp"
 #include "Key.hpp"
 #include "internal/AppImpl.hpp"
+#include "internal/RenderImpl.hpp"
 
 namespace sdk
 {
@@ -15,6 +16,11 @@ Key&  App::key()  { return impl_->key();  }
 
 void App::exit() { running_ = false; }
 
+void App::on_render()
+{
+    impl_->render();
+}
+
 void App::run()
 {
     running_ = true;
@@ -24,6 +30,7 @@ void App::run()
         KeyEvent ev = key().get_key();
         on_key(ev);
         if (!running_) break;
+        on_draw();
         on_render();
     }
 }

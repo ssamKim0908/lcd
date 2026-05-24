@@ -6,7 +6,7 @@
 namespace sdk
 {
 
-DrawImpl::DrawImpl(std::unique_ptr<IProxyClientToServer> proxy)
+DrawImpl::DrawImpl(std::shared_ptr<IProxyClientToServer> proxy)
     : proxy_(std::move(proxy)) {}
 
 DrawImpl::~DrawImpl() = default;
@@ -40,11 +40,6 @@ void DrawImpl::draw_text(int x, int y, const std::string& text,
                          util::font::TextSize size, uint16_t color)
 {
     proxy_->draw_text(x, y, text, size, color);
-}
-
-void DrawImpl::render()
-{
-    proxy_->render();
 }
 
 }

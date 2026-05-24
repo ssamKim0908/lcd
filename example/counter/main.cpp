@@ -28,7 +28,7 @@ public:
     using App::App;
 
 protected:
-    void on_render() override
+    void on_draw() override
     {
         draw().clear(COLOR_BG);
         draw().draw_text(TITLE_X, TITLE_Y, "Counter",
@@ -46,8 +46,6 @@ protected:
         draw().draw_text(HINT_X, HINT_Y_BASE + HINT_LH * 2,
                          "K4: exit", util::font::TextSize::Small,
                          COLOR_HINT);
-
-        draw().render();
     }
 
     void on_key(const KeyEvent& ev) override

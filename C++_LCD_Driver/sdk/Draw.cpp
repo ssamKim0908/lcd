@@ -18,6 +18,5 @@ void Draw::fill_circle(int cx, int cy, int r, uint16_t color)                   
 void Draw::draw_circle(int cx, int cy, int r, uint16_t color)                   { impl_->draw_circle(cx, cy, r, color); }
 void Draw::draw_text  (int x, int y, const std::string& text,
                        util::font::TextSize size, uint16_t color)               { impl_->draw_text  (x, y, text, size, color); }
-void Draw::render     ()                                                        { impl_->render(); }
 
 }

@@ -24,7 +24,7 @@ public:
     using App::App;
 
 protected:
-    void on_render() override
+    void on_draw() override
     {
         draw().clear(COLOR_BLACK);
 
@@ -38,8 +38,6 @@ protected:
         {
             draw().fill_circle(SCREEN_W / 2, SCREEN_H / 2, 6, COLOR_RED);
         }
-
-        draw().render();
     }
 
     void on_key(const KeyEvent& ev) override

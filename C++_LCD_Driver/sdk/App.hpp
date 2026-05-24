@@ -27,10 +27,12 @@ protected:
     Key&  key();
     void  exit();
 
-    virtual void on_key   (const KeyEvent& ev) = 0;
-    virtual void on_render()                   = 0;
+    virtual void on_key (const KeyEvent& ev) = 0;
+    virtual void on_draw()                   = 0;
 
 private:
+    void on_render();
+
     bool                     running_ = false;
     std::unique_ptr<AppImpl> impl_;
 };

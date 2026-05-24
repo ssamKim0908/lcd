@@ -12,7 +12,7 @@ namespace sdk
 class DrawImpl
 {
 public:
-    explicit DrawImpl(std::unique_ptr<IProxyClientToServer> proxy);
+    explicit DrawImpl(std::shared_ptr<IProxyClientToServer> proxy);
     ~DrawImpl();
 
     DrawImpl(const DrawImpl&)            = delete;
@@ -25,10 +25,9 @@ public:
     void draw_circle(int cx, int cy, int r, uint16_t color);
     void draw_text  (int x, int y, const std::string& text, util::font::TextSize size,
                      uint16_t color);
-    void render     ();
 
 private:
-    std::unique_ptr<IProxyClientToServer> proxy_;
+    std::shared_ptr<IProxyClientToServer> proxy_;
 };
 
 }

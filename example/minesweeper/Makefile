@@ -8,13 +8,13 @@ CXXFLAGS = -std=c++17 -Wall -I$(SDK_INC)
 LDFLAGS  = -L$(SDK_LIB_DIR) -lsdk
 
 BUILD_DIR = build
-TARGET    = $(BUILD_DIR)/hello
+TARGET    = $(BUILD_DIR)/minesweeper
 
 SRCS = $(wildcard *.cpp)
 OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS:.cpp=.o))
 
 APPS_D_DIR ?= ../../C++_LCD_Driver/app_manager/apps.d
-APP_NAME   ?= Hello
+APP_NAME   ?= Minesweeper
 REG_FILE    = $(APPS_D_DIR)/$(APP_NAME).conf
 
 .PHONY: all clean register unregister

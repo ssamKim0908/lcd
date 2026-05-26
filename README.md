@@ -6,22 +6,15 @@
 
 ---
 
-## 개요
-
-여러 앱이 독립적으로 동작하고 LCD 자원을 효율적으로 관리할 수 있는 **프레임워크**를 지향합니다. Client-Server 구조를 채택하여 LCD 제어 로직(Server)과 실제 애플리케이션(Client/SDK)을 분리하였습니다.
-
-- **원형 프로젝트**: [Seengreat 1.3inch LCD C Driver](https://github.com/seengreat/1.3inch-LCD-Display)
-- **개발 환경**: Raspberry Pi Zero 2W, Raspbian OS (Linux)
-- **사용 AI**: Claude Code
-
----
-
 ## 주요 특징
 
-1.  **Client-Server 아키텍처**:
-    - **Server**: LCD 하드웨어 제어, 래스터라이징(Rasterizing), 입력(Key) 이벤트를 관리합니다.
+1.  **Client-Server**
+    - **Server**: LCD 하드웨어 제어, 입력(Key) 이벤트를 관리합니다.
     - **Client (SDK)**: 프레임워크가 제공하는 SDK를 사용하여 하드웨어에 대한 직접적인 지식 없이도 LCD 앱을 개발할 수 있습니다.
-2.  **OSAL (OS Abstraction Layer)**: SPI, GPIO, Epoll 등 리눅스 시스템 호출을 추상화하여 하드웨어 제어 로직을 깔끔하게 분리했습니다.
+2.  **Layer 아키텍쳐**
+    - **목적**: 리눅스 시스템콜은 C언어 -> C언어 코드와 C++코드 격리 목표
+    - **OS Abstract Layer (OSAL)**: raw C 시스템콜을 이용하는 C++ Layer.
+    - **Application Layer** (server, app_manager, SDK, app): 순수 C++.
 
 ---
 
@@ -30,7 +23,7 @@
 ### Hardware
 - **Main Board**: Raspberry Pi Zero 2W (또는 호환 모델)
 - **Display**: 1.3inch TFT LCD (ST7789 Driver, 240x240 resolution)
-- **Interface**: SPI
+- **Interface**: SPI, GPIO
 
 ### Software
 - **OS**: Raspbian OS (Linux)
@@ -39,79 +32,28 @@
 
 ---
 
-## 프로젝트 구조
+## 프로젝트 디렉토리
 
-```text
-.
-├── C_LCD_Driver/        # 원본 C 언어 드라이버 (Reference)
-├── C++_LCD_Driver/      # 핵심 프레임워크 소스 코드
-│   ├── main.cpp         # 서버 실행 엔트리 포인트
-│   ├── app_manager/     # 앱 실행 및 관리 매니저
-│   ├── display/         # ST7789 LCD 제어 및 드라이버 로직
-│   ├── framework/       # 서버 핵심 로직 및 명령어 처리
-│   ├── input/           # GPIO 키 입력 처리 모듈
-│   ├── interface/       # 프레임워크 전반에서 사용되는 인터페이스 정의
-│   ├── ipc/             # UDS 기반 통신 모듈 (Server/Client)
-│   ├── osal/            # OS Abstraction Layer (SPI, GPIO, Epoll)
-│   ├── sdk/             # 앱 개발자를 위한 Client SDK
-│   ├── shared/          # 서버와 클라이언트 간 공유 데이터 구조체
-│   └── util/            # Font, Color, Span 등 유틸리티
-└── example/             # SDK 활용 예제 앱
-    ├── hello/            
-    └── counter/         
 ```
-
+lcd/
+├── C_LCD_Driver/        # 원본 C 드라이버 (참고용)
+├── C++_LCD_Driver/      # 프레임워크 본체
+│   ├── main.cpp             서버 엔트리
+│   ├── app_manager/         메뉴 + 앱 실행
+│   ├── osal/                OS 추상화 (SPI, GPIO, Epoll, Process, IPC)
+│   ├── osal/facade/
+│   │   ├── display/         LCD 제어
+│   │   └── input/           GPIO 키 입력
+│   ├── framework/           서버
+│   ├── sdk/                 클라이언트 SDK (공개 + internal/)
+│   ├── shared/              서버·클라이언트 공통 타입
+│   ├── interface/           내부 인터페이스 (I-prefix)
+│   └── util/                Font, Span 등
+├── example/             # SDK 사용 예제 앱
+│   ├── hello/
+│   ├── counter/
+│   ├── sdk/                 (sync-sdk 로 채워지는 SDK 스냅샷)
+│   └── Makefile             sync-sdk 등 상위 타깃
+└── Document/            # 문서
+```
 ---
-
-## 빌드 및 실행 방법
-
-### 1. 전체 프로젝트 빌드
-```bash
-cd C++_LCD_Driver
-make
-```
-
-### 2. 드라이버 서버 실행
-서버가 먼저 실행되어 LCD를 초기화하고 IPC 채널을 열어야 합니다.
-```bash
-./build/lcd_driver
-```
-
-### 3. 예제 앱 빌드 및 실행
-```bash
-cd example/counter
-make
-./build/counter_app
-```
-
----
-
-## 앱 개발 예시 (SDK 사용)
-
-`sdk::App`을 상속받아 간단하게 LCD 앱을 만들 수 있습니다.
-
-```cpp
-#include <sdk/App.hpp>
-#include <sdk/Draw.hpp>
-
-class MyApp : public sdk::App {
-protected:
-    void on_render() override {
-        draw().clear(0x0000); // Black
-        draw().draw_text(10, 10, "Hello LCD!", util::font::TextSize::Small, 0xFFFF);
-        draw().render();
-    }
-
-    void on_key(const KeyEvent& ev) override {
-        if (ev.state == KeyState::Pressed && ev.key == Key::K1) {
-            // 버튼 클릭 이벤트 처리
-        }
-    }
-};
-
-int main() {
-    MyApp app;
-    app.run();
-    return 0;
-}
-```

@@ -43,7 +43,7 @@ SDK_OBJS = $(addprefix $(BUILD_DIR)/, $(SDK_SRCS:.cpp=.o))
 
 # --- public headers exported to dist ---
 SDK_HDRS  = $(wildcard sdk/*.hpp)
-EXT_HDRS  = shared/KeyEvent.hpp util/Font.hpp util/span.hpp
+EXT_HDRS  = shared/KeyEvent.hpp shared/Screen.hpp util/Font.hpp util/span.hpp util/color.hpp
 DIST_HDRS = $(patsubst %,$(DIST_DIR)/include/%,$(SDK_HDRS) $(EXT_HDRS))
 
 # --- app_manager ---

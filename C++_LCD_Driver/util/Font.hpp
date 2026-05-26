@@ -16,5 +16,8 @@ namespace util::font
         Small,
     };
 
+    int width (TextSize size);
+    int height(TextSize size);
+
     const Font& get_font(TextSize size);
 }

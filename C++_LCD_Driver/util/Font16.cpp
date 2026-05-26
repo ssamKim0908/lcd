@@ -1774,6 +1774,9 @@ const Font& get_font(TextSize size)
     return Font16;
 }
 
+int width (TextSize size) { return get_font(size).width;  }
+int height(TextSize size) { return get_font(size).height; }
+
 } // namespace util::font
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -6,7 +6,7 @@ SDK_INC_DIR = $(SDK_DIR)/include
 SDK_LIB_DIR = $(SDK_DIR)/lib
 SDK_LIB     = $(SDK_LIB_DIR)/libsdk.a
 
-EXAMPLES = hello counter
+EXAMPLES = counter minesweeper
 
 .PHONY: all clean distclean sync-sdk $(EXAMPLES)
 

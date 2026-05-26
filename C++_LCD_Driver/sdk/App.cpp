@@ -24,6 +24,7 @@ void App::on_render()
 void App::run()
 {
     running_ = true;
+    on_draw();
     on_render();
     while (running_)
     {

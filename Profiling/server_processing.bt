@@ -17,24 +17,6 @@ uretprobe:/PATH/TO/lcd_driver:"*Server*on_recv*" /@on[tid]/
     delete(@on[tid]);
 }
 
-// 클라이언트 연결
-uprobe:/PATH/TO/lcd_driver:"*Server*on_accept*"   { @ac[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*Server*on_accept*" /@ac[tid]/
-{
-    @accept_us  = hist((nsecs - @ac[tid]) / 1000);
-    @accept_cnt = count();
-    delete(@ac[tid]);
-}
-
-// 키 입력 처리
-uprobe:/PATH/TO/lcd_driver:"*Server*on_key*"   { @ky[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*Server*on_key*" /@ky[tid]/
-{
-    @key_us  = hist((nsecs - @ky[tid]) / 1000);
-    @key_cnt = count();
-    delete(@ky[tid]);
-}
-
 // on_recv 내부: 커널에서 데이터 가져오기
 tracepoint:syscalls:sys_enter_recvfrom /comm == "lcd_driver"/ { @rts[tid] = nsecs; @recv_cnt = count(); }
 tracepoint:syscalls:sys_exit_recvfrom  /@rts[tid] && args->ret >= 0/
@@ -43,30 +25,22 @@ tracepoint:syscalls:sys_exit_recvfrom  /@rts[tid] && args->ret >= 0/
     delete(@rts[tid]);
 }
 
-// on_recv 내부 2: command 객체 생성
-uprobe:/PATH/TO/lcd_driver:"*SimpleCommandFactory*create*"   { @cr[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*SimpleCommandFactory*create*" /@cr[tid]/
-{
-    @create_us = hist((nsecs - @cr[tid]) / 1000);
-    delete(@cr[tid]);
-}
+// // on_recv 내부 2: 버퍼에 그리기
+// uprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*"   { @fr[tid] = nsecs; }
+// uretprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*" /@fr[tid]/
+// {
+//     @draw_ns  = hist(nsecs - @fr[tid]);
+//     @draw_cnt = count();
+//     delete(@fr[tid]);
+// }
 
-// on_recv 내부 3: 버퍼에 그리기
-uprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*"   { @fr[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*" /@fr[tid]/
-{
-    @draw_ns  = hist(nsecs - @fr[tid]);
-    @draw_cnt = count();
-    delete(@fr[tid]);
-}
-
-// on_recv 내부 4: SPI -> LCD 전송
-uprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*"   { @rd[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*" /@rd[tid]/
-{
-    @render_us  = hist((nsecs - @rd[tid]) / 1000);
-    @render_cnt = count();
-    delete(@rd[tid]);
-}
+// // on_recv 내부 3: SPI -> LCD 전송
+// uprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*"   { @rd[tid] = nsecs; }
+// uretprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*" /@rd[tid]/
+// {
+//     @render_us  = hist((nsecs - @rd[tid]) / 1000);
+//     @render_cnt = count();
+//     delete(@rd[tid]);
+// }
 
 END { clear(@pw); clear(@on); clear(@ac); clear(@ky); clear(@rts); clear(@cr); clear(@fr); clear(@rd); }

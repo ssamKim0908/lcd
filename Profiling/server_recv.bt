@@ -1,0 +1,38 @@
+/*
+ * server_recv.bt — server(lcd_driver) 수신단 증폭 측정  [tracepoint, 심볼 불필요]
+ *
+ * 사용:  sudo bpftrace server_recv.bt
+ *
+ * 출력 해석:
+ *   @epoll_wait   : epoll_pwait 호출 횟수. 서버는 drain 루프가 없어(Server.cpp on_recv)
+ *                   패킷 1개 처리할 때마다 1회 깨어남 → draw 수에 비례.
+ *   @epoll_ready  : 깨어날 때 ready fd 수 분포. 클라 1개면 보통 1 (한 번에 1패킷씩만 처리).
+ *   @recv_count   : recvfrom 횟수  ==  클라 sendto 횟수. 수신단도 1:1로 부하를 받음.
+ *   @recv_lat_us  : recvfrom 1건 지연 분포(μs).
+ *   @recv_bytes   : 패킷 1개 크기 분포(현재 MAX_PACKET=256 상한, 실제론 수십 byte).
+ */
+
+tracepoint:syscalls:sys_enter_epoll_pwait /comm == "lcd_driver"/
+{
+    @epoll_wait = count();
+}
+
+tracepoint:syscalls:sys_exit_epoll_pwait /comm == "lcd_driver" && args->ret >= 0/
+{
+    @epoll_ready = hist(args->ret);
+}
+
+tracepoint:syscalls:sys_enter_recvfrom /comm == "lcd_driver"/
+{
+    @rts[tid]   = nsecs;
+    @recv_count = count();
+}
+
+tracepoint:syscalls:sys_exit_recvfrom /@rts[tid] && args->ret >= 0/
+{
+    @recv_lat_us = hist((nsecs - @rts[tid]) / 1000);
+    @recv_bytes  = hist(args->ret);
+    delete(@rts[tid]);
+}
+
+END { clear(@rts); }

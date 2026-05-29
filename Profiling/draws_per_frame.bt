@@ -18,18 +18,18 @@
  */
 
 /* 프레임 경계: render() 진입 시점 = 직전까지 쌓인 draw send 수가 곧 그 프레임의 draw 수 */
-uprobe:/PATH/TO/app:"*IpcCToS*render*"
+uprobe:/home/mmmek0401/lcd/example/stress/build/stress:"*IpcCToS*render*"
 {
     @per_frame = hist(@cur);
     @cur = -1;            /* 직후 render 자신의 send 가 @cur 를 0 으로 되돌림 → 다음 프레임은 0부터 */
 }
 
 /* 모든 draw flush 가 거치는 단일 choke point */
-uprobe:/PATH/TO/app:"*UdsChannel*send*"  { @cur++; }
+uprobe:/home/mmmek0401/lcd/example/stress/build/stress:"*UdsChannel*send*"  { @cur++; }
 
 /* draw 1건의 유저공간+syscall 총비용 (stress 앱은 fill_rect 만 사용) */
-uprobe:/PATH/TO/app:"*IpcCToS*fill_rect*"     { @c[tid] = nsecs; }
-uretprobe:/PATH/TO/app:"*IpcCToS*fill_rect*" /@c[tid]/
+uprobe:/home/mmmek0401/lcd/example/stress/build/stress:"*IpcCToS*fill_rect*"     { @c[tid] = nsecs; }
+uretprobe:/home/mmmek0401/lcd/example/stress/build/stress:"*IpcCToS*fill_rect*" /@c[tid]/
 {
     @draw_cost_us = hist((nsecs - @c[tid]) / 1000);
     delete(@c[tid]);

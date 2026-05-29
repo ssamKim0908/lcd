@@ -17,6 +17,7 @@ uretprobe:/PATH/TO/lcd_driver:"*Server*on_recv*" /@on[tid]/
     delete(@on[tid]);
 }
 
+<<<<<<< Updated upstream
 // 클라이언트 연결
 uprobe:/PATH/TO/lcd_driver:"*Server*on_accept*"   { @ac[tid] = nsecs; }
 uretprobe:/PATH/TO/lcd_driver:"*Server*on_accept*" /@ac[tid]/

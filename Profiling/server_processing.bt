@@ -1,0 +1,70 @@
+/*
+ * server_processing.bt — server(lcd_driver) 수신·처리 비용 [uprobe + tracepoint]
+ *
+ * 구조 핵심(프레임버퍼 방식):
+ *   draw 명령은 framebuffer(메모리)에만 쓴다 → SPI/syscall 없음, 수십 ns.
+ *   SPI 전송은 render() 에서만, framebuffer 전체를 4096B 청크로 ~29회 write().
+ *   Server::on_recv = recv(syscall) + create(make_unique) + execute(draw 또는 render)
+ *
+ * ▶ 실행 전: 아래 4쌍(uprobe/uretprobe)의 경로 /PATH/TO/lcd_driver 를 server 바이너리
+ *   절대경로로 바꿀 것. sed 한 줄:
+ *     BIN=$(readlink -f ~/lcd/C++_LCD_Driver/build/lcd_driver)
+ *     sed -i -E "s#(uprobe|uretprobe):[^:]*:#\1:$BIN:#" server_processing.bt
+ *   심볼 확인:
+ *     nm -C $BIN | grep -E 'Server::on_recv|SimpleCommandFactory::create|Rasterizer::fill_rect|St7789Lcd::render'
+ *
+ *   sudo bpftrace server_processing.bt
+ *
+ * 모든 지연 hist 단위 = ns (작은 값까지 보려고). 횟수는 _cnt.
+ * 해석 포인트:  @onrecv_ns(패킷당 서버 처리 전체) 의 대부분이 @recv_ns 이고,
+ *               @draw_ns 는 수십 ns 수준 → "비용은 그리기가 아니라 IPC/수신" 을 증명.
+ *               @recv_cnt / @epoll_cnt 는 draw 수에 비례(=수신단 증폭). @render 는 프레임당 고정.
+ */
+
+/* --- epoll 깨어난 횟수 (Server::run 루프 회전) --- */
+tracepoint:syscalls:sys_enter_epoll_pwait /comm == "lcd_driver"/ { @epoll_cnt = count(); }
+
+/* --- recv 커널 수신 syscall --- */
+tracepoint:syscalls:sys_enter_recvfrom /comm == "lcd_driver"/ { @rts[tid] = nsecs; @recv_cnt = count(); }
+tracepoint:syscalls:sys_exit_recvfrom  /@rts[tid] && args->ret >= 0/
+{
+    @recv_ns = hist(nsecs - @rts[tid]);
+    delete(@rts[tid]);
+}
+
+/* --- 패킷 1개 서버 처리 전체 (recv + create + execute) --- */
+uprobe:/PATH/TO/lcd_driver:"*Server*on_recv*"   { @on[tid] = nsecs; }
+uretprobe:/PATH/TO/lcd_driver:"*Server*on_recv*" /@on[tid]/
+{
+    @onrecv_ns  = hist(nsecs - @on[tid]);
+    @onrecv_cnt = count();
+    delete(@on[tid]);
+}
+
+/* --- command 생성 비용 (make_unique 힙 할당) --- */
+uprobe:/PATH/TO/lcd_driver:"*SimpleCommandFactory*create*"   { @cr[tid] = nsecs; }
+uretprobe:/PATH/TO/lcd_driver:"*SimpleCommandFactory*create*" /@cr[tid]/
+{
+    @create_ns = hist(nsecs - @cr[tid]);
+    delete(@cr[tid]);
+}
+
+/* --- draw 시간 (fill_rect 래스터라이즈 = framebuffer 메모리 write) --- */
+uprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*"   { @fr[tid] = nsecs; }
+uretprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*" /@fr[tid]/
+{
+    @draw_ns  = hist(nsecs - @fr[tid]);
+    @draw_cnt = count();
+    delete(@fr[tid]);
+}
+
+/* --- render 시간 (framebuffer 전체 → SPI flush, 프레임당 1회) --- */
+uprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*"   { @rd[tid] = nsecs; }
+uretprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*" /@rd[tid]/
+{
+    @render_ns  = hist(nsecs - @rd[tid]);
+    @render_cnt = count();
+    delete(@rd[tid]);
+}
+
+END { clear(@rts); clear(@on); clear(@cr); clear(@fr); clear(@rd); }

@@ -1,0 +1,45 @@
+// client_app_loop.bt — 클라(stress) App::run 루프 분해 + 서버 render 대조
+//
+// App::run 1프레임 = on_draw(draw N개 send) + on_render(send) + get_key(다음 키 대기)
+//   클라가 "밀리는" 곳을 분해:
+//     @on_draw_us  : 한 프레임 draw 방출 시간 (send 가 backpressure 로 블록되는 시간 포함)
+//     @send_us     : send() 1회 지연. 꼬리(큰 값) = 서버가 못 빼가서 블록(backpressure)
+//     @get_key_us  : 다음 키 기다린 시간. 작은 버킷 = 서버 전달 지연(=render 중이면 늦음),
+//                    거대 버킷 = 사람이 키 안 누른 think-time (무시)
+//     @on_render_us: render 송신 시간
+//   대조: @server_render_us = 서버의 실제 render(SPI) 시간. 같은 타임라인에서 비교.
+//
+// 두 바이너리(stress, lcd_driver) 경로는 본인 환경에 맞게.
+//   sudo bpftrace client_app_loop.bt
+
+// ── 클라(stress) ──
+uprobe:/PATH/TO/stress:"*StressApp*on_draw*"   { @d[tid] = nsecs; }
+uretprobe:/PATH/TO/stress:"*StressApp*on_draw*" /@d[tid]/
+{
+    @on_draw_us = hist((nsecs - @d[tid]) / 1000);
+    delete(@d[tid]);
+}
+
+uprobe:/PATH/TO/stress:"*App*on_render*"   { @r[tid] = nsecs; }
+uretprobe:/PATH/TO/stress:"*App*on_render*" /@r[tid]/
+{
+    @on_render_us = hist((nsecs - @r[tid]) / 1000);
+    delete(@r[tid]);
+}
+
+uprobe:/PATH/TO/stress:"*recv_key*"   { @k[tid] = nsecs; }
+uretprobe:/PATH/TO/stress:"*recv_key*" /@k[tid]/
+{
+    @get_key_us = hist((nsecs - @k[tid]) / 1000);
+    delete(@k[tid]);
+}
+
+// send() 1회 지연 (backpressure 블록이 꼬리로 뜸)
+tracepoint:syscalls:sys_enter_sendto /comm == "stress"/ { @s[tid] = nsecs; }
+tracepoint:syscalls:sys_exit_sendto  /@s[tid]/
+{
+    @send_us = hist((nsecs - @s[tid]) / 1000);
+    delete(@s[tid]);
+}
+
+END { clear(@d); clear(@r); clear(@k); clear(@s); }

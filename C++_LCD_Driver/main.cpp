@@ -4,13 +4,16 @@
 #include "osal/facade/display/St7789Lcd.hpp"
 #include "osal/facade/display/LcdWriter.hpp"
 #include "osal/facade/input/GpioKeys.hpp"
+#include "osal/facade/input/FakeKeys.hpp"
 #include "osal/process/NonBlockingProcessLauncher.hpp"
 #include "osal/epoll.hpp"
 #include "osal/gpio.hpp"
 #include "osal/spi.hpp"
+#include "interface/IKeys.hpp"
 #include "shared/SocketPaths.hpp"
 
 #include <csignal>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -43,7 +46,17 @@ int main()
     // --- Server ---
     auto uds_server = std::make_unique<UdsServer>(sock_path);
     auto poller     = std::make_unique<Epoll>();
-    auto keys       = std::make_unique<GpioKeys>(std::move(reader));
+
+    std::unique_ptr<IKeys> keys;
+    if (const char* ms = std::getenv("FAKE_KEYS_MS"))
+    {
+        keys = std::make_unique<FakeKeys>(std::atoi(ms));
+        std::cout << "[server] FakeKeys " << ms << "ms (GPIO 입력 무시)" << std::endl;
+    }
+    else
+    {
+        keys = std::make_unique<GpioKeys>(std::move(reader));
+    }
 
     Server server(std::move(uds_server), std::move(poller),
                   std::move(keys), rasterizer);

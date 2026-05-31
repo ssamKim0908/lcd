@@ -1,46 +1,55 @@
-// epoll 대기 시간
-uprobe:/PATH/TO/lcd_driver:"*Epoll*wait*"   { @pw[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*Epoll*wait*" /@pw[tid]/
+// server_processing.bt — Server::run 의 IPC 처리량 vs N (원래 가설 측정)
+//
+// 측정: Epoll::wait(reactor poll) + on_recv(패킷당 처리) + recvfrom(커널 수신)
+//   - *_cnt   : 횟수 (N 에 선형으로 늘어야 함 = 부하 스케일링)
+//   - *_us    : 1회 분포(hist), 단위 µs
+//   - *_total_us : 버스트 전체 총합(sum) → "처리시간 vs N" 곡선용 단일 숫자
+//
+// reactor poll 은 Epoll::wait uprobe 로만 잡아 GPIO epoll 과 분리.
+// 경로: uprobe 의 바이너리 = server 실행파일(lcd_driver). (소스 .cpp 아님)
+//   bpftrace 세션 1개 = 버스트 1개로 돌리면 각 N 마다 total 하나씩 나온다.
+
+// reactor poll (idle 일 땐 대기가 거대버킷으로 뜸 → 버스트 중 작은버킷만 의미)
+// 서버 Epoll::wait C++ 메서드 안에 있는 동안만 플래그 ON
+uprobe:/PATH/TO/lcd_driver:"*Epoll*wait*"   { @in[tid] = 1; }
+uretprobe:/PATH/TO/lcd_driver:"*Epoll*wait*" { delete(@in[tid]); }
+
+// 플래그 켜진 동안의 epoll_wait syscall = 서버 것만
+tracepoint:syscalls:sys_enter_epoll_wait /@in[tid]/                  { @ew[tid] = nsecs; }
+tracepoint:syscalls:sys_exit_epoll_wait  /@in[tid] && @ew[tid]/
 {
-    // idle 상태일 땐 대기시간이 엄청 길게 찍힘. 작은 값들 위주로 확인 필요.
-    @poll_us  = hist((nsecs - @pw[tid]) / 1000);   
-    @poll_cnt = count();
-    delete(@pw[tid]);
+    @epoll_us = hist((nsecs - @ew[tid]) / 1000);   // 서버 epoll syscall 진입~반환
+    delete(@ew[tid]);
 }
 
-// 데이터 수신 
+
+// 패킷 1개 처리 전체 (recv + create + execute). render 패킷은 여기서 ~30ms 거대버킷으로 튄다(=reveal)
 uprobe:/PATH/TO/lcd_driver:"*Server*on_recv*"   { @on[tid] = nsecs; }
 uretprobe:/PATH/TO/lcd_driver:"*Server*on_recv*" /@on[tid]/
 {
-    @onrecv_us  = hist((nsecs - @on[tid]) / 1000);
-    @onrecv_cnt = count();
+    @onrecv_us       = hist((nsecs - @on[tid]) / 1000);
+    @onrecv_cnt      = count();
+    @onrecv_total_us = sum((nsecs - @on[tid]) / 1000);
     delete(@on[tid]);
 }
 
-// on_recv 내부: 커널에서 데이터 가져오기
+// on_recv 내부: 커널 수신 syscall (순수 IPC 비용)
 tracepoint:syscalls:sys_enter_recvfrom /comm == "lcd_driver"/ { @rts[tid] = nsecs; @recv_cnt = count(); }
 tracepoint:syscalls:sys_exit_recvfrom  /@rts[tid] && args->ret >= 0/
 {
-    @recv_us = hist((nsecs - @rts[tid]) / 1000);
+    @recv_us       = hist((nsecs - @rts[tid]) / 1000);
+    @recv_total_us = sum((nsecs - @rts[tid]) / 1000);
     delete(@rts[tid]);
 }
 
-// // on_recv 내부 2: 버퍼에 그리기
-// uprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*"   { @fr[tid] = nsecs; }
-// uretprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*" /@fr[tid]/
-// {
-//     @draw_ns  = hist(nsecs - @fr[tid]);
-//     @draw_cnt = count();
-//     delete(@fr[tid]);
-// }
-
-// // on_recv 내부 3: SPI -> LCD 전송
+// ── step2 (render reveal / before-after): 정량 비교가 필요할 때 주석 해제 ──
 // uprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*"   { @rd[tid] = nsecs; }
 // uretprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*" /@rd[tid]/
 // {
-//     @render_us  = hist((nsecs - @rd[tid]) / 1000);
-//     @render_cnt = count();
+//     @render_us       = hist((nsecs - @rd[tid]) / 1000);
+//     @render_cnt      = count();
+//     @render_total_us = sum((nsecs - @rd[tid]) / 1000);
 //     delete(@rd[tid]);
 // }
 
-END { clear(@pw); clear(@on); clear(@ac); clear(@ky); clear(@rts); clear(@cr); clear(@fr); clear(@rd); }
+END { clear(@pw); clear(@on); clear(@rts); clear(@in); clear(@ew); }

@@ -7,10 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-// ====================================================================
-//  Presenter
-// ====================================================================
-
 Presenter::Presenter(std::shared_ptr<LcdWriter> writer)
     : writer_(std::move(writer))
 {
@@ -39,7 +35,6 @@ void Presenter::render(const Frame& framebuf)
 
 void Presenter::set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
-    // MADCTL=0xA0 (MY=1, MV=1): 패널이 RAM row 80..319 영역을 본다
     constexpr uint16_t X_OFFSET = 80;
     constexpr uint16_t Y_OFFSET = 0;
 

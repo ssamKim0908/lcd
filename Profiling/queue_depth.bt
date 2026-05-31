@@ -1,18 +1,3 @@
-/*
- * queue_depth.bt — client→server 소켓 수신큐 깊이(= 처리 대기 중인 draw 패킷 수) 관측
- *
- * 큐 깊이 = (앱 stress 가 send 완료한 수) − (서버 lcd_driver 가 recv 완료한 수)
- *         = 커널 소켓 버퍼에 쌓여 처리를 기다리는 패킷 수.
- *
- * 보이는 것:
- *   - 버스트 시작 → 큐가 차오름
- *   - 어느 높이에서 plateau  → 그 값이 곧 "유효 큐 용량"(소켓 버퍼 상한). 여기서 앱 send 가 블록(backpressure)
- *   - 버스트 끝 → 서버가 드레인하며 0 으로 감소
- *
- * uprobe 경로 불필요(tracepoint + comm 필터만). 바로 실행:
- *   sudo bpftrace queue_depth.bt
- */
-
 tracepoint:syscalls:sys_exit_sendto   /comm == "stress" && args->ret > 0/
 {
     @inflight++;

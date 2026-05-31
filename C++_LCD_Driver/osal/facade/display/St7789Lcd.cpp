@@ -5,10 +5,39 @@
 #include <vector>
 #include <initializer_list>
 #include <algorithm>
+#include <utility>
 
-// ----------------------------------private
+// ====================================================================
+//  Presenter
+// ====================================================================
 
-void St7789Lcd::set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+Presenter::Presenter(std::shared_ptr<LcdWriter> writer)
+    : writer_(std::move(writer))
+{
+    worker_ = std::thread(&Presenter::render_loop, this);
+}
+
+Presenter::~Presenter()
+{
+    {
+        std::lock_guard<std::mutex> lk(mtx_);
+        stop_ = true;
+    }
+    cv_.notify_one();
+    if (worker_.joinable()) worker_.join();
+}
+
+void Presenter::render(const Frame& framebuf)
+{
+    std::unique_lock<std::mutex> lk(mtx_);
+    cv_.wait(lk, [this] { return !rendering_; });   // 이전 전송 끝까지 대기 (drop 없음)
+
+    scratch_ = framebuf;                            // 스냅샷
+    rendering_ = true;
+    cv_.notify_one();                               // 워커 깨움
+}
+
+void Presenter::set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
     // MADCTL=0xA0 (MY=1, MV=1): 패널이 RAM row 80..319 영역을 본다
     constexpr uint16_t X_OFFSET = 80;
@@ -19,28 +48,64 @@ void St7789Lcd::set_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
     uint16_t ys = y0 + Y_OFFSET;
     uint16_t ye = (y1 - 1) + Y_OFFSET;
 
-    writer->write_cmd(std::byte{0x2A});
+    writer_->write_cmd(std::byte{0x2A});
     std::byte col[] = {
         std::byte((xs >> 8) & 0xFF), std::byte(xs & 0xFF),
         std::byte((xe >> 8) & 0xFF), std::byte(xe & 0xFF),
     };
-    writer->write_data({col, 4});
+    writer_->write_data({col, 4});
 
-    writer->write_cmd(std::byte{0x2B});
+    writer_->write_cmd(std::byte{0x2B});
     std::byte row[] = {
         std::byte((ys >> 8) & 0xFF), std::byte(ys & 0xFF),
         std::byte((ye >> 8) & 0xFF), std::byte(ye & 0xFF),
     };
-    writer->write_data({row, 4});
+    writer_->write_data({row, 4});
 
-    writer->write_cmd(std::byte{0x2C});
+    writer_->write_cmd(std::byte{0x2C});
 }
 
-// ----------------------------------public
+void Presenter::blast()
+{
+    set_window(0, 0, WIDTH, HEIGHT);
+
+    constexpr size_t CHUNK = 4096;
+    util::Span<const std::byte> bytes =
+        util::as_bytes(util::Span<const uint16_t>(scratch_.data(), scratch_.size()));
+
+    for (size_t offset = 0; offset < bytes.size(); offset += CHUNK)
+    {
+        const size_t n = std::min(CHUNK, bytes.size() - offset);
+        writer_->write_data({bytes.data() + offset, n});
+    }
+}
+
+void Presenter::render_loop()
+{
+    std::unique_lock<std::mutex> lk(mtx_);
+    for (;;)
+    {
+        cv_.wait(lk, [this] { return rendering_ || stop_; });
+        if (stop_) return;
+
+        lk.unlock();
+        blast();                 // SPI 전송 (락 없이)
+        lk.lock();
+
+        rendering_ = false;
+        cv_.notify_one();        // render() 에서 대기 중인 메인 깨움
+    }
+}
+
+// ====================================================================
+//  St7789Lcd
+// ====================================================================
 
 St7789Lcd::St7789Lcd(std::unique_ptr<LcdWriter> writer)
     : writer(std::move(writer))
-{}
+{
+    presenter = std::make_unique<Presenter>(this->writer);
+}
 
 St7789Lcd::~St7789Lcd() = default;
 
@@ -101,14 +166,5 @@ void St7789Lcd::draw_pixel(uint16_t x, uint16_t y, uint16_t color)
 
 void St7789Lcd::render()
 {
-    set_window(0, 0, WIDTH, HEIGHT);
-
-    constexpr size_t CHUNK = 4096;
-    util::Span<const std::byte> bytes = util::as_bytes(util::Span(framebuf));
-
-    for (size_t offset = 0; offset < bytes.size(); offset += CHUNK)
-    {
-        const size_t n = std::min(CHUNK, bytes.size() - offset);
-        writer->write_data({bytes.data() + offset, n});
-    }
+    presenter->render(framebuf);
 }

@@ -1,73 +1,38 @@
-// epoll 대기 시간
-uprobe:/PATH/TO/lcd_driver:"*Epoll*wait*"   { @pw[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*Epoll*wait*" /@pw[tid]/
+uprobe:/PATH/TO/lcd_driver:"*Epoll*wait*"   { @in[tid] = 1; }
+uretprobe:/PATH/TO/lcd_driver:"*Epoll*wait*" { delete(@in[tid]); }
+
+// 플래그 켜진 동안의 epoll_wait syscall = 서버 것만
+tracepoint:syscalls:sys_enter_epoll_wait /@in[tid]/                  { @ew[tid] = nsecs; }
+tracepoint:syscalls:sys_exit_epoll_wait  /@in[tid] && @ew[tid]/
 {
-    // idle 상태일 땐 대기시간이 엄청 길게 찍힘. 작은 값들 위주로 확인 필요.
-    @poll_us  = hist((nsecs - @pw[tid]) / 1000);   
-    @poll_cnt = count();
-    delete(@pw[tid]);
+    @epoll_us = hist((nsecs - @ew[tid]) / 1000);   // 서버 epoll syscall 진입~반환
+    delete(@ew[tid]);
 }
 
-// 데이터 수신 
 uprobe:/PATH/TO/lcd_driver:"*Server*on_recv*"   { @on[tid] = nsecs; }
 uretprobe:/PATH/TO/lcd_driver:"*Server*on_recv*" /@on[tid]/
 {
-    @onrecv_us  = hist((nsecs - @on[tid]) / 1000);
-    @onrecv_cnt = count();
+    @onrecv_us       = hist((nsecs - @on[tid]) / 1000);
+    @onrecv_cnt      = count();
+    @onrecv_total_us = sum((nsecs - @on[tid]) / 1000);
     delete(@on[tid]);
 }
 
-<<<<<<< Updated upstream
-// 클라이언트 연결
-uprobe:/PATH/TO/lcd_driver:"*Server*on_accept*"   { @ac[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*Server*on_accept*" /@ac[tid]/
-{
-    @accept_us  = hist((nsecs - @ac[tid]) / 1000);
-    @accept_cnt = count();
-    delete(@ac[tid]);
-}
-
-// 키 입력 처리
-uprobe:/PATH/TO/lcd_driver:"*Server*on_key*"   { @ky[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*Server*on_key*" /@ky[tid]/
-{
-    @key_us  = hist((nsecs - @ky[tid]) / 1000);
-    @key_cnt = count();
-    delete(@ky[tid]);
-}
-
-// on_recv 내부: 커널에서 데이터 가져오기
 tracepoint:syscalls:sys_enter_recvfrom /comm == "lcd_driver"/ { @rts[tid] = nsecs; @recv_cnt = count(); }
 tracepoint:syscalls:sys_exit_recvfrom  /@rts[tid] && args->ret >= 0/
 {
-    @recv_us = hist((nsecs - @rts[tid]) / 1000);
+    @recv_us       = hist((nsecs - @rts[tid]) / 1000);
+    @recv_total_us = sum((nsecs - @rts[tid]) / 1000);
     delete(@rts[tid]);
 }
 
-// on_recv 내부 2: command 객체 생성
-uprobe:/PATH/TO/lcd_driver:"*SimpleCommandFactory*create*"   { @cr[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*SimpleCommandFactory*create*" /@cr[tid]/
-{
-    @create_us = hist((nsecs - @cr[tid]) / 1000);
-    delete(@cr[tid]);
-}
-
-// on_recv 내부 3: 버퍼에 그리기
-uprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*"   { @fr[tid] = nsecs; }
-uretprobe:/PATH/TO/lcd_driver:"*Rasterizer*fill_rect*" /@fr[tid]/
-{
-    @draw_ns  = hist(nsecs - @fr[tid]);
-    @draw_cnt = count();
-    delete(@fr[tid]);
-}
-
-// on_recv 내부 4: SPI -> LCD 전송
 uprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*"   { @rd[tid] = nsecs; }
 uretprobe:/PATH/TO/lcd_driver:"*St7789Lcd*render*" /@rd[tid]/
 {
-    @render_us  = hist((nsecs - @rd[tid]) / 1000);
-    @render_cnt = count();
+    @render_us       = hist((nsecs - @rd[tid]) / 1000);
+    @render_cnt      = count();
+    @render_total_us = sum((nsecs - @rd[tid]) / 1000);
     delete(@rd[tid]);
 }
 
-END { clear(@pw); clear(@on); clear(@ac); clear(@ky); clear(@rts); clear(@cr); clear(@fr); clear(@rd); }
+END { clear(@pw); clear(@on); clear(@rts); clear(@in); clear(@ew); }

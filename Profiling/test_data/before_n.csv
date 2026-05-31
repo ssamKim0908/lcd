@@ -1,0 +1,682 @@
+Tracing... stress_n: 1
+get_key: key lag 55 us
+get_key: key lag 46 us
+get_key: key lag 44 us
+get_key: key lag 51 us
+get_key: key lag 44 us
+get_key: key lag 42 us
+get_key: key lag 42 us
+get_key: key lag 41 us
+get_key: key lag 50 us
+get_key: key lag 51 us
+get_key: key lag 49 us
+get_key: key lag 42 us
+get_key: key lag 41 us
+get_key: key lag 48 us
+get_key: key lag 45 us
+get_key: key lag 43 us
+get_key: key lag 41 us
+get_key: key lag 41 us
+get_key: key lag 49 us
+get_key: key lag 52 us
+get_key: key lag 41 us
+get_key: key lag 42 us
+get_key: key lag 42 us
+get_key: key lag 48 us
+get_key: key lag 47 us
+get_key: key lag 41 us
+get_key: key lag 43 us
+get_key: key lag 41 us
+get_key: key lag 48 us
+get_key: key lag 50 us
+get_key: key lag 42 us
+get_key: key lag 42 us
+get_key: key lag 41 us
+get_key: key lag 47 us
+get_key: key lag 46 us
+get_key: key lag 42 us
+get_key: key lag 41 us
+get_key: key lag 43 us
+get_key: key lag 50 us
+get_key: key lag 52 us
+get_key: key lag 44 us
+get_key: key lag 44 us
+get_key: key lag 61 us
+get_key: key lag 71 us
+get_key: key lag 67 us
+get_key: key lag 60 us
+get_key: key lag 62 us
+get_key: key lag 59 us
+get_key: key lag 67 us
+get_key: key lag 65 us
+get_key: key lag 71 us
+get_key: key lag 63 us
+get_key: key lag 59 us
+get_key: key lag 68 us
+get_key: key lag 64 us
+get_key: key lag 61 us
+get_key: key lag 59 us
+get_key: key lag 60 us
+get_key: key lag 70 us
+get_key: key lag 75 us
+get_key: key lag 78 us
+get_key: key lag 63 us
+get_key: key lag 62 us
+get_key: key lag 70 us
+get_key: key lag 65 us
+get_key: key lag 60 us
+get_key: key lag 60 us
+get_key: key lag 61 us
+get_key: key lag 68 us
+get_key: key lag 63 us
+get_key: key lag 62 us
+get_key: key lag 60 us
+get_key: key lag 59 us
+get_key: key lag 68 us
+get_key: key lag 65 us
+get_key: key lag 61 us
+get_key: key lag 62 us
+get_key: key lag 60 us
+get_key: key lag 72 us
+get_key: key lag 74 us
+get_key: key lag 59 us
+get_key: key lag 59 us
+get_key: key lag 57 us
+get_key: key lag 69 us
+get_key: key lag 65 us
+get_key: key lag 62 us
+get_key: key lag 61 us
+get_key: key lag 62 us
+get_key: key lag 69 us
+get_key: key lag 73 us
+get_key: key lag 67 us
+get_key: key lag 62 us
+get_key: key lag 60 us
+get_key: key lag 54 us
+
+
+@key_lag_us:
+[32, 64)              36 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                    |
+[64, 128)             58 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+
+/////////////////////////////////////////////////////////////
+
+Attaching 4 probes...
+Tracing... stress_n: 10
+get_key: key lag 46 us
+get_key: key lag 44 us
+get_key: key lag 46 us
+get_key: key lag 43 us
+get_key: key lag 42 us
+get_key: key lag 42 us
+get_key: key lag 41 us
+get_key: key lag 50 us
+get_key: key lag 42 us
+get_key: key lag 44 us
+get_key: key lag 41 us
+get_key: key lag 45 us
+get_key: key lag 46 us
+get_key: key lag 51 us
+get_key: key lag 43 us
+get_key: key lag 42 us
+get_key: key lag 41 us
+get_key: key lag 46 us
+get_key: key lag 41 us
+get_key: key lag 42 us
+get_key: key lag 42 us
+get_key: key lag 40 us
+get_key: key lag 47 us
+get_key: key lag 49 us
+get_key: key lag 46 us
+get_key: key lag 41 us
+get_key: key lag 42 us
+get_key: key lag 49 us
+get_key: key lag 45 us
+get_key: key lag 43 us
+get_key: key lag 42 us
+get_key: key lag 42 us
+get_key: key lag 46 us
+get_key: key lag 48 us
+get_key: key lag 44 us
+get_key: key lag 40 us
+get_key: key lag 43 us
+get_key: key lag 47 us
+get_key: key lag 43 us
+get_key: key lag 52 us
+get_key: key lag 42 us
+get_key: key lag 43 us
+get_key: key lag 48 us
+get_key: key lag 45 us
+get_key: key lag 44 us
+get_key: key lag 61 us
+get_key: key lag 68 us
+get_key: key lag 63 us
+get_key: key lag 63 us
+get_key: key lag 62 us
+get_key: key lag 55 us
+get_key: key lag 60 us
+get_key: key lag 66 us
+get_key: key lag 68 us
+get_key: key lag 61 us
+get_key: key lag 61 us
+get_key: key lag 62 us
+get_key: key lag 63 us
+get_key: key lag 64 us
+get_key: key lag 61 us
+get_key: key lag 60 us
+get_key: key lag 58 us
+get_key: key lag 64 us
+get_key: key lag 59 us
+get_key: key lag 58 us
+get_key: key lag 60 us
+get_key: key lag 59 us
+get_key: key lag 63 us
+get_key: key lag 64 us
+get_key: key lag 61 us
+get_key: key lag 58 us
+get_key: key lag 62 us
+get_key: key lag 64 us
+get_key: key lag 58 us
+get_key: key lag 52 us
+get_key: key lag 54 us
+get_key: key lag 62 us
+get_key: key lag 57 us
+get_key: key lag 64 us
+get_key: key lag 60 us
+get_key: key lag 58 us
+get_key: key lag 60 us
+get_key: key lag 65 us
+get_key: key lag 69 us
+get_key: key lag 63 us
+get_key: key lag 61 us
+get_key: key lag 60 us
+get_key: key lag 63 us
+get_key: key lag 59 us
+get_key: key lag 61 us
+get_key: key lag 63 us
+get_key: key lag 57 us
+get_key: key lag 62 us
+get_key: key lag 66 us
+
+
+@key_lag_us:
+[32, 64)              43 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@         |
+[64, 128)             51 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+
+
+///////////////////////////////////////////////////////////////////
+
+Attaching 4 probes...
+Tracing... stress_n: 100
+get_key: key lag 45 us
+get_key: key lag 44 us
+get_key: key lag 44 us
+get_key: key lag 42 us
+get_key: key lag 43 us
+get_key: key lag 45 us
+get_key: key lag 51 us
+get_key: key lag 42 us
+get_key: key lag 41 us
+get_key: key lag 54 us
+get_key: key lag 42 us
+get_key: key lag 43 us
+get_key: key lag 43 us
+get_key: key lag 41 us
+get_key: key lag 42 us
+get_key: key lag 47 us
+get_key: key lag 45 us
+get_key: key lag 44 us
+get_key: key lag 43 us
+get_key: key lag 52 us
+get_key: key lag 41 us
+get_key: key lag 43 us
+get_key: key lag 42 us
+get_key: key lag 43 us
+get_key: key lag 47 us
+get_key: key lag 50 us
+get_key: key lag 44 us
+get_key: key lag 49 us
+get_key: key lag 41 us
+get_key: key lag 41 us
+get_key: key lag 41 us
+get_key: key lag 44 us
+get_key: key lag 43 us
+get_key: key lag 43 us
+get_key: key lag 47 us
+get_key: key lag 45 us
+get_key: key lag 46 us
+get_key: key lag 46 us
+get_key: key lag 46 us
+get_key: key lag 51 us
+get_key: key lag 47 us
+get_key: key lag 44 us
+get_key: key lag 53 us
+get_key: key lag 45 us
+get_key: key lag 47 us
+get_key: key lag 69 us
+get_key: key lag 70 us
+get_key: key lag 64 us
+get_key: key lag 60 us
+get_key: key lag 64 us
+get_key: key lag 60 us
+get_key: key lag 59 us
+get_key: key lag 59 us
+get_key: key lag 57 us
+get_key: key lag 60 us
+get_key: key lag 59 us
+get_key: key lag 57 us
+get_key: key lag 58 us
+get_key: key lag 61 us
+get_key: key lag 59 us
+get_key: key lag 60 us
+get_key: key lag 63 us
+get_key: key lag 61 us
+get_key: key lag 63 us
+get_key: key lag 62 us
+get_key: key lag 61 us
+get_key: key lag 62 us
+get_key: key lag 65 us
+get_key: key lag 63 us
+get_key: key lag 65 us
+get_key: key lag 68 us
+get_key: key lag 70 us
+get_key: key lag 61 us
+get_key: key lag 62 us
+get_key: key lag 65 us
+get_key: key lag 61 us
+get_key: key lag 62 us
+get_key: key lag 61 us
+get_key: key lag 61 us
+get_key: key lag 66 us
+get_key: key lag 64 us
+get_key: key lag 61 us
+get_key: key lag 63 us
+get_key: key lag 68 us
+get_key: key lag 67 us
+get_key: key lag 60 us
+get_key: key lag 67 us
+get_key: key lag 61 us
+get_key: key lag 60 us
+get_key: key lag 78 us
+get_key: key lag 60 us
+get_key: key lag 64 us
+get_key: key lag 60 us
+get_key: key lag 62 us
+
+
+@key_lag_us:
+[32, 64)              40 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@              |
+[64, 128)             54 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+
+//////////////////////////////////////////////
+
+Attaching 4 probes...
+Tracing... stress_n: 1000
+get_key: key lag 44 us
+get_key: key lag 43 us
+get_key: key lag 46 us
+get_key: key lag 46 us
+get_key: key lag 46 us
+get_key: key lag 44 us
+get_key: key lag 44 us
+get_key: key lag 54 us
+get_key: key lag 54 us
+get_key: key lag 47 us
+get_key: key lag 49 us
+get_key: key lag 48 us
+get_key: key lag 47 us
+get_key: key lag 48 us
+get_key: key lag 47 us
+get_key: key lag 46 us
+get_key: key lag 47 us
+get_key: key lag 51 us
+get_key: key lag 53 us
+get_key: key lag 47 us
+get_key: key lag 45 us
+get_key: key lag 46 us
+get_key: key lag 46 us
+get_key: key lag 53 us
+get_key: key lag 47 us
+get_key: key lag 54 us
+get_key: key lag 43 us
+get_key: key lag 44 us
+get_key: key lag 51 us
+get_key: key lag 45 us
+get_key: key lag 44 us
+get_key: key lag 44 us
+get_key: key lag 46 us
+get_key: key lag 51 us
+get_key: key lag 49 us
+get_key: key lag 46 us
+get_key: key lag 46 us
+get_key: key lag 47 us
+get_key: key lag 51 us
+get_key: key lag 45 us
+get_key: key lag 46 us
+get_key: key lag 49 us
+get_key: key lag 47 us
+get_key: key lag 47 us
+get_key: key lag 48 us
+get_key: key lag 60 us
+get_key: key lag 54 us
+get_key: key lag 60 us
+get_key: key lag 62 us
+get_key: key lag 54 us
+get_key: key lag 57 us
+get_key: key lag 54 us
+get_key: key lag 56 us
+get_key: key lag 52 us
+get_key: key lag 53 us
+get_key: key lag 54 us
+get_key: key lag 52 us
+get_key: key lag 52 us
+get_key: key lag 52 us
+get_key: key lag 61 us
+get_key: key lag 58 us
+get_key: key lag 54 us
+get_key: key lag 68 us
+get_key: key lag 54 us
+get_key: key lag 59 us
+get_key: key lag 52 us
+get_key: key lag 59 us
+get_key: key lag 54 us
+get_key: key lag 60 us
+get_key: key lag 52 us
+get_key: key lag 59 us
+get_key: key lag 53 us
+get_key: key lag 55 us
+get_key: key lag 57 us
+get_key: key lag 52 us
+get_key: key lag 58 us
+get_key: key lag 52 us
+get_key: key lag 53 us
+get_key: key lag 66 us
+get_key: key lag 53 us
+get_key: key lag 54 us
+get_key: key lag 52 us
+get_key: key lag 61 us
+get_key: key lag 54 us
+get_key: key lag 56 us
+get_key: key lag 55 us
+get_key: key lag 53 us
+get_key: key lag 53 us
+get_key: key lag 58 us
+get_key: key lag 54 us
+get_key: key lag 62 us
+get_key: key lag 55 us
+get_key: key lag 61 us
+get_key: key lag 56 us
+
+
+@key_lag_us:
+[32, 64)              35 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                      |
+[64, 128)             59 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+
+////////////////////////////////////////////////
+
+Attaching 4 probes...
+Tracing... stress_n: 2500
+get_key: key lag 670 us
+get_key: key lag 2540 us
+get_key: key lag 10564 us
+get_key: key lag 12634 us
+get_key: key lag 20857 us
+get_key: key lag 20844 us
+get_key: key lag 24404 us
+get_key: key lag 28002 us
+get_key: key lag 37453 us
+get_key: key lag 48656 us
+get_key: key lag 46046 us
+get_key: key lag 50976 us
+get_key: key lag 55647 us
+get_key: key lag 58342 us
+get_key: key lag 59292 us
+get_key: key lag 63196 us
+get_key: key lag 66881 us
+get_key: key lag 67612 us
+get_key: key lag 63300 us
+get_key: key lag 64110 us
+get_key: key lag 64222 us
+get_key: key lag 64092 us
+get_key: key lag 65643 us
+get_key: key lag 65270 us
+get_key: key lag 66865 us
+get_key: key lag 101444 us
+get_key: key lag 103008 us
+get_key: key lag 109673 us
+get_key: key lag 111934 us
+get_key: key lag 113593 us
+get_key: key lag 122852 us
+get_key: key lag 128986 us
+get_key: key lag 131984 us
+get_key: key lag 137280 us
+get_key: key lag 144904 us
+get_key: key lag 151653 us
+get_key: key lag 157896 us
+get_key: key lag 165542 us
+get_key: key lag 173238 us
+get_key: key lag 178249 us
+get_key: key lag 174798 us
+get_key: key lag 173237 us
+get_key: key lag 172763 us
+get_key: key lag 170185 us
+get_key: key lag 209969 us
+get_key: key lag 211202 us
+get_key: key lag 219592 us
+get_key: key lag 222972 us
+get_key: key lag 231833 us
+get_key: key lag 232557 us
+get_key: key lag 240976 us
+get_key: key lag 243885 us
+get_key: key lag 244283 us
+get_key: key lag 246645 us
+get_key: key lag 248850 us
+get_key: key lag 256061 us
+get_key: key lag 259117 us
+get_key: key lag 267660 us
+get_key: key lag 267028 us
+get_key: key lag 276318 us
+get_key: key lag 275083 us
+get_key: key lag 271962 us
+get_key: key lag 274988 us
+get_key: key lag 274587 us
+get_key: key lag 273904 us
+get_key: key lag 271078 us
+get_key: key lag 269362 us
+get_key: key lag 309043 us
+get_key: key lag 309813 us
+get_key: key lag 311564 us
+get_key: key lag 321852 us
+get_key: key lag 327257 us
+get_key: key lag 333560 us
+get_key: key lag 336092 us
+get_key: key lag 343732 us
+get_key: key lag 347863 us
+get_key: key lag 351738 us
+get_key: key lag 363929 us
+get_key: key lag 372275 us
+get_key: key lag 381927 us
+get_key: key lag 391584 us
+get_key: key lag 393235 us
+
+
+@key_lag_us:
+[512, 1K)              1 |@@                                                  |
+[1K, 2K)               0 |                                                    |
+[2K, 4K)               1 |@@                                                  |
+[4K, 8K)               0 |                                                    |
+[8K, 16K)              2 |@@@@                                                |
+[16K, 32K)             4 |@@@@@@@@                                            |
+[32K, 64K)            13 |@@@@@@@@@@@@@@@@@@@@@@@@@@@                         |
+[64K, 128K)           11 |@@@@@@@@@@@@@@@@@@@@@@                              |
+[128K, 256K)          25 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[256K, 512K)          25 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+
+
+///////////////////////////////////
+
+Attaching 4 probes...
+Tracing... stress_n: 5000
+get_key: key lag 29143 us
+get_key: key lag 101884 us
+get_key: key lag 175767 us
+get_key: key lag 256704 us
+get_key: key lag 322765 us
+get_key: key lag 427249 us
+get_key: key lag 501304 us
+get_key: key lag 571674 us
+get_key: key lag 643299 us
+get_key: key lag 719266 us
+get_key: key lag 792375 us
+get_key: key lag 864365 us
+get_key: key lag 937456 us
+get_key: key lag 998842 us
+get_key: key lag 1077631 us
+get_key: key lag 1159044 us
+get_key: key lag 1225710 us
+get_key: key lag 1300325 us
+get_key: key lag 1337146 us
+get_key: key lag 1441937 us
+get_key: key lag 1508421 us
+get_key: key lag 1593381 us
+get_key: key lag 1672292 us
+get_key: key lag 1762683 us
+get_key: key lag 1835852 us
+get_key: key lag 1892926 us
+get_key: key lag 1983831 us
+get_key: key lag 2062717 us
+get_key: key lag 2145427 us
+get_key: key lag 2225248 us
+get_key: key lag 2297988 us
+get_key: key lag 2378054 us
+get_key: key lag 2442811 us
+get_key: key lag 2530326 us
+get_key: key lag 2604994 us
+get_key: key lag 2686768 us
+get_key: key lag 2760834 us
+get_key: key lag 2803250 us
+get_key: key lag 2912370 us
+get_key: key lag 2978071 us
+get_key: key lag 3072695 us
+get_key: key lag 3135949 us
+get_key: key lag 3213706 us
+get_key: key lag 3285159 us
+get_key: key lag 3359573 us
+get_key: key lag 3432225 us
+get_key: key lag 3485286 us
+get_key: key lag 3581889 us
+get_key: key lag 3657519 us
+get_key: key lag 3742821 us
+get_key: key lag 3819047 us
+get_key: key lag 3901441 us
+get_key: key lag 3981804 us
+
+
+@key_lag_us:
+[16K, 32K)             1 |@@                                                  |
+[32K, 64K)             0 |                                                    |
+[64K, 128K)            1 |@@                                                  |
+[128K, 256K)           2 |@@@@                                                |
+[256K, 512K)           3 |@@@@@@                                              |
+[512K, 1M)             7 |@@@@@@@@@@@@@@                                      |
+[1M, 2M)              14 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       |
+[2M, 4M)              25 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+
+
+//////////////////////////////////////
+Tracing... stress_n: 7000
+get_key: key lag 83990 us
+get_key: key lag 213851 us
+get_key: key lag 376918 us
+get_key: key lag 511072 us
+get_key: key lag 650323 us
+get_key: key lag 796018 us
+get_key: key lag 919401 us
+get_key: key lag 1087292 us
+get_key: key lag 1227961 us
+get_key: key lag 1359760 us
+get_key: key lag 1502495 us
+get_key: key lag 1644919 us
+get_key: key lag 1780625 us
+get_key: key lag 1917331 us
+get_key: key lag 2064812 us
+get_key: key lag 2209866 us
+get_key: key lag 2362303 us
+get_key: key lag 2510486 us
+get_key: key lag 2623196 us
+get_key: key lag 2801569 us
+get_key: key lag 2938792 us
+get_key: key lag 3083343 us
+get_key: key lag 3222330 us
+get_key: key lag 3360225 us
+get_key: key lag 3501465 us
+get_key: key lag 3651000 us
+get_key: key lag 3794777 us
+get_key: key lag 3940059 us
+get_key: key lag 4082605 us
+get_key: key lag 4224342 us
+get_key: key lag 4351455 us
+get_key: key lag 4510333 us
+get_key: key lag 4649089 us
+get_key: key lag 4790266 us
+get_key: key lag 4934856 us
+get_key: key lag 5092111 us
+get_key: key lag 5239843 us
+get_key: key lag 5380283 us
+get_key: key lag 5527109 us
+
+
+@key_lag_us:
+[64K, 128K)            1 |@@@                                                 |
+[128K, 256K)           1 |@@@                                                 |
+[256K, 512K)           2 |@@@@@@@                                             |
+[512K, 1M)             3 |@@@@@@@@@@@                                         |
+[1M, 2M)               8 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       |
+[2M, 4M)              14 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[4M, 8M)              10 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@               |
+
+@knr: 40
+@kns: 94
+
+///////////////////////////////////////////////////
+
+Attaching 4 probes...
+Tracing... stress_n: 10000
+get_key: key lag 185296 us
+get_key: key lag 395255 us
+get_key: key lag 590063 us
+get_key: key lag 821474 us
+get_key: key lag 1038827 us
+get_key: key lag 1234884 us
+get_key: key lag 1490140 us
+get_key: key lag 1703112 us
+get_key: key lag 1925220 us
+get_key: key lag 2141148 us
+get_key: key lag 2351469 us
+get_key: key lag 2564905 us
+get_key: key lag 2781339 us
+get_key: key lag 2995258 us
+get_key: key lag 3217988 us
+get_key: key lag 3431884 us
+get_key: key lag 3643948 us
+get_key: key lag 3855062 us
+get_key: key lag 4066965 us
+get_key: key lag 4303436 us
+get_key: key lag 4512842 us
+get_key: key lag 4703317 us
+get_key: key lag 4952745 us
+get_key: key lag 5181626 us
+get_key: key lag 5400539 us
+get_key: key lag 5623832 us
+get_key: key lag 5846980 us
+get_key: key lag 6078978 us
+get_key: key lag 6312552 us
+
+
+@key_lag_us:
+[128K, 256K)           1 |@@@@@                                               |
+[256K, 512K)           1 |@@@@@                                               |
+[512K, 1M)             3 |@@@@@@@@@@@@@@@                                     |
+[1M, 2M)               4 |@@@@@@@@@@@@@@@@@@@@                                |
+[2M, 4M)              10 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[4M, 8M)              10 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|

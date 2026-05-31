@@ -24,6 +24,8 @@
 #define APP_MANAGER_PATH "/usr/local/bin/app_manager"
 #endif
 
+#define TEST_STRESS_PATH "/home/mmmek0401/lcd/example/stress/build/stress"
+
 int main()
 {
     std::signal(SIGPIPE, SIG_IGN);
@@ -63,7 +65,7 @@ int main()
 
     // --- Bring up app_manager (init's first child) ---
     auto launcher = std::make_unique<NonBlockingProcessLauncher>();
-    launcher->launch(APP_MANAGER_PATH);
+    launcher->launch(TEST_STRESS_PATH);
     std::cout << "[server] launched app_manager" << std::endl;
 
     // --- Reactor loop (blocks forever) ---

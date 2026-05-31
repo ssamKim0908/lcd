@@ -1,0 +1,22 @@
+uprobe:/PATH/TO/stress:"*StressApp*on_draw*"   { @d[tid] = nsecs; }
+uretprobe:/PATH/TO/stress:"*StressApp*on_draw*" /@d[tid]/
+{
+    @on_draw_us = hist((nsecs - @d[tid]) / 1000);
+    delete(@d[tid]);
+}
+
+uprobe:/PATH/TO/stress:"*App*on_render*"   { @r[tid] = nsecs; }
+uretprobe:/PATH/TO/stress:"*App*on_render*" /@r[tid]/
+{
+    @on_render_us = hist((nsecs - @r[tid]) / 1000);
+    delete(@r[tid]);
+}
+
+uprobe:/PATH/TO/stress:"*recv_key*"   { @k[tid] = nsecs; }
+uretprobe:/PATH/TO/stress:"*recv_key*" /@k[tid]/
+{
+    @get_key_us = hist((nsecs - @k[tid]) / 1000);
+    delete(@k[tid]);
+}
+
+END { clear(@d); clear(@r); clear(@k); clear(@s); }

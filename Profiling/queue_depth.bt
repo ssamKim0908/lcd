@@ -1,0 +1,14 @@
+tracepoint:syscalls:sys_exit_sendto   /comm == "stress" && args->ret > 0/
+{
+    @inflight++;
+    @qdepth = hist(@inflight);          /* send 시점의 큐 깊이 분포 → max 버킷 = 버퍼 용량 */
+}
+
+tracepoint:syscalls:sys_exit_recvfrom /comm == "lcd_driver" && args->ret > 0/
+{
+    if (@inflight > 0) { @inflight--; }  /* 추적 시작 타이밍에 음수 되는 것 방지 */
+}
+
+interval:ms:20 { printf("inflight=%d\n", @inflight); }   /* 20ms 마다 현재 큐 깊이(시계열) */
+
+END { clear(@inflight); }

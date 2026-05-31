@@ -1,0 +1,21 @@
+BEGIN 
+{ 
+    @kns = 0; @knr = 1; 
+    printf("Tracing... stress_n: %d\n", $1);
+}
+
+tracepoint:syscalls:sys_exit_sendto /comm == "lcd_driver"/
+{
+    @ksent[@kns] = nsecs;
+    @kns++;
+}
+
+uretprobe:/PATH/TO/stress:_ZN3sdk3Key7get_keyEv
+{
+    $i = @knr; @knr++;
+    if (@ksent[$i] != 0) {
+        printf("get_key: key lag %d us\n", (nsecs - @ksent[$i]) / 1000);
+        @key_lag_us = hist((nsecs - @ksent[$i]) / 1000);
+        delete(@ksent[$i]);
+    }
+}

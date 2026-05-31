@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -I. -MMD
+CXXFLAGS = -std=c++17 -Wall -I. -MMD -pthread
 
 PLATFORM ?= host
 ifeq ($(PLATFORM),device)

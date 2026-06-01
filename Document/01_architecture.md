@@ -7,7 +7,8 @@
 
 
 ### 시퀀스 다이어 그램
-여기 그림 필요
+
+![App Lifecycle Sequence](image/app_lifecycle_sequence.svg)
 
 ### Server
 LCD 렌더링, GPIO 키 입력, 클라이언트 연결을 관리하는 프로세스.
@@ -32,23 +33,11 @@ Server에 Draw를 요청하고 키 이벤트를 받아 동작합니다.
 
 ## 2. Layer
 
+![Layered Architecture](image/layered_architecture.svg)
+
 코드는 **OSAL** 과 **순수 C++ layer** 로 나뉩니다.
 
-### 여기 그림 필요
 
-```
-┌──────────────────────────────────────────────┐
-│  C++ Layer (순수 C++)                         │
-│  framework(Server) · app_manager · sdk · app  │
-└─────────────────────┬────────────────────────┘
-                      │  의존은 ↓ 한 방향만
-┌─────────────────────▼────────────────────────┐
-│  OSAL  (리눅스 syscall 을 감싼 C++)           │
-│  spi · gpio · epoll · ipc(uds) · process      │
-└─────────────────────┬────────────────────────┘
-                      ▼
-                Linux Kernel
-```
 
 - C++ 와 C syscall 코드를 격리하는 것이 목적입니다.
 - 리눅스 또는 C언어 관련 코드는 전부 OSAL(`osal/`)에서 볼 수 있습니다.

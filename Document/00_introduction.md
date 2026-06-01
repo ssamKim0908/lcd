@@ -1,10 +1,12 @@
-# LCD Framework
+# 0. Introduction
+
+## 개요
 
 이 프로젝트는 Raspberry Pi Zero 2W와 1.3인치 TFT LCD 디스플레이를 위한 C++ 기반의 LCD 애플리케이션 프레임워크입니다. 
 
 기존 제조사([Seengreat](https://github.com/seengreat/1.3inch-LCD-Display))에서 제공하는 C 언어 기반의 드라이버 코드를 C++ 구조로 재설계하여, 더 쉽고 확장성 있는 LCD 애플리케이션 개발 환경을 제공합니다.
 
----
+Client-Server 구조로 설계하여 LCD 제어 로직(Server)과 애플리케이션(Client/SDK)을 분리하였습니다.
 
 ## 주요 특징
 
@@ -16,7 +18,7 @@
     - **OS Abstract Layer (OSAL)**: raw C 시스템콜을 이용하는 C++ Layer.
     - **Application Layer** (server, app_manager, SDK, app): 순수 C++.
 
----
+
 
 ## 하드웨어 및 소프트웨어
 
@@ -57,4 +59,23 @@ lcd/
 ├── Profiling/           # 성능 측정 (bpftrace 스크립트 + 데이터)
 └── Document/            # 문서
 ```
+
+## 빠른 시작
+
+```bash
+# 1) 최초 1회 — 드라이버 빌드 + SDK 패키지 동기화
+cd C++_LCD_Driver && make PLATFORM=device
+cd ../example && make sync-sdk
+
+# 2) 매 앱마다 — 빌드 + 등록
+cd hello
+make
+make register
+
+# 3) 서버 실행 → 메뉴에 등록된 앱들 보임
+cd ../../C++_LCD_Driver && ./build/lcd_driver
+```
+
 ---
+
+다음 → [1. Architecture](01_architecture.md)

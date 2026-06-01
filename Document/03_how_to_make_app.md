@@ -1,12 +1,12 @@
 # 3. How to Make App
 
-이 문서는 **SDK** 의 구조와, 그 SDK로 **App을 만드는 방법**을 설명합니다.
+이 문서는 SDK 의 구조와, 그 SDK로 App을 만드는 방법을 설명합니다.
 
 ---
 
 ## 1. SDK: 공개 / 비공개
 
-SDK는 **공개(public)** 와 **비공개(internal)** 로 나뉩니다.
+SDK는 공개(public) 와 비공개(internal) 로 나뉩니다.
 
 | 구분 | 내용 | 사용자에게 |
 |---|---|---|
@@ -23,17 +23,17 @@ dist/
     └── libsdk.a      ← 구현 (공개 + 비공개 전부 컴파일된 결과)
 ```
 
-비공개 코드(`sdk/internal/`)는 `libsdk.a` 안에 컴파일되어 있지만, **헤더는 공개되지 않습니다.**
+비공개 코드(`sdk/internal/`)는 `libsdk.a` 안에 컴파일되어 있지만, 헤더는 공개되지 않습니다.
 
 ---
 
 ## 2. 공개 헤더 + libsdk.a 만으로 개발 가능
 
-App을 만들 때 필요한 건 **공개 헤더(`include/`) 와 라이브러리 파일(`libsdk.a`)** 뿐입니다.
-IPC·UDS·직렬화 같은 **내부 비공개를 전혀 몰라도** App을 개발할 수 있습니다.
+App을 만들 때 필요한 건 공개 헤더(`include/`) 와 라이브러리 파일(`libsdk.a`) 뿐입니다.
+IPC·UDS·직렬화 같은 내부 비공개를 전혀 몰라도 App을 개발할 수 있습니다.
 
-- 만든 App은 **App Manager에 등록**해서 메뉴로 실행하는 것이 기본입니다.
-- 단, App은 Server에 연결되는 독립 프로세스일 뿐입니다. 실행 구조를 바꾸면(예: Server가 직접 실행) App Manager 없이 **단독으로도** 동작시킬 수 있습니다. 다만, 이는 framework의 코드를 직접 이해하고, 수정해야 합니다.
+- 만든 App은 App Manager에 등록해서 메뉴로 실행하는 것이 기본입니다.
+- 단, App은 Server에 연결되는 독립 프로세스일 뿐입니다. 실행 구조를 바꾸면(예: Server가 직접 실행) App Manager 없이 단독으로도 동작시킬 수 있습니다. 다만, 이는 framework의 코드를 직접 이해하고, 수정해야 합니다.
 
 ---
 
@@ -73,15 +73,15 @@ void App::run()
 ```
 
 
-핵심은 **그리기는 `on_draw()` 한 곳에 모으고, `on_key()` 는 상태만 바꾼다**는 점입니다.
+핵심은 그리기는 `on_draw()` 한 곳에 모으고, `on_key()` 는 상태만 바꾼다는 점입니다.
 키가 들어오면 `run()` 이 알아서 `on_draw()` 를 다시 불러 화면을 갱신하므로, `on_key()` 안에서 직접 그릴 필요가 없습니다. 화면 전송(`render`)도 `run()` 이 자동으로 처리합니다.
 
 **사용자가 구현해야 하는 메소드 (순수 가상):**
 
 | 메소드 | 여기서 할 일 |
 |---|---|
-| `on_draw()` | 현재 상태를 화면에 그립니다. 보통 `draw().clear(...)` 로 지우고 처음부터 다시 그립니다. **그리기 코드만** 둡니다. |
-| `on_key(const KeyEvent& ev)` | 눌린 키에 따라 **내부 상태(변수)를 바꿉니다.** 앱을 끝내려면 `exit()` 를 호출합니다. 그리기는 하지 않습니다. |
+| `on_draw()` | 현재 상태를 화면에 그립니다. 보통 `draw().clear(...)` 로 지우고 처음부터 다시 그립니다. 그리기 코드만 둡니다. |
+| `on_key(const KeyEvent& ev)` | 눌린 키에 따라 내부 상태(변수)를 바꿉니다. 앱을 끝내려면 `exit()` 를 호출합니다. 그리기는 하지 않습니다. |
 
 최소 예제:
 
@@ -147,8 +147,8 @@ make unregister
 | 메소드 | 접근 | 설명 |
 |---|---|---|
 | `run()` | public | 이벤트 루프 시작. `main()` 에서 한 번 호출 |
-| `on_draw()` | protected, **순수가상** | 화면을 그림. 매 프레임 호출됨. **구현 필수** |
-| `on_key(const KeyEvent&)` | protected, **순수가상** | 키 이벤트 처리. **구현 필수** |
+| `on_draw()` | protected, **순수가상** | 화면을 그림. 매 프레임 호출됨. |
+| `on_key(const KeyEvent&)` | protected, **순수가상** | 키 이벤트 처리. |
 | `draw()` → `Draw&` | protected | `Draw` 객체 접근 |
 | `key()` → `Key&` | protected | `Key` 객체 접근 (보통 직접 안 씀) |
 | `exit()` | protected | 이벤트 루프를 끝내 앱을 종료 |
@@ -206,8 +206,8 @@ enum class KeyState { Pressed, Released };
 
 ## 7. pImpl
 
-`App`, `Draw`, `Key` 는 모두 **pImpl(pointer to implementation)** 패턴입니다.
-공개 헤더에는 구현 클래스의 **전방 선언 + `unique_ptr` 멤버**만 두고, 실제 구현은 `libsdk.a` 안에 숨깁니다.
+`App`, `Draw`, `Key` 는 모두 pImpl(pointer to implementation) 패턴입니다.
+공개 헤더에는 구현 클래스의 전방 선언 + `unique_ptr` 멤버만 두고, 실제 구현은 `libsdk.a` 안에 숨깁니다.
 
 ```cpp
 // App.hpp (공개)

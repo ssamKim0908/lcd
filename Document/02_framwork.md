@@ -1,6 +1,6 @@
 # 2. Framework
 
-이 문서는 **Server** 와 **App Manager** 를 소스 코드 중심으로 설명합니다.
+이 문서는 Server 와 App Manager 를 소스 코드 중심으로 설명합니다.
 
 ---
 
@@ -8,7 +8,7 @@
 
 소스: [framework/Server.hpp](C++_LCD_Driver/framework/Server.hpp), [framework/Server.cpp](C++_LCD_Driver/framework/Server.cpp)
 
-`Server` 는 의존성을 **생성자 주입**으로 받습니다. 구체 타입을 만들어 넘기는 곳은 [main.cpp](C++_LCD_Driver/main.cpp) 뿐입니다.
+`Server` 는 의존성을 생성자 주입으로 받습니다. 구체 타입을 만들어 넘기는 곳은 [main.cpp](C++_LCD_Driver/main.cpp) 뿐입니다.
 
 ```cpp
 Server(std::unique_ptr<IServer>    server,    // UDS 리슨 소켓
@@ -64,12 +64,12 @@ class IPoller {
 ```
 
 - `Epoll` 생성자에서 `epoll_create1`, `add/del` 은 `epoll_ctl`, `wait` 은 `epoll_wait` 을 호출합니다.
-- `wait()` 는 `epoll_wait(.., maxevents=1, timeout=-1)` 이라 **이벤트 하나를 무한 대기**합니다.
+- `wait()` 는 `epoll_wait(.., maxevents=1, timeout=-1)` 이라 이벤트 하나를 무한 대기합니다.
 - Level-Triggered 방식으로 구현했습니다. 수정을 원하시면 epoll 관련 파일에서 수정하면 됩니다.
 
 ### 1.2 키 입력 포커싱 (FocusStack)
 
-여러 클라이언트(App Manager, App)가 동시에 연결될 수 있지만, **키와 화면을 갖는 건 항상 하나**입니다. Server는 연결된 채널을 `FocusStack`(스택)으로 관리하고, **맨 위(top)** 만 활성으로 봅니다.
+여러 클라이언트(App Manager, App)가 동시에 연결될 수 있지만, 키와 화면을 갖는 건 항상 하나입니다. Server는 연결된 채널을 `FocusStack`(스택)으로 관리하고, 맨 위(top) 만 활성으로 봅니다.
 
 ```cpp
 class FocusStack {
@@ -78,7 +78,7 @@ class FocusStack {
 };
 ```
 
-포커싱의 핵심은 **epoll에는 항상 `리슨 소켓 + 키 fd + top 클라이언트 fd` 만 등록**한다는 점입니다.
+포커싱의 핵심은 epoll에는 항상 `리슨 소켓 + 키 fd + top 클라이언트 fd` 만 등록한다는 점입니다.
 
 - **`on_accept()`** — 새 클라이언트가 접속하면, 기존 top을 epoll에서 `del` 하고 새 채널을 push한 뒤 새 fd를 `add`합니다. → 새 클라이언트가 top(활성)이 됩니다.
 
@@ -89,7 +89,7 @@ class FocusStack {
 
 - **`disconnect_top()`** — top이 끊기면 pop하고, 바로 아래 클라이언트를 다시 epoll에 `add` 하여 top으로 복귀시킵니다.
 
-이 동작이 **App 종료 → App Manager 복귀** 를 자연스럽게 만듭니다.
+이 동작이 App 종료 → App Manager 복귀 를 자연스럽게 만듭니다.
 
 ```
 접속 순서             FocusStack (top = 활성)
@@ -104,7 +104,7 @@ App 종료          →   [App Manager]         ← App Manager 가 다시 활�
 
 소스: [app_manager/](C++_LCD_Driver/app_manager/)
 
-App Manager는 그 자체로 **SDK로 만든 클라이언트**입니다. [AppManager.hpp](C++_LCD_Driver/app_manager/AppManager.hpp) 를 보면 `sdk::App` 을 상속하고 `on_draw()`(메뉴 그리기) / `on_key()`(메뉴 이동·선택)만 구현합니다. 즉 일반 App과 동일한 방식으로 동작합니다.
+App Manager는 그 자체로 SDK로 만든 클라이언트입니다. [AppManager.hpp](C++_LCD_Driver/app_manager/AppManager.hpp) 를 보면 `sdk::App` 을 상속하고 `on_draw()`(메뉴 그리기) / `on_key()`(메뉴 이동·선택)만 구현합니다. 즉 일반 App과 동일한 방식으로 동작합니다.
 
 ### 2.1 어떻게 App을 실행시키는지
 

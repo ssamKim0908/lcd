@@ -1,9 +1,7 @@
 #pragma once
 #include "../../../interface/IProxyClient.hpp"
 #include "../../../util/IpcSerializer.hpp"
-#include <cstddef>
 #include <memory>
-#include <vector>
 
 class ISender;
 
@@ -14,7 +12,6 @@ class IpcCToS : public IProxyClientToServer
 {
 private:
     std::shared_ptr<ISender>  sender_;
-    std::vector<std::byte>    buffer_;
     util::ipc::Writer         writer_;
 
 public:

@@ -6,50 +6,55 @@ namespace util::ipc
 {
 // ===== Writer =====
 
-void Writer::put_u8(std::vector<std::byte>& buf, uint8_t x) const
+void Writer::clear()
 {
-    buf.push_back(static_cast<std::byte>(x));
+    buffer_.clear();
 }
 
-void Writer::put_u16(std::vector<std::byte>& buf, uint16_t x) const
+void Writer::put_u8(uint8_t x)
+{
+    buffer_.push_back(static_cast<std::byte>(x));
+}
+
+void Writer::put_u16(uint16_t x)
 {
     const auto* p = reinterpret_cast<const std::byte*>(&x);
-    buf.insert(buf.end(), p, p + sizeof(x));
+    buffer_.insert(buffer_.end(), p, p + sizeof(x));
 }
 
-void Writer::put_ui32(std::vector<std::byte>& buf, uint32_t x) const
+void Writer::put_u32(uint32_t x)
 {
     const auto* p = reinterpret_cast<const std::byte*>(&x);
-    buf.insert(buf.end(), p, p + sizeof(x));
+    buffer_.insert(buffer_.end(), p, p + sizeof(x));
 }
 
-void Writer::put_i8(std::vector<std::byte>& buf, int8_t x) const
+void Writer::put_i8(int8_t x)
 {
-    buf.push_back(static_cast<std::byte>(static_cast<uint8_t>(x)));
+    buffer_.push_back(static_cast<std::byte>(x));
 }
 
-void Writer::put_i16(std::vector<std::byte>& buf, int16_t x) const
-{
-    const auto* p = reinterpret_cast<const std::byte*>(&x);
-    buf.insert(buf.end(), p, p + sizeof(x));
-}
-
-void Writer::put_i32(std::vector<std::byte>& buf, int32_t x) const
+void Writer::put_i16(int16_t x)
 {
     const auto* p = reinterpret_cast<const std::byte*>(&x);
-    buf.insert(buf.end(), p, p + sizeof(x));
+    buffer_.insert(buffer_.end(), p, p + sizeof(x));
 }
 
-void Writer::put_text_size(std::vector<std::byte>& buf, util::font::TextSize size) const
+void Writer::put_i32(int32_t x)
 {
-    put_u8(buf, static_cast<uint8_t>(size));
+    const auto* p = reinterpret_cast<const std::byte*>(&x);
+    buffer_.insert(buffer_.end(), p, p + sizeof(x));
 }
 
-void Writer::put_string(std::vector<std::byte>& buf, std::string_view s) const
+void Writer::put_text_size(util::font::TextSize size)
 {
-    put_u8(buf, static_cast<uint8_t>(s.size()));
+    put_u8(static_cast<uint8_t>(size));
+}
+
+void Writer::put_string(const std::string& s)
+{
+    put_u8(static_cast<uint8_t>(s.size()));
     const auto* p = reinterpret_cast<const std::byte*>(s.data());
-    buf.insert(buf.end(), p, p + s.size());
+    buffer_.insert(buffer_.end(), p, p + s.size());
 }
 
 
@@ -80,7 +85,7 @@ uint16_t Reader::get_u16()
     return v;
 }
 
-uint32_t Reader::get_ui32()
+uint32_t Reader::get_u32()
 {
     ensure(sizeof(uint32_t));
     uint32_t v{};
@@ -92,7 +97,7 @@ uint32_t Reader::get_ui32()
 int8_t Reader::get_i8()
 {
     ensure(sizeof(int8_t));
-    int8_t v = static_cast<int8_t>(static_cast<uint8_t>(*cur_));
+    int8_t v = static_cast<int8_t>(*cur_);
     cur_ += sizeof(int8_t);
     return v;
 }

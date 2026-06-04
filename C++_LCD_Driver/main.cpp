@@ -49,8 +49,10 @@ int main()
     auto uds_server = std::make_unique<UdsServer>(sock_path);
     auto poller     = std::make_unique<Epoll>();
 
+    bool test = true;
+    
     std::unique_ptr<IKeys> keys;
-    if (const char* ms = std::getenv("FAKE_KEYS_MS"))
+    if (test && const char* ms = std::getenv("FAKE_KEYS_MS");)
     {
         keys = std::make_unique<FakeKeys>(std::atoi(ms));
         std::cout << "[server] FakeKeys " << ms << "ms (GPIO 입력 무시)" << std::endl;
@@ -65,7 +67,9 @@ int main()
 
     // --- Bring up app_manager (init's first child) ---
     auto launcher = std::make_unique<NonBlockingProcessLauncher>();
-    launcher->launch(TEST_STRESS_PATH);
+
+    auto PATH = test ? TEST_STRESS_PATH : APP_MANAGER_PATH;
+    launcher->launch(PATH);
     std::cout << "[server] launched app_manager" << std::endl;
 
     // --- Reactor loop (blocks forever) ---

@@ -1,21 +1,43 @@
 BEGIN 
 { 
-    @kns = 0; @knr = 1; 
+    @kns = 0; @knr = 0; 
+    @started = 0;
     printf("Tracing... stress_n: %d\n", $1);
 }
 
 tracepoint:syscalls:sys_exit_sendto /comm == "lcd_driver"/
 {
+    if (@started == 0) 
+    {
+        @started = 1;
+        @t0 = nsecs;
+    }
+    if (@started == 1 && nsecs - @t0 >= 10000000000) { exit(); }
     @ksent[@kns] = nsecs;
     @kns++;
 }
 
 uretprobe:/PATH/TO/stress:_ZN3sdk3Key7get_keyEv
 {
+    if (@started == 1 && nsecs - @t0 >= 10000000000) { exit(); }
     $i = @knr; @knr++;
     if (@ksent[$i] != 0) {
         printf("get_key: key lag %d us\n", (nsecs - @ksent[$i]) / 1000);
         @key_lag_us = hist((nsecs - @ksent[$i]) / 1000);
         delete(@ksent[$i]);
     }
+}
+
+interval:ms:100 
+{
+    if (@started == 1 && nsecs - @t0 >= 10000000000) {
+        exit();
+    }
+}
+
+END
+{
+    clear(@ksent);
+    clear(@started);
+    clear(@t0);
 }

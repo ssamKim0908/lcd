@@ -41,7 +41,7 @@ lcd/
 │   ├── main.cpp             서버 엔트리
 │   ├── app_manager/         메뉴 + 앱 실행
 │   ├── osal/                OS 추상화 (SPI, GPIO, Epoll, Process, IPC)
-│   ├── osal/facade/
+│   ├── osal/driver/
 │   │   ├── display/         LCD 제어
 │   │   └── input/           GPIO 키 입력
 │   ├── framework/           서버

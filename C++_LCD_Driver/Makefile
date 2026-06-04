@@ -21,8 +21,8 @@ SERVER_BIN  = $(BUILD_DIR)/lcd_driver
 SERVER_SRCS = main.cpp \
               $(wildcard osal/*.cpp) \
               $(wildcard osal/ipc/*.cpp) \
-              $(wildcard osal/facade/display/*.cpp) \
-              $(wildcard osal/facade/input/*.cpp) \
+              $(wildcard osal/driver/display/*.cpp) \
+              $(wildcard osal/driver/input/*.cpp) \
               $(wildcard osal/process/*.cpp) \
               $(wildcard framework/*.cpp) \
               $(wildcard framework/ipc/*.cpp) \

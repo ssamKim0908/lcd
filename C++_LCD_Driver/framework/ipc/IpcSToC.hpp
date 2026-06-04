@@ -17,5 +17,5 @@ public:
     IpcSToC(const IpcSToC&)            = delete;
     IpcSToC& operator=(const IpcSToC&) = delete;
 
-    SendStatus send_key(KeyEvent ev, const std::shared_ptr<ISender>& sender_) override;
+    SendStatus send_key(KeyEvent ev, ISender& sender_) override;
 };

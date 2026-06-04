@@ -16,8 +16,8 @@ void Server::on_accept()
     auto channel = server_->accept();
     int  new_fd  = channel->fd();
 
-    if (auto old_top = focus_.top())
-        poller_->del(old_top->fd());
+    if (!focus_.empty())
+        poller_->del(focus_.top().fd());
 
     focus_.push(std::move(channel));
     poller_->add(new_fd, static_cast<uint32_t>(PollEvents::In));
@@ -28,19 +28,20 @@ void Server::on_accept()
 void Server::on_key()
 {
     KeyEvent k = keys_->next_event();
-    auto top = focus_.top();
-    if (!top) return;
+    if (focus_.empty()) return;
 
-    if (sToC->send_key(k, top) == SendStatus::Closed)
+    if (sToC->send_key(k, focus_.top()) == SendStatus::Closed)
         disconnect_top();
 }
 
 void Server::on_recv(int fd)
 {
-    auto top = focus_.top();
-    if (!top || top->fd() != fd) return;
+    if (focus_.empty()) return;
+    IChannel& top = focus_.top();
+    
+    if (top.fd() != fd) return;
 
-    RecvResult r = top->recv();
+    RecvResult r = top.recv();
     switch (r.status)
     {
     case RecvResult::Status::Data:
@@ -58,15 +59,14 @@ void Server::on_recv(int fd)
 
 void Server::disconnect_top()
 {
-    auto closing = focus_.top();
-    if (!closing) return;
+    if (focus_.empty()) return;
 
-    int fd = closing->fd();
+    int fd = focus_.top().fd();
     poller_->del(fd);
     focus_.pop();
 
-    if (auto new_top = focus_.top())
-        poller_->add(new_top->fd(), static_cast<uint32_t>(PollEvents::In));
+    if (!focus_.empty())
+        poller_->add(focus_.top().fd(), static_cast<uint32_t>(PollEvents::In));
 
     std::cout << "client disconnected: fd=" << fd << std::endl;
 }
@@ -114,7 +114,7 @@ FocusStack::~FocusStack()
 
 void FocusStack::push(std::unique_ptr<IChannel> channel)
 {
-    stack_.push(std::shared_ptr<IChannel>(std::move(channel)));
+    stack_.push(std::move(channel));
 }
 
 void FocusStack::pop()
@@ -127,8 +127,7 @@ bool FocusStack::empty() const
     return stack_.empty();
 }
 
-std::shared_ptr<IChannel> FocusStack::top() const
+IChannel& FocusStack::top() const
 {
-    if (stack_.empty()) return nullptr;
-    return stack_.top();
+    return *stack_.top();
 }

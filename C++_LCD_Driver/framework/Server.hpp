@@ -13,7 +13,7 @@ class Rasterizer;
 class FocusStack
 {
 private:
-    std::stack<std::shared_ptr<IChannel>> stack_;
+    std::stack<std::unique_ptr<IChannel>> stack_;
 public:
     FocusStack();
     ~FocusStack();
@@ -24,7 +24,7 @@ public:
     void                       push (std::unique_ptr<IChannel> channel);
     void                       pop  ();
     bool                       empty() const;
-    std::shared_ptr<IChannel>  top  () const;
+    IChannel&                  top  () const;
 };
 
 class Server

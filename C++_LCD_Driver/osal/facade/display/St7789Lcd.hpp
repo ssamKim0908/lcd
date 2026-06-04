@@ -18,8 +18,8 @@ namespace
 class St7789Lcd : public ILcd
 {
 private:
-    std::shared_ptr<LcdWriter>      writer;      
-    std::unique_ptr<Worker_thread> thread_pool;
+    std::unique_ptr<LcdWriter>      writer;      
+    std::unique_ptr<Worker_thread>  thread_pool;
 
     Frame                           framebuf{};  
     Frame                           scratch_{};

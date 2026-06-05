@@ -50,9 +50,10 @@ int main()
     auto poller     = std::make_unique<Epoll>();
 
     bool test = true;
-    
+    const char* ms = std::getenv("FAKE_KEYS_MS");
+
     std::unique_ptr<IKeys> keys;
-    if (test && const char* ms = std::getenv("FAKE_KEYS_MS");)
+    if (test && ms)
     {
         keys = std::make_unique<FakeKeys>(std::atoi(ms));
         std::cout << "[server] FakeKeys " << ms << "ms (GPIO 입력 무시)" << std::endl;

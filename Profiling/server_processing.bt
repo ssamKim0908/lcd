@@ -2,8 +2,8 @@ uprobe:/PATH/TO/lcd_driver:"*Epoll*wait*"   { @in[tid] = 1; }
 uretprobe:/PATH/TO/lcd_driver:"*Epoll*wait*" { delete(@in[tid]); }
 
 // 플래그 켜진 동안의 epoll_wait syscall = 서버 것만
-tracepoint:syscalls:sys_enter_epoll_wait /@in[tid]/                  { @ew[tid] = nsecs; }
-tracepoint:syscalls:sys_exit_epoll_wait  /@in[tid] && @ew[tid]/
+tracepoint:syscalls:sys_enter_epoll_pwait /@in[tid]/                  { @ew[tid] = nsecs; }
+tracepoint:syscalls:sys_exit_epoll_pwait  /@in[tid] && @ew[tid]/
 {
     @epoll_us = hist((nsecs - @ew[tid]) / 1000);   // 서버 epoll syscall 진입~반환
     delete(@ew[tid]);

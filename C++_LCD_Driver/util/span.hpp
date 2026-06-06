@@ -12,22 +12,22 @@ class Span
     size_t len_;
 
 public:
-    constexpr Span(T* ptr, size_t len) noexcept : ptr_(ptr), len_(len) {}
+    Span(T* ptr, size_t len)  : ptr_(ptr), len_(len) {}
 
     template <size_t N>
-    constexpr Span(T (&arr)[N]) noexcept : ptr_(arr), len_(N) {}
+    Span(T (&arr)[N])  : ptr_(arr), len_(N) {}
 
     template <class Container>
-    constexpr Span(Container& c) noexcept : ptr_(c.data()), len_(c.size()) {}
+    Span(Container& c)  : ptr_(c.data()), len_(c.size()) {}
 
-    constexpr T*     data()  const noexcept { return ptr_; }
-    constexpr size_t size()  const noexcept { return len_; }
-    constexpr bool   empty() const noexcept { return len_ == 0; }
+    T*     data()  const  { return ptr_; }
+    size_t size()  const  { return len_; }
+    bool   empty() const  { return len_ == 0; }
 
-    constexpr T* begin() const noexcept { return ptr_; }
-    constexpr T* end()   const noexcept { return ptr_ + len_; }
+    T* begin() const  { return ptr_; }
+    T* end()   const  { return ptr_ + len_; }
 
-    constexpr T& operator[](size_t i) const noexcept { return ptr_[i]; }
+    T& operator[](size_t i) const  { return ptr_[i]; }
 
     ~Span() = default;
 };
@@ -39,7 +39,7 @@ template <class Container>
 Span(const Container& c) -> Span<const typename Container::value_type>;
 
 template <class T>
-Span<const std::byte> as_bytes(Span<T> s) noexcept
+Span<const std::byte> as_bytes(Span<T> s) 
 {
     static_assert(std::is_trivially_copyable<T>::value,
                   "as_bytes requires a trivially copyable type");
@@ -48,7 +48,7 @@ Span<const std::byte> as_bytes(Span<T> s) noexcept
 }
 
 template <class T>
-Span<std::byte> as_writable_bytes(Span<T> s) noexcept
+Span<std::byte> as_writable_bytes(Span<T> s) 
 {
     static_assert(std::is_trivially_copyable<T>::value,
                   "as_writable_bytes requires a trivially copyable type");

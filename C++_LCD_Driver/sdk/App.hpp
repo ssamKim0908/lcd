@@ -27,10 +27,10 @@ protected:
     Key&  key();
     void  exit();
 
+private:
     virtual void on_key (const KeyEvent& ev) = 0;
     virtual void on_draw()                   = 0;
-
-private:
+    
     void on_render();
 
     bool                     running_ = false;
